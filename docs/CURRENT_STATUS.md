@@ -16,6 +16,15 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance and Atreides ordinary auction knowledge — 27 October. Prototyped /
+Partial.** A structured fact compares the current successfully inspected
+ordinary auction card with a public printed name. Single/compound controls,
+private answers and existing legal bots are connected. Eight related unit files
+pass 32 cases, including genuine Basic/Advanced auction progression; an
+unavailable inspection is staged separately. Richese, Ixian and non-Atreides
+Homeworld inspection, general Truthtrance and deployed acceptance remain open.
+[Scope](TRUTHTRANCE_KNOWLEDGE.md#atreides-ordinary-auction-knowledge--27-october-2026).
+
 **Truthtrance and Atreides Spice Blow knowledge — 27 October. Prototyped /
 Partial.** A structured question can compare the currently known next Spice
 Card with a printed location, sandworm or Sandtrout. Only Atreides' active,

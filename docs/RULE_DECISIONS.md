@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Truthtrance and Atreides ordinary auction knowledge — 27 October 2026
+
+The publisher FAQ permits game-related yes/no and compound questions. A named
+ordinary auction card can now be compared with Atreides' successful current
+inspection. Unknown, canceled and unavailable inspections do not reveal a
+card; special-auction and non-Atreides Homeworld entitlements remain separate.
+This is a bounded software interpretation, not a printed restriction.
+[Scope](TRUTHTRANCE_KNOWLEDGE.md#atreides-ordinary-auction-knowledge--27-october-2026).
+
 ## Truthtrance and Atreides Spice Blow knowledge — 27 October 2026
 
 The publisher FAQ permits game-related yes/no and compound questions. The

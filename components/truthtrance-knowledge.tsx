@@ -4,11 +4,12 @@ import { useId } from 'react';
 import { FACTIONS } from '@/game/catalog';
 import { territory } from '@/game/board';
 import { knowledgeFactInputError, SPICE_PEEK_VALUES, type KnowledgeFact } from '@/game/truthtrance-knowledge';
+import { TRUTH_CARD_NAMES } from '@/game/truthtrance-card-names';
 import { Input } from '@/components/ui/input';
 
-type NumericKnowledgeFact = Exclude<KnowledgeFact, { kind: 'prediction'; field: 'faction' } | { kind: 'spicePeek' }>;
+type NumericKnowledgeFact = Exclude<KnowledgeFact, { kind: 'prediction'; field: 'faction' } | { kind: 'spicePeek' } | { kind: 'auctionPeek' }>;
 function isNumericKnowledgeFact(fact: KnowledgeFact): fact is NumericKnowledgeFact {
-  return fact.kind !== 'spicePeek' && (fact.kind !== 'prediction' || fact.field === 'turn');
+  return fact.kind !== 'spicePeek' && fact.kind !== 'auctionPeek' && (fact.kind !== 'prediction' || fact.field === 'turn');
 }
 
 export function KnowledgeFactFields({
@@ -27,7 +28,17 @@ export function KnowledgeFactFields({
   const invalid = knowledgeFactInputError(value);
   return (
     <>
-      {value.kind === 'spicePeek' ? (
+      {value.kind === 'auctionPeek' ? (
+        <>
+          <label>
+            Inspected auction card
+            <select value={value.name} onChange={(event) => onChange({ kind: 'auctionPeek', name: event.target.value })}>
+              {TRUTH_CARD_NAMES.map((name) => <option key={name} value={name}>{name}</option>)}
+            </select>
+          </label>
+          <p className="fine">This asks about the current ordinary auction card the target has privately inspected. If no current card is known, the answer is I don’t know. Only the answer is published.</p>
+        </>
+      ) : value.kind === 'spicePeek' ? (
         <>
           <label>
             Next Spice Blow card

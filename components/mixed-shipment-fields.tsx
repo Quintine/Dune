@@ -66,6 +66,7 @@ export function TruthFactFields({ value: fact, game, target, onChange }: {
     stormDial: { kind: 'stormDial', compare: 'gte', value: 0 },
     stormForecast: { kind: 'stormForecast', compare: 'gte', value: 1 },
     spicePeek: { kind: 'spicePeek', value: 'worm' },
+    auctionPeek: { kind: 'auctionPeek', name: 'Shield' },
     spice: { kind: 'spice', compare: 'gte', value: 6 },
     forceCount: { kind: 'forceCount', zone: { kind: 'reserves' }, counter: 'total', compare: 'gte', value: 6 },
     noFieldValue: { kind: 'noFieldValue', value: 3 },
@@ -85,6 +86,7 @@ export function TruthFactFields({ value: fact, game, target, onChange }: {
         <option value="stormDial">Known storm dial</option>
         <option value="stormForecast">Known storm forecast</option>
         <option value="spicePeek">Known next Spice Blow card</option>
+        <option value="auctionPeek">Inspected ordinary auction card</option>
         <option value="spice">Current personal spice</option>
         <option value="forceCount">Current physical forces</option>
         <option value="noFieldValue">Current concealed No-Field printed value</option>
@@ -100,7 +102,7 @@ export function TruthFactFields({ value: fact, game, target, onChange }: {
         <FaceDancerFactFields value={fact} leaders={game.allLeaders} onChange={onChange} /> : fact.kind === 'noFieldValue' ?
         <NoFieldValueFields value={fact} onChange={onChange} /> : fact.kind === 'forceCount' ?
           <ForceCountFields value={fact} game={game} player={game.players.find(player => player.id === target)!} onChange={onChange} /> :
-        fact.kind === 'prediction' || fact.kind === 'stormDial' || fact.kind === 'stormForecast' || fact.kind === 'spicePeek' ?
+        fact.kind === 'prediction' || fact.kind === 'stormDial' || fact.kind === 'stormForecast' || fact.kind === 'spicePeek' || fact.kind === 'auctionPeek' ?
           <KnowledgeFactFields value={fact} onChange={onChange} /> : fact.kind === 'spice' ? <>
             <label>
               Compare current personal spice

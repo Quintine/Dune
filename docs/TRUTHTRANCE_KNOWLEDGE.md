@@ -1,5 +1,25 @@
 # Truthtrance: recorded predictions and storm knowledge
 
+## Atreides ordinary auction knowledge — 27 October 2026
+
+**Prototyped / Partial.** The structured fact `{kind:'auctionPeek', name}` asks
+whether Atreides' currently inspected ordinary auction card has the named
+printed face. The answer uses only the current lot's successful native
+inspection. Other factions, canceled or expired inspections and missing lots
+return unknown. Active Ixian and Richese special auctions and non-Atreides
+occupied Homeworld inspection are separate and remain unfinished. The card identity is
+not added to another seat's view; the selected answer is public through the
+normal Truthtrance flow. Single and compound selectors use the public printed
+name registry, and existing bots answer from their own projected scalar.
+
+The [GF9 FAQ p. 8](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=8)
+permits game-related yes/no and compound questions. This selector and its
+software boundary are a bounded interpretation, not a printed restriction.
+Native Basic/Advanced auction progression exercises an actual card inspection,
+question, answer and all four minimal AI profiles; the unavailable-inspection
+case is staged. Eight related unit files pass 32 cases. Broader question
+language and special-auction interactions remain open.
+
 ## Atreides Spice Blow knowledge — 27 October 2026
 
 **Prototyped / Partial.** The structured fact `{kind:'spicePeek', value}` asks

@@ -1,5 +1,16 @@
 # Dune implementation status
 
+## 27 October 2026 — Truthtrance and Atreides ordinary auction knowledge
+
+A single or compound structured question can compare a named Treachery Card
+with Atreides' current successfully inspected ordinary lot. Canceled or missing
+inspections answer unknown; special auctions and non-Atreides Homeworld
+entitlement remain separate. Eight related unit files pass 32 cases, including
+native Basic/Advanced auction progression, the question and all four legal bot
+answer paths. The unavailable-inspection case is staged. General freeform
+enforcement, broader interactions and deployed acceptance remain open.
+[Scope](TRUTHTRANCE_KNOWLEDGE.md#atreides-ordinary-auction-knowledge--27-october-2026).
+
 ## 27 October 2026 — Truthtrance and Atreides Spice Blow knowledge
 
 A single or compound structured question may ask whether the Spice Card

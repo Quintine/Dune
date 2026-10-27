@@ -9,7 +9,7 @@ import { knowledgeFactInputError } from '../game/truthtrance-knowledge';
 import { createGame, joinGame, newPlayer, viewGame } from '../game/engine';
 import type { TruthFact } from '../game/truthtrance';
 
-function markup(value: Extract<TruthFact, { kind: 'prediction' | 'stormDial' | 'stormForecast' | 'spicePeek' }>) {
+function markup(value: Extract<TruthFact, { kind: 'prediction' | 'stormDial' | 'stormForecast' | 'spicePeek' | 'auctionPeek' }>) {
   return renderToStaticMarkup(createElement(KnowledgeFactFields, { value, onChange() {} }));
 }
 
@@ -34,6 +34,22 @@ void test('knowledge controls expose full public faction registry and bounded st
   assert.match(forecast, /value="gte"/);
   assert.match(forecast, /value="lte"/);
   assert.match(forecast, /If no such value is available/);
+});
+
+void test('auction peek selector is available in single and compound current-fact questions', () => {
+  const game = createGame('AUCTIONCONTROLS', newPlayer('a', 'Asker', 'emperor'));
+  joinGame(game, newPlayer('b', 'Target', 'atreides'));
+  const view = viewGame(game, 'a');
+  const fact: TruthFact = { kind: 'auctionPeek', name: 'Shield' };
+  const single = renderToStaticMarkup(createElement(TruthFactFields, { value: fact, game: view, target: 'b', onChange() {} }));
+  assert.match(single, /value="auctionPeek" selected/);
+  assert.match(single, /value="Shield" selected/);
+  assert.match(single, /current ordinary auction card/);
+  assert.match(single, /If no current card is known/);
+  const compound: TruthFact = { kind: 'or', terms: [fact, { kind: 'spice', compare: 'gte', value: 3 }] };
+  const grouped = renderToStaticMarkup(createElement(TruthFactExpressionFields, { value: compound, game: view, target: 'b', disabled: false, onChange() {} }));
+  assert.match(grouped, /Inspected ordinary auction card/);
+  assert.match(grouped, /value="Shield" selected/);
 });
 
 void test('spice peek controls offer public card identities with private-knowledge guidance', () => {

@@ -1,6 +1,7 @@
 import { FACTIONS, type FactionId } from './catalog';
 import { SPICE_CARDS } from './cards';
 import { territory } from './board';
+import { TRUTH_CARD_NAMES } from './truthtrance-card-names';
 import type { Game, Player } from './engine';
 
 type Comparison = 'eq' | 'gte' | 'lte';
@@ -13,6 +14,7 @@ export type KnowledgeFact =
   | { kind: 'prediction'; field: 'faction'; faction: FactionId }
   | { kind: 'prediction'; field: 'turn'; compare: Comparison; value: number }
   | { kind: 'spicePeek'; value: string }
+  | { kind: 'auctionPeek'; name: string }
   | { kind: 'stormDial' | 'stormForecast'; compare: Comparison; value: number };
 
 /** Only values already chosen or actually known by this respondent. */
@@ -21,16 +23,20 @@ export type TruthKnowledge = {
   stormDial: number | null;
   stormForecast: number | null;
   spicePeek: string | null;
+  auctionPeek: string | null;
 };
 
 export function isKnowledgeFact(value: unknown): value is KnowledgeFact {
   if (!value || typeof value !== 'object') return false;
   const kind = (value as { kind?: unknown }).kind;
-  return kind === 'prediction' || kind === 'stormDial' || kind === 'stormForecast' || kind === 'spicePeek';
+  return kind === 'prediction' || kind === 'stormDial' || kind === 'stormForecast' || kind === 'spicePeek' || kind === 'auctionPeek';
 }
 
 export function knowledgeFactInputError(value: unknown): string | null {
   if (!isKnowledgeFact(value)) return 'Choose a stored prediction, storm dial or known forecast.';
+  if (value.kind === 'auctionPeek')
+    return typeof value.name === 'string' && TRUTH_CARD_NAMES.includes(value.name)
+      ? null : 'Choose a known Treachery Card name.';
   if (value.kind === 'spicePeek')
     return typeof value.value === 'string' && SPICE_PEEK_VALUES.includes(value.value)
       ? null : 'Choose a printed Spice Blow territory, a sandworm, or Sandtrout.';
@@ -51,6 +57,7 @@ export function knowledgeFactInputError(value: unknown): string | null {
 export function parseKnowledgeFact(value: unknown): KnowledgeFact {
   const error = knowledgeFactInputError(value);
   if (error || !isKnowledgeFact(value)) throw new Error(error ?? 'Choose a valid private-knowledge question.');
+  if (value.kind === 'auctionPeek') return { kind: value.kind, name: value.name };
   if (value.kind === 'spicePeek') return { kind: value.kind, value: value.value };
   if (value.kind === 'prediction' && value.field === 'faction')
     return { kind: value.kind, field: value.field, faction: value.faction };
@@ -60,12 +67,16 @@ export function parseKnowledgeFact(value: unknown): KnowledgeFact {
 }
 
 export function truthKnowledgeOf(
-  g: Pick<Game, 'phase' | 'turn' | 'advanced' | 'stormDials' | 'stormDialers' | 'stormCard' | 'stormCardKnown' | 'spicePeekKnown' | 'spiceDeck'>,
+  g: Pick<Game, 'phase' | 'turn' | 'advanced' | 'stormDials' | 'stormDialers' | 'stormCard' | 'stormCardKnown' | 'spicePeekKnown' | 'spiceDeck' | 'auction' | 'richeseAuction' | 'ixAuction'>,
   p: Pick<Player, 'id' | 'faction' | 'prediction'>,
 ): TruthKnowledge {
   const dial = g.stormDials[p.id];
   const peek = g.phase === 5 && p.faction === 'atreides' && g.spicePeekKnown
     ? g.spiceDeck[0] : undefined;
+  const lot = g.phase === 3 && p.faction === 'atreides' && !g.richeseAuction && !g.ixAuction ? g.auction : null;
+  // The private lot is read only after the same inspection entitlement used by
+  // the ordinary auction view has resolved successfully for this faction.
+  const lotName = lot?.peekKnown ? lot.cards[lot.index]?.name : undefined;
   const peekFace = peek && 'worm' in peek && peek.worm === true ? 'worm'
     : peek && 'sandtrout' in peek && peek.sandtrout === true ? 'sandtrout'
       : peek && 'territory' in peek && typeof peek.territory === 'string' && SPICE_PEEK_VALUES.includes(peek.territory)
@@ -80,6 +91,7 @@ export function truthKnowledgeOf(
       Number.isSafeInteger(g.stormCard) && g.stormCard! >= 1 && g.stormCard! <= 6
       ? g.stormCard : null,
     spicePeek: peekFace,
+    auctionPeek: typeof lotName === 'string' && lotName.length > 0 ? lotName : null,
   };
 }
 
@@ -90,6 +102,9 @@ export function knowledgeFactAnswer(
   const error = knowledgeFactInputError(fact);
   if (error) throw new Error(error);
   if (!knowledge) return 'unknown';
+  if (fact.kind === 'auctionPeek')
+    return knowledge.auctionPeek == null ? 'unknown'
+      : knowledge.auctionPeek === fact.name ? 'yes' : 'no';
   if (fact.kind === 'spicePeek')
     return knowledge.spicePeek === null || knowledge.spicePeek === undefined ? 'unknown'
       : knowledge.spicePeek === fact.value ? 'yes' : 'no';
@@ -104,6 +119,8 @@ export function knowledgeFactAnswer(
 }
 
 export function knowledgeFactText(fact: KnowledgeFact): string {
+  if (fact.kind === 'auctionPeek')
+    return `the current auction card you inspected as Atreides is ${fact.name}`;
   if (fact.kind === 'spicePeek') {
     const face = fact.value === 'worm' ? 'a sandworm' : fact.value === 'sandtrout' ? 'Sandtrout'
       : `a Spice Blow at ${territory(fact.value).name}`;
