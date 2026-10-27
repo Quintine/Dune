@@ -42996,11 +42996,22 @@ function applyActionInner(
     }
     if (t === 'factionSwapOffer') {
       requireRule(Object.keys(action).every(key => ['type', 'target'].includes(key)) &&
-        typeof action.target === 'string' && !p.bot, 'Choose another human seat for the faction swap.');
+        typeof action.target === 'string' && !p.bot, 'Choose another seat for the faction swap.');
       const target = g.players.find(player => player.id === action.target);
-      requireRule(target && !target.bot, 'Choose another human seat for the faction swap.');
-      g.factionSwap = factionSwapRule(() => createFactionSwap(g.players, id, target.id, crypto.randomUUID()));
-      log(g, `${p.name} offered to exchange factions with ${target.name}.`);
+      requireRule(target, 'Choose another seat for the faction swap.');
+      const offer = factionSwapRule(() => createFactionSwap(g.players, id, target.id, crypto.randomUUID()));
+      if (target.bot) {
+        // Lobby bots do not run asynchronous decision workers. Their provisional
+        // policy accepts a human's offer in the same authoritative action.
+        const result = factionSwapRule(() => answerFactionSwap(g.players, offer, target.id, true));
+        const oldName = target.name;
+        for (const assignment of result.assignments) assignLobbyFaction(getPlayer(g, assignment.player), assignment.faction);
+        g.players.forEach(player => (player.ready = !!player.bot));
+        log(g, `${p.name} exchanged factions with ${oldName}, which accepted automatically. Human readiness was cleared.`);
+      } else {
+        g.factionSwap = offer;
+        log(g, `${p.name} offered to exchange factions with ${target.name}.`);
+      }
       return g;
     }
     if (t === 'factionAllocation') {

@@ -38,8 +38,11 @@ to the current offer. A pending offer freezes other lobby changes and new seats
 until resolved, but players can switch between their own seats or exit. Only
 acceptance changes the assignments and clears human readiness. Seat IDs,
 credentials, circles and host remain attached to their participants; faction
-leaders and Ixian elites follow the new faction. AI seats cannot offer or
-receive swaps yet. Broader player-count interpretations, AI swap policy,
+leaders and Ixian elites follow the new faction. A human may offer to swap
+with an AI seat; the AI immediately accepts as a provisional software policy.
+The AI seat keeps its difficulty, identity and controller, while its name and
+faction assets follow the new faction. AI-initiated offers remain unfinished.
+Broader player-count interpretations, AI strategy,
 complete setup combinations, saved-game assurance and deployed acceptance
 remain open.
 
@@ -48,3 +51,8 @@ HTTP cases exercise allocation and authenticated swaps across independently
 controlled seats. This evidence does not certify every setup combination.
 An isolated browser room also exercised an offer between two controlled seats,
 including switching to accept, cleared readiness and an available exit control.
+
+The AI-target follow-up passes 50 cases in ten related unit files and three
+isolated HTTP cases covering allocation and authenticated human/AI swaps.
+An isolated browser room confirmed an immediate human/Hard-AI swap, retained AI
+difficulty and the human readiness reset.

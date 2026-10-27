@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { FACTIONS } from '@/game/catalog';
 import type { Action, GameView } from '@/game/engine';
 
-/** Swaps require the recipient's explicit consent; the server owns the offer. */
+/** Human recipients consent explicitly; AI recipients accept immediately. */
 export function FactionSwap({ game, send, busy }: {
   game: GameView;
   send: (action: Action) => Promise<void>;
@@ -35,17 +35,19 @@ export function FactionSwap({ game, send, busy }: {
   </section>;
 
   const self = game.players.find((player) => player.id === game.me);
-  const targets = game.players.filter((player) => player.id !== game.me && !player.bot);
+  const targets = game.players.filter((player) => player.id !== game.me);
   return <section className="notice" aria-label="Faction swaps">
     <h2>Swap factions</h2>
-    <p>Offer to exchange factions with another player. The other player must accept before either faction changes.</p>
+    <p>Offer to exchange factions with another player. A human recipient must accept before either faction changes.</p>
     {game.factionDraft && <p>Finish or cancel the faction draft before offering a swap.</p>}
-    {game.players.some((player) => player.bot) && <p className="fine">AI seats cannot receive swap offers yet.</p>}
+    {game.players.some((player) => player.bot && player.id !== game.me) && <p className="fine">AI seats accept immediately. The exchange clears human readiness.</p>}
     {self && !self.bot && targets.length > 0 ? <div className="flex flex-wrap gap-2">
       {targets.map((player) => <Button key={player.id} type="button" variant="outline" disabled={busy || !!game.factionDraft}
         onClick={() => void send({ type: 'factionSwapOffer', target: player.id })}>
-        {`Offer swap to ${player.name} (${factionName(player.faction)})`}
+        {player.bot
+          ? `Swap immediately with ${player.name} (${factionName(player.faction)} AI)`
+          : `Offer swap to ${player.name} (${factionName(player.faction)})`}
       </Button>)}
-    </div> : <p className="fine">A second human seat is needed to offer a swap.</p>}
+    </div> : <p className="fine">{self?.bot ? 'Only human players can offer a swap.' : 'A second seat is needed to offer a swap.'}</p>}
   </section>;
 }

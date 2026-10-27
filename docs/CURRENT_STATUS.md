@@ -16,6 +16,16 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Human-to-AI faction swaps — 28 October. Prototyped / Partial.** A human may
+exchange factions with an AI seat, which accepts immediately under a provisional
+policy. The action resets human readiness and preserves seats, controller mapping,
+player circles and AI difficulty. Human-to-human consent remains unchanged. Ten
+related unit files pass 50 cases; three isolated HTTP cases cover swaps and
+allocation. An isolated browser room exercised an immediate AI exchange and
+confirmed its retained difficulty and cleared readiness. AI-initiated offers,
+strategy and deployed acceptance remain open.
+[Scope](FACTION_ALLOCATION.md).
+
 **Consensual faction swaps — 28 October. Prototyped / Partial.** Human seats can
 offer, accept, decline or cancel a faction exchange. Offers bind current seats
 and factions; conflicting lobby changes wait while seat switching and exit
@@ -24,7 +34,7 @@ credentials, circles and host. Ten related unit files pass 48 cases; two
 isolated HTTP cases cover authenticated four-seat swaps and faction allocation.
 An isolated browser room exercised offer, seat switching and acceptance, and
 confirmed the exit control remains available during an offer.
-AI swaps, wider combinations and deployed acceptance remain open.
+AI-initiated swaps, wider combinations and deployed acceptance remain open.
 [Scope](FACTION_ALLOCATION.md).
 
 **Faction allocation at setup — 28 October. Prototyped / Partial.** Hosts can
@@ -35,7 +45,7 @@ Direct selection still works. Nine related unit files pass 43 cases; four
 isolated HTTP cases include a four-seat/two-controller draft and game start.
 An isolated browser room exercised a random deal, a human draft choice and an
 automatic AI pick through completion.
-AI swaps, wider combinations and deployed acceptance remain open.
+AI-initiated swaps, wider combinations and deployed acceptance remain open.
 [Scope](FACTION_ALLOCATION.md).
 
 **Advanced Voice names for ordinary cards — 28 October. Prototyped / Partial.**

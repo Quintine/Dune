@@ -9,7 +9,7 @@ type Wire = {
   code: string;
   me: string;
   version: number;
-  players: { id: string; faction: string; ready: boolean }[];
+  players: { id: string; name: string; faction: string; ready: boolean; bot?: string }[];
   factionSwap?: { event: string; from: string; to: string; fromFaction: string; toFaction: string } | null;
   controlledFactionSeats?: { id: string; faction: string }[];
   error?: string;
@@ -113,4 +113,50 @@ void test('faction swaps require the recipient seat credential and preserve cont
   assert.equal(declined.status, 200, JSON.stringify(declined.data));
   assert.ok(!declined.data.factionSwap);
   assert.deepEqual(declined.data.players.map(({ id, faction, ready }) => ({ id, faction, ready })), beforeDecline);
+});
+
+void test('a human can exchange factions with an AI through their own authenticated seat', async () => {
+  const host = await request('/api/rooms', {
+    name: 'AI swap host', faction: 'atreides', advanced: false, expansions: [], entry: receipt(),
+  });
+  assert.equal(host.status, 201, JSON.stringify(host.data));
+  assert.ok(host.cookie);
+  const path = `/api/rooms/${host.data.code}`;
+  const added = await request(path, {
+    version: host.data.version, action: { type: 'addBot', faction: 'harkonnen', difficulty: 'Hard' },
+  }, host.cookie, host.data.me);
+  assert.equal(added.status, 200, JSON.stringify(added.data));
+  const bot = added.data.players.find(player => player.faction === 'harkonnen' && player.bot === 'Hard');
+  assert.ok(bot);
+  const ready = await request(path, {
+    version: added.data.version, action: { type: 'ready' },
+  }, host.cookie, host.data.me);
+  assert.equal(ready.status, 200, JSON.stringify(ready.data));
+  assert.ok(ready.data.players.every(player => player.ready));
+  const originalIds = ready.data.players.map(player => player.id);
+
+  // Selecting the AI seat does not grant a credential to speak for it.
+  const forged = await request(path, {
+    version: ready.data.version, action: { type: 'factionSwapOffer', target: host.data.me },
+  }, host.cookie, bot.id);
+  assert.equal(forged.status, 409, JSON.stringify(forged.data));
+  const accepted = await request(path, {
+    version: ready.data.version, action: { type: 'factionSwapOffer', target: bot.id },
+  }, host.cookie, host.data.me);
+  assert.equal(accepted.status, 200, JSON.stringify(accepted.data));
+  assert.ok(!accepted.data.factionSwap);
+  assert.deepEqual(accepted.data.players.map(player => player.id), originalIds);
+  const human = accepted.data.players.find(player => player.id === host.data.me);
+  const swappedBot = accepted.data.players.find(player => player.id === bot.id);
+  assert.equal(human?.faction, 'harkonnen');
+  assert.equal(human?.ready, false);
+  assert.equal(swappedBot?.faction, 'atreides');
+  assert.equal(swappedBot?.bot, 'Hard');
+  assert.equal(swappedBot?.name, 'Atreides AI');
+  assert.equal(swappedBot?.ready, true);
+  const refreshed = await request(path, undefined, host.cookie, host.data.me);
+  assert.equal(refreshed.status, 200, JSON.stringify(refreshed.data));
+  assert.equal(refreshed.data.me, host.data.me);
+  assert.deepEqual(refreshed.data.players, accepted.data.players);
+  assert.ok(!refreshed.data.factionSwap);
 });

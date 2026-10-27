@@ -85,14 +85,13 @@ void test('declining and cancelling preserve factions and existing readiness', (
   rejected(game, 'host', { type: 'factionSwapRespond', event: second, accept: true });
 });
 
-void test('swap actions reject forged parties, payloads, stale events and AI seats without mutation', () => {
+void test('swap actions reject forged parties, payloads, stale events and AI proposers without mutation', () => {
   let game = lobby();
   game = applyAction(game, 'host', { type: 'addBot', faction: 'guild', difficulty: 'Easy' });
   const bot = game.players.find(player => player.bot)!;
   for (const [actor, action] of [
     ['host', { type: 'factionSwapOffer', target: 'host' }],
     ['host', { type: 'factionSwapOffer', target: 'missing' }],
-    ['host', { type: 'factionSwapOffer', target: bot.id }],
     [bot.id, { type: 'factionSwapOffer', target: 'host' }],
     ['missing', { type: 'factionSwapOffer', target: 'host' }],
     ['host', { type: 'factionSwapOffer', target: 'guest', from: 'third' }],
@@ -113,6 +112,66 @@ void test('swap actions reject forged parties, payloads, stale events and AI sea
     ['host', { type: 'factionSwapCancel', event, target: 'third' }],
     ['third', { type: 'factionSwapOffer', target: 'guest' }],
   ] as Array<[string, Action]>) rejected(game, actor, action);
+});
+
+void test('a human offer to an AI seat is accepted immediately with faction assets and readiness updated', () => {
+  let game = createGame('SWAPAI', newPlayer('host', 'Host', 'atreides'));
+  joinGame(game, newPlayer('guest', 'Guest', 'harkonnen'));
+  game = applyAction(game, 'host', { type: 'addBot', faction: 'guild', difficulty: 'Hard' });
+  const bot = game.players.find(player => player.bot)!;
+  const positions = structuredClone(game.playerPositions);
+  game = readyAll(game);
+  const original = structuredClone(game);
+
+  game = applyAction(game, 'guest', { type: 'factionSwapOffer', target: bot.id });
+  assert.equal(game.factionSwap, undefined, 'AI consent completes within the offer action');
+  assert.deepEqual(game.playerPositions, positions);
+  assert.equal(game.host, 'host');
+  assert.deepEqual(game.players.map(player => player.id), original.players.map(player => player.id));
+  assert.equal(game.players.find(player => player.id === 'guest')!.faction, 'guild');
+  assert.equal(game.players.find(player => player.id === 'guest')!.name, 'Guest');
+  const swappedBot = game.players.find(player => player.id === bot.id)!;
+  assert.equal(swappedBot.faction, 'harkonnen');
+  assert.equal(swappedBot.name, 'Harkonnen AI');
+  assert.equal(swappedBot.bot, 'Hard');
+  assert.deepEqual(swappedBot.leaders, newPlayer('x', 'X', 'harkonnen').leaders);
+  assert.deepEqual(game.players.find(player => player.id === 'guest')!.leaders, newPlayer('x', 'X', 'guild').leaders);
+  assert.equal(swappedBot.ready, true);
+  assert.ok(game.players.filter(player => !player.bot).every(player => !player.ready));
+  assert.ok(game.log.some(entry => /accept/i.test(entry.text)), 'the automatic acceptance is recorded');
+  rejected(game, bot.id, { type: 'factionSwapOffer', target: 'guest' });
+  rejected(game, 'guest', { type: 'factionSwapRespond', event: 'missing', accept: true });
+});
+
+void test('a two-faction AI controller keeps both seats and receives Ixian elites when swapped', () => {
+  let game = createGame('SWAPAI2', newPlayer('human', 'Human', 'ixians'), false, ['ix']);
+  game = applyAction(game, 'human', { type: 'twoPlayerMode', enabled: true });
+  joinControlledFaction(game, newPlayer('second', 'Human second', 'harkonnen'), 'human');
+  game = applyAction(game, 'human', { type: 'addBot', faction: 'emperor', difficulty: 'Medium' });
+  const firstBot = game.players.find(player => player.bot)!;
+  game = applyAction(game, 'human', { type: 'addControlledBot', controller: firstBot.id, faction: 'guild', difficulty: 'Easy' });
+  const secondBot = game.players.find(player => player.faction === 'guild')!;
+  const mapping = structuredClone(game.twoPlayerControllers);
+  const positions = structuredClone(game.playerPositions);
+  game = readyAll(game);
+
+  game = applyAction(game, 'human', { type: 'factionSwapOffer', target: secondBot.id });
+  assert.equal(game.factionSwap, undefined);
+  assert.deepEqual(game.twoPlayerControllers, mapping);
+  assert.deepEqual(game.playerPositions, positions);
+  const human = game.players.find(player => player.id === 'human')!;
+  const bot = game.players.find(player => player.id === secondBot.id)!;
+  assert.equal(human.faction, 'guild');
+  assert.equal(human.elites, undefined);
+  assert.equal(bot.faction, 'ixians');
+  assert.equal(bot.name, 'Ixians AI');
+  assert.equal(bot.bot, 'Easy');
+  assert.deepEqual(bot.elites, { reserves: 7, tanks: 0, forces: {}, revived: 0 });
+  assert.deepEqual(bot.leaders, newPlayer('x', 'X', 'ixians').leaders);
+  assert.equal(game.players.find(player => player.id === firstBot.id)!.faction, 'emperor');
+  assert.ok(game.players.filter(player => player.bot).every(player => player.ready));
+  assert.ok(game.players.filter(player => !player.bot).every(player => !player.ready));
+  assert.deepEqual(viewGame(game, 'human').controlledFactionSeats.map(seat => seat.id), ['human', 'second']);
 });
 
 void test('an outstanding offer freezes conflicting lobby actions and joining', () => {

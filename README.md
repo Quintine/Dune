@@ -20,8 +20,9 @@ factions are assigned together after every seat chooses. AI seats choose
 automatically. Both methods clear human readiness; direct selection remains
 available. Human seats can offer a faction swap, which takes effect only when
 the recipient accepts. Pending offers pause other lobby changes and can be
-declined by the recipient or canceled by the proposer. Accepted swaps clear
-human readiness; AI seats cannot participate yet. See
+declined by the recipient or canceled by the proposer. A human may also offer
+to swap with an AI seat, which currently accepts immediately. Accepted swaps
+clear human readiness. See
 [faction allocation](docs/FACTION_ALLOCATION.md).
 
 For the provisional two-person setup, the host enables **Two players, two

@@ -8,7 +8,8 @@ swaps. The prototype implements these methods in the lobby, retaining
 direct selection and existing start gates. Each faction seat receives its own
 draw in the two-person/four-faction mode; that composition and the automatic
 AI pick are software interpretations. Human seats can exchange factions by
-offer and acceptance; AI participation in swaps remains unfinished.
+offer and acceptance. A human offer to an AI seat is accepted immediately as a
+provisional software policy; AI-initiated offers remain unfinished.
 [Scope](FACTION_ALLOCATION.md).
 
 ## Advanced Voice and ordinary card names — 28 October 2026

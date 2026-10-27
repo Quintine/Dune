@@ -31,17 +31,23 @@ const click = (nodes: Element[], label: string) => {
   (button.props.onClick as () => void)();
 };
 
-void test('offers target other human seats and require the recipient to accept', () => {
+void test('offers distinguish human consent from immediate AI acceptance', () => {
   const calls: Action[] = [];
   const nodes = controls(base, async (action) => { calls.push(action); });
   assert.deepEqual(nodes.map((node) => node.props.children), [
     'Offer swap to Basil (Harkonnen)', 'Offer swap to Chani (Fremen)',
+    'Swap immediately with Computer (Spacing Guild AI)',
   ]);
-  assert.match(render(base), /other player must accept/);
-  assert.match(render(base), /AI seats cannot receive swap offers/);
+  assert.match(render(base), /human recipient must accept/);
+  assert.match(render(base), /AI seats accept immediately/);
+  assert.match(render(base), /exchange clears human readiness/);
   assert.doesNotMatch(render({ ...base, status: 'playing' }), /Swap factions/);
   click(nodes, 'Offer swap to Basil (Harkonnen)');
-  assert.deepEqual(calls, [{ type: 'factionSwapOffer', target: 'b' }]);
+  click(nodes, 'Swap immediately with Computer (Spacing Guild AI)');
+  assert.deepEqual(calls, [
+    { type: 'factionSwapOffer', target: 'b' },
+    { type: 'factionSwapOffer', target: 'd' },
+  ]);
 });
 
 void test('offers are unavailable during a draft or while busy', () => {
@@ -49,9 +55,14 @@ void test('offers are unavailable during a draft or while busy', () => {
   const inDraft = { ...base, factionDraft: draft } as unknown as GameView;
   assert.match(render(inDraft), /Finish or cancel the faction draft/);
   for (const node of [...controls(inDraft), ...controls(base, send, true)]) assert.equal(node.props.disabled, true);
-  const alone = { ...base, players: [base.players[0], base.players[3]] };
-  assert.match(render(alone), /second human seat/);
+  const withBot = { ...base, players: [base.players[0], base.players[3]] };
+  assert.equal(controls(withBot).length, 1);
+  const alone = { ...base, players: [base.players[0]] };
+  assert.match(render(alone), /second seat/);
   assert.equal(controls(alone).length, 0);
+  const asBot = { ...base, me: 'd' };
+  assert.match(render(asBot), /Only human players can offer a swap/);
+  assert.equal(controls(asBot).length, 0);
 });
 
 void test('the pending offer is visible to everyone, with consent and cancellation limited to each party', () => {

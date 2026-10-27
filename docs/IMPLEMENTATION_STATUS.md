@@ -1,5 +1,16 @@
 # Dune implementation status
 
+## 28 October 2026 — Human-to-AI faction swaps
+
+Humans can exchange with AI faction seats, which automatically accept under a
+provisional policy. One atomic action keeps the AI seat, difficulty and
+controller, updates faction assets and names, and clears human readiness. Ten
+related unit files pass 50 cases; three isolated HTTP cases cover allocation,
+human-to-human and human-to-AI swaps. AI-initiated negotiation, strategic
+policy and deployed acceptance remain open. An isolated browser room confirmed
+the immediate AI exchange, retained difficulty and readiness reset.
+[Scope](FACTION_ALLOCATION.md).
+
 ## 28 October 2026 — Consensual lobby faction swaps
 
 Human seats can offer an exchange, with recipient acceptance or decline and
