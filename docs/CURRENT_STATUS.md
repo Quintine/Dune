@@ -20,6 +20,14 @@ open mode gates.
 Keep identified Basic-function gaps ahead of Advanced and wider interactions.
 Prototype labels and final acceptance gates remain.
 
+**Truthtrance ground-movement sectors — 27 October. Prototyped / Partial.**
+A future physical-movement condition can name the whole destination territory
+or one exact printed sector. Separate eligible moves may satisfy separate
+clauses; each minimum counts one actual group. Older territory-only progress
+never invents a sector. Native guidance and minimal legal bots use actual
+movement choices; broader combinations and deployed acceptance remain open.
+[Scope](TRUTHTRANCE_MOVEMENT_PROMISES.md#ground-movement-destination-sector--27-october-2026).
+
 **Truthtrance shipment sectors — 27 October. Prototyped / Partial.**
 A future reserve-shipment condition may name an exact printed sector or the
 whole territory. Sector and territory clauses share the original physical

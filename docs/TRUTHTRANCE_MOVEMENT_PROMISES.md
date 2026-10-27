@@ -688,3 +688,25 @@ Framework aliases/CSS stubbing make this server-rendered evidence, not browser,
 visual or deployed acceptance. Full modes, wider preparations/timing/modules,
 comprehensive assurance and deployed acceptance remain open. No saved-room/D1
 operation, reset, restart or deployment.
+
+## Ground-movement destination sector — 27 October 2026
+
+**Prototyped / Partial.** The publisher FAQ (November 2020, p. 8) permits
+current-turn Yes/No questions; naming the destination sector is a provisional
+application of the project's online binding procedure. A movement clause may
+name any sector of a printed territory or a single printed sector and requires
+one actual physical ground-moving group of the selected minimum. Shipment,
+marker-only movement and special relocations retain their existing distinctions.
+
+Standalone, expression, mixed, travel and whole-turn questions use the same
+native legal movement and shared private guide. No forbids the matching move;
+Yes retains an available native completion. Different actual moves can satisfy
+different positive sector clauses when movement allowances and cards permit.
+Per-sector maxima record each qualifying group without adding smaller moves;
+old territory-wide progress is preserved and never implies an unrecorded sector.
+Dynamic board locations remain native legal destinations but cannot be named
+as printed-sector claims in this prototype.
+
+Runtime cases use a genuine Basic setup and actual physical shipment, Hajr and
+movement actions; complete expansion interactions, broader source review,
+browser and deployed acceptance remain open.

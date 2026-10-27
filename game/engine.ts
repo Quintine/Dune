@@ -21,7 +21,7 @@ import { TurnActionError, liveTurnActionPromises, turnActionBranches, recordTurn
   recordTurnActionStormDial, closeTurnActionStormDial, turnActionStormDialChoices,
   turnActionPromiseModeSupported, type TurnActionPlanValue, type TurnActionCombat, type TurnActionClaim, type TurnActionPromise, type TurnActionBranchLeaf, type TurnActionPreparation, type TurnActionWindowCards } from './turn-action-promises';
 import { TravelPromiseError, liveTravelPromises, travelBranches, recordTravelShipment, recordTravelMovement,
-  finishTravelTurn, validateTravelPromises, type TravelClaim, type TravelPromise, type TravelBranchLeaf } from './travel-expression-promises';
+  finishTravelTurn, validateTravelPromises, needsMovementSectorProgress, type TravelClaim, type TravelPromise, type TravelBranchLeaf } from './travel-expression-promises';
 import { mixedTraitorRequirement, type MixedTraitorClaim } from './mixed-traitor-question';
 import type { MixedBattleActionClaim, MixedBattleClaim } from './mixed-battle-question';
 import { AllianceExpressionPromiseError, allianceExpressionOutcomes, findAllianceExpressionPlans,
@@ -33,7 +33,7 @@ import type { RevivalActionClaim, MixedRevivalClaim } from './mixed-revival-ques
 import type { BribePaymentClaim, MixedBribeClaim } from './mixed-bribe-question';
 import { compileMixedActionExpression, MixedActionQuestionError, type CompiledMixedAction } from './mixed-action-question';
 import { MovementExpressionPromiseError, liveMovementExpressionPromises, recordMovementExpressionEvent,
-  validateMovementExpressionPromises, type MovementExpression, type MovementExpressionClaim, type MovementExpressionPromise } from './movement-expression-promises';
+  validateMovementExpressionPromises, movementExpressionSectors, type MovementExpression, type MovementExpressionClaim, type MovementExpressionPromise } from './movement-expression-promises';
 import { BribeExpressionPromiseError, bribeExpressionRecipients, bribeCompletionCandidates,
   liveBribeExpressionPromises, recordBribeExpressionPayment, validateBribeExpressionPromises,
   type BribeExpression, type BribeExpressionClaim, type BribeExpressionPromise } from './bribe-expression-promises';
@@ -19893,7 +19893,7 @@ function groundMovementProbe(source: Game, actor: string): Game {
   return game;
 }
 function groundMovementEvent(move: MovementOrder) {
-  return { territory: move.to, amount: move.total - Number(!!move.noField) };
+  return { territory: move.to, sector: move.sector, amount: move.total - Number(!!move.noField) };
 }
 function projectGroundMovement(source: Game, move: MovementOrder): Game {
   const game = structuredClone(source), player = getPlayer(game, move.player);
@@ -20973,7 +20973,7 @@ function turnActionCompletionAfterFreshDiscard(source: Game, actor: string, unkn
       else if (leaf.kind === 'ship') trial.shipmentPromises!.push({ ...metadata,
         territory: leaf.territory, minimum: leaf.minimum, ...(leaf.sector === undefined ? {} : { sector: leaf.sector }) });
       else if (leaf.kind === 'move') trial.movementPromises!.push({ ...metadata,
-        territory: leaf.territory, minimum: leaf.minimum });
+        territory: leaf.territory, minimum: leaf.minimum, ...(leaf.sector === undefined ? {} : { sector: leaf.sector }) });
       else if (leaf.kind === 'bid') (trial.bidPromises ??= []).push({ ...metadata,
         lot: leaf.lot, source: leaf.source, minimum: leaf.minimum });
       else if (leaf.kind === 'forces') (trial.revivalPromises ??= []).push({ ...metadata,
@@ -21171,7 +21171,8 @@ function turnActionPromise(g: Game, p: Player, claim: TurnActionClaim, answer: b
     ...(preparation ? { preparation } : {}),
     ...(nexus ? { alliance: { source: nexus.source, partner: null, closed: false } } : {}),
     shipment: { pending: open && (g.phase < 5 || !!g.phaseOpening?.initialize || shipmentAvailable(g, p)), event: null },
-    progress: [], payments: [], transportClosed: !open, paymentClosed: false,
+    progress: [], ...(needsMovementSectorProgress(claim.mixed) ? { sectorProgress: [] } : {}),
+    payments: [], transportClosed: !open, paymentClosed: false,
     fulfilled: compiled.kind === 'constant' && compiled.value === answer, released: false };
   if (combat?.plan && battle?.plans[p.id]) promise = turnActionRule(() => recordTurnActionPlan([promise], p.id,
     g.turn, combat.event, combat.territory, turnActionPlanValues(g, p.id, [claim.mixed])))[0];
@@ -21535,7 +21536,7 @@ function travelCompletion(source: Game, actor: string,
       shipmentPromises: [...shipments], movementPromises: [...movements], movementExpressionPromises: [...expressions] };
     for (const leaf of leaves) {
       const promise = { territory: leaf.territory, minimum: leaf.minimum, turn: source.turn,
-        ...(leaf.kind === 'ship' && leaf.sector !== undefined ? { sector: leaf.sector } : {}),
+        ...(leaf.sector !== undefined ? { sector: leaf.sector } : {}),
         player: actor, asker: source.players.find(player => player.id !== actor)!.id, answer: leaf.answer };
       if (leaf.kind === 'ship') trial.shipmentPromises.push(promise);
       else trial.movementPromises.push(promise);
@@ -21553,7 +21554,8 @@ function travelTruthAnswers(g: Game, p: Player, claim: TravelClaim): TruthAnswer
     if (compiled.kind === 'constant' && compiled.value !== answer) continue;
     const promise: TravelPromise = { ...structuredClone(claim), event: 'candidate', player: p.id,
       asker: g.players.find(player => player.id !== p.id)!.id, answer, compiled,
-      shipment: { pending: g.phase < 5 || shipmentAvailable(g, p), event: null }, progress: [], movementClosed: false,
+      shipment: { pending: g.phase < 5 || shipmentAvailable(g, p), event: null }, progress: [],
+      ...(needsMovementSectorProgress(claim.mixed) ? { sectorProgress: [] } : {}), movementClosed: false,
       fulfilled: compiled.kind === 'constant', released: false };
     const answerSource = (g.phase === 2 && !g.charityOrder) || (g.phase === 4 && !g.revivalOrder)
       ? { ...g, ready: g.ready.filter(id => id !== p.id) } : g;
@@ -21576,7 +21578,8 @@ function bindTravelTruth(g: Game, p: Player, claim: TravelClaim, answer: boolean
   reopenMovementPreparation(g, p);
   initializeTravelOrder(g);
   (g.travelPromises ??= []).push({ ...structuredClone(claim), event: crypto.randomUUID(), player: p.id, asker, answer,
-    compiled, shipment: { pending: g.phase < 5 || shipmentAvailable(g, p), event: null }, progress: [], movementClosed: false,
+    compiled, shipment: { pending: g.phase < 5 || shipmentAvailable(g, p), event: null }, progress: [],
+    ...(needsMovementSectorProgress(claim.mixed) ? { sectorProgress: [] } : {}), movementClosed: false,
     fulfilled: compiled.kind === 'constant', released: false });
   appendTravelOrder(g, 'travel', g.travelPromises!.length - 1);
 }
@@ -21951,7 +21954,8 @@ function movementExpressionTruthAnswers(g: Game, p: Player, claim: MovementExpre
   const answers: TruthAnswer[] = [];
   for (const answer of [true, false]) {
     const promise: MovementExpressionPromise = { ...structuredClone(claim), event: 'candidate', player: p.id,
-      asker: g.players.find(other => other.id !== p.id)!.id, answer, progress: [] };
+      asker: g.players.find(other => other.id !== p.id)!.id, answer, progress: [],
+      ...(movementExpressionSectors(claim.claim).length ? { sectorProgress: [] } : {}) };
     const expressions = [...(g.movementExpressionPromises ?? []), promise];
     const trial = { ...answerSource, movementExpressionPromises: expressions };
     if (phaseBidCompatibleLaterPromises(trial,p) && groundMovementCompletion(trial, p.id) &&
@@ -21965,7 +21969,8 @@ function bindMovementExpressionTruth(g: Game, p: Player, claim: MovementExpressi
     'Choose a whole movement answer compatible with owned actions and earlier answers.');
   reopenMovementPreparation(g, p);
   const promise: MovementExpressionPromise = { ...structuredClone(claim), event: crypto.randomUUID(),
-    player: p.id, asker, answer, progress: [] };
+    player: p.id, asker, answer, progress: [],
+    ...(movementExpressionSectors(claim.claim).length ? { sectorProgress: [] } : {}) };
   (g.movementExpressionPromises ??= []).push(promise);
   (g.movementPromiseSequence ??= []).push(promise.event);
   appendTravelOrder(g, 'movementExpression', g.movementExpressionPromises!.length - 1);

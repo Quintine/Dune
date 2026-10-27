@@ -515,7 +515,8 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
     const respondent = g.players.find(player => player.id === v.target)!;
     const mixed = parseMixedActionExpression(v.mixed, fact => parseFact(g, fact, respondent), action => {
       check(action && typeof action === 'object' && !Array.isArray(action) &&
-        Object.keys(action).sort().join(',') === 'minimum,territory', 'Supply only a printed movement destination and physical minimum.');
+        ['minimum,territory', 'minimum,sector,territory'].includes(Object.keys(action).sort().join(',')),
+      'Supply a printed movement destination, optional sector and physical minimum.');
       return parseMovementClaim(action);
     });
     return { kind: 'mixedMovement', target: v.target as string, turn: g.turn, mixed };
@@ -529,8 +530,8 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
     return { kind: 'movementExpression', target: v.target as string, ...claim };
   }
   if (v.kind === 'movement') {
-    check(Object.keys(v).sort().join(',') === 'kind,minimum,target,territory',
-      'Supply one ground-movement destination, minimum and respondent.');
+    check(['kind,minimum,target,territory', 'kind,minimum,sector,target,territory'].includes(Object.keys(v).sort().join(',')),
+      'Supply one ground-movement destination, optional sector, minimum and respondent.');
     check(movementPromiseTargetAvailable(g, v.target as string),
       'Ground-movement promises need a supported unused opportunity this round under Basic or Advanced rules with declared native families and pending decisions finished. Optional modules remain unfinished.');
     try { return { kind: 'movement', target: v.target as string, ...parseMovementClaim(v) }; }

@@ -15,7 +15,7 @@ const config: MixedActionConfig<TravelActionClaim> = {
   actionTiming: 'Future shipment or ground move · this turn',
   actionHelp: <>Shipment conditions concern your single future original reserve shipment after the answer.
     Choose any sector or one exact printed sector in that territory; only that sector satisfies an exact condition.
-    Ground-movement conditions concern one actual future ground move before your Movement turn ends this round.
+    Ground-movement conditions concern one actual future ground move before your Movement turn ends this round; its sector may also be named.
     Count physical forces in one action; smaller moves never add together. Earlier actions do not count.
     OR keeps legal shipment and movement alternatives available. No makes the whole expression false.
     Original costs, movement rights, cards and preparation still apply; this claim grants no extra shipment or movement.</>,
@@ -29,8 +29,8 @@ const config: MixedActionConfig<TravelActionClaim> = {
     <label htmlFor={`${id}-action`}>Future action</label>
     <select id={`${id}-action`} value={value.kind} disabled={disabled} onChange={event => {
       const kind = event.currentTarget.value;
-      if (kind === 'ship') onChange({ ...value, kind });
-      else if (kind === 'move') onChange({ kind, territory: value.territory, minimum: value.minimum });
+      if ((kind === 'ship' || kind === 'move') && kind !== value.kind)
+        onChange({ kind, territory: value.territory, minimum: value.minimum });
     }}>
       <option value="ship">Ship from reserves</option>
       <option value="move">Make ground movement</option>
@@ -40,20 +40,19 @@ const config: MixedActionConfig<TravelActionClaim> = {
       disabled={disabled} aria-invalid={!TERRITORIES.some(destination => destination.id === value.territory)}
       onChange={event => {
         const destination = event.currentTarget.value;
-        if (value.kind === 'ship') onChange({ kind: 'ship', territory: destination, minimum: value.minimum });
-        else onChange({ ...value, territory: destination });
+        onChange({ kind: value.kind, territory: destination, minimum: value.minimum });
       }}>
       <option value="">Choose a printed Arrakis territory</option>
       {TERRITORIES.map(destination => <option key={destination.id} value={destination.id}>{destination.name}</option>)}
     </select>
-    {value.kind === 'ship' && (() => {
+    {(value.kind === 'ship' || value.kind === 'move') && (() => {
       const printed = TERRITORIES.find(destination => destination.id === value.territory);
       return <>
-        <label htmlFor={`${id}-sector`}>Shipment sector</label>
+        <label htmlFor={`${id}-sector`}>{value.kind === 'ship' ? 'Shipment sector' : 'Ground-movement sector'}</label>
         <select id={`${id}-sector`} disabled={disabled} value={value.sector === undefined ? '' : String(value.sector)}
           aria-invalid={value.sector !== undefined && !printed?.sectors.includes(value.sector)} onChange={event => {
             const selected = event.currentTarget.value;
-            if (selected === '') onChange({ kind: 'ship', territory: value.territory, minimum: value.minimum });
+            if (selected === '') onChange({ kind: value.kind, territory: value.territory, minimum: value.minimum });
             else {
               const sector = Number(selected);
               if (printed?.sectors.includes(sector)) onChange({ ...value, sector });

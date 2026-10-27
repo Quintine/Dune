@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Truthtrance and ground-movement sector — 27 October 2026
+
+A sector-qualified current-turn question counts a real physical ground group
+ending in that printed sector. Separate eligible moves can satisfy separate
+clauses; smaller groups are never added together. This is a provisional online
+application of the FAQ's current-turn question permission, not a separate
+publisher timing ruling.
+[Contract](TRUTHTRANCE_MOVEMENT_PROMISES.md#ground-movement-destination-sector--27-october-2026).
+
 ## Truthtrance and reserve shipment sector — 27 October 2026
 
 An optional exact sector names the same original reserve-shipment event as

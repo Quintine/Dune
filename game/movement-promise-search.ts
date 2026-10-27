@@ -1,7 +1,7 @@
 import type { Action, Game, Player } from './engine';
 import { gameTerritories, splitLocation } from './board';
 import { liveMovementPromises, movementEventAllowed, movementMatches, settleMovementEvent, type MovementEvent, type MovementPromise } from './movement-promises';
-import { evaluateMovementExpression, liveMovementExpressionPromises, movementExpressionTerritories,
+import { evaluateMovementExpression, liveMovementExpressionPromises, movementExpressionTerritories, movementExpressionSectors,
   MovementExpressionPromiseError, recordMovementExpressionEvent, type MovementExpression,
   type MovementExpressionPromise } from './movement-expression-promises';
 
@@ -69,6 +69,9 @@ export function findMovementCompletion(source: Game, actor: string,
       positiveWhole.some(promise => !evaluateMovementExpression(promise.claim,
         movementExpressionTerritories(promise.claim).map(territory => ({ territory,
           maximum: Math.max(promise.progress.find(entry => entry.territory === territory)?.maximum ?? 0,
+            Math.min(20, possiblePhysical)) })),
+        movementExpressionSectors(promise.claim).map(({ territory, sector }) => ({ territory, sector,
+          maximum: Math.max(promise.sectorProgress?.find(entry => entry.territory === territory && entry.sector === sector)?.maximum ?? 0,
             Math.min(20, possiblePhysical)) }))))) return null;
     const key = JSON.stringify([player.forces, player.elites, player.advisors, player.moved, player.shipped, player.reserves, player.tanks, player.hand.map(card => card.id),
       player.hajrPlays, player.hajrWindow, player.ornithopterExtraMoves, player.spice, game.choamMovement,
@@ -78,8 +81,8 @@ export function findMovementCompletion(source: Game, actor: string,
       game.aid, game.karamaShipping, game.guildRateBlocked, game.shipmentPromises,
       game.discard.map(card => card.id), game.movementDiscardKnowledge?.[actor], game.pendingNullentropy,
       game.choamWorthlessBlocked, game.hajr, game.ornithopter ? [game.ornithopter.mode, game.ornithopter.startingMove, game.ornithopter.completed, game.ornithopter.cohort] : null,
-      live.map(promise => [promise.territory, promise.minimum, promise.answer]),
-      liveWhole.map(promise => [promise.claim, promise.answer, promise.progress]), adapter.progressKey?.(game, actor)]);
+      live.map(promise => [promise.territory, promise.sector, promise.minimum, promise.answer]),
+      liveWhole.map(promise => [promise.claim, promise.answer, promise.progress, promise.sectorProgress]), adapter.progressKey?.(game, actor)]);
     if (failed.has(key)) return null;
     const destinations = gameTerritories(game).filter(destination => !destination.id.startsWith('homeworld:'));
     const wanted = new Set([...live.filter(promise => promise.answer).map(promise => promise.territory),
@@ -110,12 +113,13 @@ export function findMovementCompletion(source: Game, actor: string,
         const amounts = [...(carriesMarker ? [0] : []), ...Array.from({ length: total }, (_, i) => i + 1)];
         const helpsWhole = (expression: MovementExpression, amount: number): boolean => 'terms' in expression
           ? expression.terms.some(term => helpsWhole(term, amount))
-          : expression.territory === destination.id && amount >= expression.minimum;
-        const helps = (amount: number) => live.some(p => p.answer && p.territory === destination.id && amount >= p.minimum) ||
+          : expression.territory === destination.id && (expression.sector === undefined || expression.sector === sector) && amount >= expression.minimum;
+        const helps = (amount: number) => live.some(p => p.answer && p.territory === destination.id &&
+          (p.sector === undefined || p.sector === sector) && amount >= p.minimum) ||
           positiveWhole.some(promise => helpsWhole(promise.claim, amount));
         amounts.sort((a, b) => Number(helps(b)) - Number(helps(a)) || a - b);
         for (const amount of amounts) {
-          const event = { territory: destination.id, amount };
+          const event = { territory: destination.id, sector, amount };
           if (!movementEventAllowed(live, event)) continue;
           if (!mayMoveAgain && live.some(promise => promise.answer && !movementMatches(promise, event))) continue;
           let projectedWhole: MovementExpressionPromise[];

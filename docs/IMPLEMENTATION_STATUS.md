@@ -1,5 +1,14 @@
 # Dune implementation status
 
+## 27 October 2026 — Truthtrance ground-movement sector
+
+Future physical-movement conditions may name an exact printed sector.
+Standalone, mixed, expression, travel and whole-turn controls share the native
+move, per-group progress and legal guidance. Separate moves can satisfy
+different clauses; legacy territory maxima never imply a sector. Broader
+combinations, complete rules and deployed acceptance remain open.
+[Contract](TRUTHTRANCE_MOVEMENT_PROMISES.md#ground-movement-destination-sector--27-october-2026).
+
 ## 27 October 2026 — Truthtrance reserve shipment sector
 
 An optional exact printed sector is part of the existing future reserve

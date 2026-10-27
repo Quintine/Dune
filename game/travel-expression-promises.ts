@@ -1,4 +1,4 @@
-import { TERRITORIES } from './board';
+import { TERRITORIES, validLocation } from './board';
 import {
   parseMixedActionExpression,
   type CompiledMixedAction,
@@ -15,6 +15,7 @@ export const TRAVEL_MAX_LEAVES = 16;
 export type TravelActionClaim = { kind: 'ship' | 'move'; territory: string; minimum: number; sector?: number };
 export type TravelClaim = { turn: number; mixed: MixedActionExpression<TravelActionClaim> };
 export type TravelEvent = { territory: string; amount: number; sector?: number };
+export type MovementSectorProgress = { territory: string; sector: number; maximum: number };
 export type TravelBranchLeaf = TravelActionClaim & { answer: boolean };
 export type TravelPromise = TravelClaim & {
   event: string;
@@ -26,6 +27,8 @@ export type TravelPromise = TravelClaim & {
   shipment: { pending: boolean; event: TravelEvent | null };
   /** Largest actual physical ground group per destination after this answer. */
   progress: { territory: string; maximum: number }[];
+  /** Present only for original questions naming a specific movement sector. */
+  sectorProgress?: MovementSectorProgress[];
   movementClosed: boolean;
   fulfilled: boolean;
   released: boolean;
@@ -55,16 +58,16 @@ const physical = (value: unknown): value is number =>
 const printedTerritory = (value: unknown): value is string =>
   typeof value === 'string' && TERRITORIES.some(destination => destination.id === value);
 
-/** An optional printed sector applies only to the original reserve shipment. */
+/** An optional printed sector names the actual reserve shipment or ground arrival. */
 export function parseTravelActionClaim(value: unknown): TravelActionClaim {
   check(object(value) && (keys(value, 'kind,minimum,territory') ||
-    value.kind === 'ship' && keys(value, 'kind,minimum,sector,territory')) &&
+    keys(value, 'kind,minimum,sector,territory')) &&
     (value.kind === 'ship' || value.kind === 'move'),
   'Choose one reserve shipment or physical ground movement, with its minimum and printed destination.');
-  if ('sector' in value) check(value.kind === 'ship' && printedTerritory(value.territory) &&
+  if ('sector' in value) check(printedTerritory(value.territory) &&
     typeof value.sector === 'number' && Number.isSafeInteger(value.sector) &&
     TERRITORIES.find(destination => destination.id === value.territory)!.sectors.includes(value.sector),
-  'Choose an actual printed sector in the shipment destination.');
+  'Choose an actual printed sector in the destination.');
   try {
     const claim = value.kind === 'ship' ? parseShipmentClaim(value) : parseMovementClaim(value);
     // parseShipmentClaim receives a flat leaf above, never its expression form.
@@ -90,6 +93,16 @@ function storedFact(value: unknown, depth = 0): TruthFact {
     return { kind: value.kind, terms: value.terms.map(term => storedFact(term, depth + 1)) };
   }
   return value as unknown as TruthFact;
+}
+
+/** New-only ledger initializer. The original expression is inspected, not a
+ * compiled branch, because frozen facts can fold an originally named sector. */
+export function needsMovementSectorProgress(node: unknown): boolean {
+  if (!object(node)) return false;
+  if (node.kind === 'action') return object(node.action) && node.action.kind === 'move' &&
+    Object.hasOwn(node.action, 'sector');
+  return (node.kind === 'and' || node.kind === 'or') && Array.isArray(node.terms) &&
+    node.terms.some(needsMovementSectorProgress);
 }
 
 function actionKey(action: TravelActionClaim): string {
@@ -123,11 +136,15 @@ function readCompiled(value: unknown, originals: ReadonlySet<string>): CompiledM
 }
 
 function validateEvent(event: unknown): asserts event is TravelEvent {
+  // Events are native physical arrivals, which may be at the mobile
+  // stronghold or a revealed Discovery. Question claims remain printed-only;
+  // the engine independently validates that a dynamic site actually exists.
   check(object(event) && (keys(event, 'amount,territory') || keys(event, 'amount,sector,territory')) &&
-    printedTerritory(event.territory) && physical(event.amount) &&
-    (!('sector' in event) || typeof event.sector === 'number' && Number.isSafeInteger(event.sector) &&
-      TERRITORIES.find(destination => destination.id === event.territory)!.sectors.includes(event.sector)),
-    'Retain the printed destination, any actual printed sector and zero to twenty physical forces.');
+    typeof event.territory === 'string' && physical(event.amount) &&
+    ('sector' in event ? typeof event.sector === 'number' && Number.isSafeInteger(event.sector) &&
+      validLocation(event.territory, event.sector) :
+      printedTerritory(event.territory) || validLocation(event.territory, 0)),
+    'Retain a structurally valid destination, any actual sector and zero to twenty physical forces.');
 }
 
 function readPromise(promise: TravelPromise): CompiledMixedAction<TravelActionClaim> {
@@ -135,10 +152,14 @@ function readPromise(promise: TravelPromise): CompiledMixedAction<TravelActionCl
   const mixed = parseMixedActionExpression(promise.mixed, storedFact, parseTravelActionClaim, { requireFact: false });
   const originals = new Set<string>();
   const destinations = new Set<string>();
+  const sectorDestinations = new Set<string>();
   const visit = (node: MixedActionExpression<TravelActionClaim>): void => {
     if (node.kind === 'action') {
       originals.add(actionKey(node.action));
-      if (node.action.kind === 'move') destinations.add(node.action.territory);
+      if (node.action.kind === 'move') {
+        destinations.add(node.action.territory);
+        if (node.action.sector !== undefined) sectorDestinations.add(JSON.stringify([node.action.territory, node.action.sector]));
+      }
     } else if (node.kind !== 'fact') node.terms.forEach(visit);
   };
   visit(mixed);
@@ -161,6 +182,17 @@ function readPromise(promise: TravelPromise): CompiledMixedAction<TravelActionCl
     'Retain unique named movement destinations and actual physical group maxima.');
     seen.add(entry.territory);
   }
+  check(sectorDestinations.size ? Array.isArray(promise.sectorProgress) : !('sectorProgress' in promise),
+    'Retain per-sector movement maxima only for original sector-qualified questions.');
+  const seenSectors = new Set<string>();
+  for (const entry of promise.sectorProgress ?? []) {
+    const key = object(entry) ? JSON.stringify([entry.territory, entry.sector]) : '';
+    check(object(entry) && keys(entry, 'maximum,sector,territory') && sectorDestinations.has(key) &&
+      physical(entry.maximum) && !seenSectors.has(key) &&
+      (promise.progress.find(row => row.territory === entry.territory)?.maximum ?? 0) >= entry.maximum,
+    'Retain unique named physical sector maxima under the actual territory maximum.');
+    seenSectors.add(key);
+  }
   return compiled;
 }
 
@@ -168,7 +200,10 @@ function actionValue(action: TravelActionClaim, promise: TravelPromise): boolean
   if (action.kind === 'ship') return promise.shipment.event !== null &&
     promise.shipment.event.territory === action.territory && promise.shipment.event.amount >= action.minimum &&
     (action.sector === undefined || promise.shipment.event.sector === action.sector);
-  return (promise.progress.find(entry => entry.territory === action.territory)?.maximum ?? 0) >= action.minimum;
+  return ((action.sector === undefined
+    ? promise.progress.find(entry => entry.territory === action.territory)?.maximum
+    : promise.sectorProgress?.find(entry => entry.territory === action.territory && entry.sector === action.sector)?.maximum
+  ) ?? 0) >= action.minimum;
 }
 
 function evaluate(node: CompiledMixedAction<TravelActionClaim>, promise: TravelPromise): boolean {
@@ -287,12 +322,28 @@ export function recordTravelMovement<T extends TravelPromise>(promises: readonly
     visit(promise.mixed);
     if (!named) continue;
     const old = promise.progress.find(entry => entry.territory === event.territory)?.maximum ?? 0;
-    if (event.amount <= old) continue;
+    const namesSector = (node: MixedActionExpression<TravelActionClaim>): boolean => node.kind === 'action'
+      ? node.action.kind === 'move' && node.action.territory === event.territory && node.action.sector === event.sector && event.sector !== undefined
+      : node.kind !== 'fact' && node.terms.some(namesSector);
+    const sectorNamed = event.sector !== undefined && namesSector(promise.mixed);
+    const oldSector = sectorNamed ? promise.sectorProgress!.find(entry => entry.territory === event.territory &&
+      entry.sector === event.sector)?.maximum ?? 0 : 0;
+    if (event.amount <= old && (!sectorNamed || event.amount <= oldSector)) continue;
     const progress = promise.progress.map(entry => ({ ...entry }));
-    const entry = progress.find(candidate => candidate.territory === event.territory);
-    if (entry) entry.maximum = event.amount;
-    else progress.push({ territory: event.territory, maximum: event.amount });
-    updates.set(promise, settle(promise, { ...promise, progress }));
+    if (event.amount > old) {
+      const entry = progress.find(candidate => candidate.territory === event.territory);
+      if (entry) entry.maximum = event.amount;
+      else progress.push({ territory: event.territory, maximum: event.amount });
+    }
+    let sectorProgress = promise.sectorProgress;
+    if (sectorNamed && event.amount > oldSector) {
+      sectorProgress = promise.sectorProgress!.map(entry => ({ ...entry }));
+      const entry = sectorProgress.find(candidate => candidate.territory === event.territory && candidate.sector === event.sector);
+      if (entry) entry.maximum = event.amount;
+      else sectorProgress.push({ territory: event.territory, sector: event.sector!, maximum: event.amount });
+    }
+    updates.set(promise, settle(promise, { ...promise, progress,
+      ...(sectorProgress ? { sectorProgress } : {}) }));
   }
   return promises.map(promise => updates.get(promise) ?? promise);
 }

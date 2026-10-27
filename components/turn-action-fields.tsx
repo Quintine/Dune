@@ -119,7 +119,7 @@ const config: MixedActionConfig<TurnActionLeaf> = {
     Amal halves available cash before ordinary payments become legal; preserve enough remaining cash for any payment condition.
     Shipment conditions concern the single future original reserve shipment after the answer. Choose any sector or one exact printed sector;
     a different sector in the same territory does not satisfy an exact-sector condition.
-    Ground-movement conditions use the maximum physical forces in one actual future move to that destination; smaller moves never add together.
+    Ground-movement conditions use the maximum physical forces in one actual future move to that destination and optional exact sector; smaller moves never add together.
     Bid conditions close with their named ordinary lot; Revival conditions close with your native Revival opportunity.
     Shipment and movement close at your own Movement turn end, while payment conditions last until the actual turn ends.
     AND requires every condition; OR keeps legal alternatives. No makes the whole expression false, not every condition separately.
@@ -434,20 +434,19 @@ const config: MixedActionConfig<TurnActionLeaf> = {
             const destination = event.currentTarget.value;
             // An exact sector belongs to its printed territory. Selecting a
             // different territory returns to the explicit any-sector choice.
-            if (value.kind === 'ship') onChange({ kind: 'ship', territory: destination, minimum: value.minimum });
-            else onChange({ ...value, territory: destination });
+            onChange({ kind: value.kind, territory: destination, minimum: value.minimum });
           }}>
           <option value="">Choose a printed Arrakis territory</option>
           {TERRITORIES.map(destination => <option key={destination.id} value={destination.id}>{destination.name}</option>)}
         </select>
-        {value.kind === 'ship' && (() => {
+        {(value.kind === 'ship' || value.kind === 'move') && (() => {
           const printed = TERRITORIES.find(destination => destination.id === value.territory);
           return <>
-            <label htmlFor={`${id}-sector`}>Shipment sector</label>
+            <label htmlFor={`${id}-sector`}>{value.kind === 'ship' ? 'Shipment sector' : 'Ground-movement sector'}</label>
             <select id={`${id}-sector`} disabled={disabled} value={value.sector === undefined ? '' : String(value.sector)}
               aria-invalid={value.sector !== undefined && !printed?.sectors.includes(value.sector)} onChange={event => {
                 const chosen = event.currentTarget.value;
-                if (chosen === '') onChange({ kind: 'ship', territory: value.territory, minimum: value.minimum });
+                if (chosen === '') onChange({ kind: value.kind, territory: value.territory, minimum: value.minimum });
                 else {
                   const sector = Number(chosen);
                   if (printed?.sectors.includes(sector)) onChange({ ...value, sector });

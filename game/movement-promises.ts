@@ -3,8 +3,8 @@ import { nativePromiseScopeSupported } from './native-promise-scope';
 import type { Game } from './engine';
 
 /** One qualifying ground movement, never the sum of several smaller groups. */
-export type MovementClaim = { territory: string; minimum: number };
-export type MovementEvent = { territory: string; amount: number };
+export type MovementClaim = { territory: string; minimum: number; sector?: number };
+export type MovementEvent = { territory: string; amount: number; sector?: number };
 export type MovementPromise = MovementClaim & {
   /** New answers share accepted order with whole expressions; older saves omit it. */
   event?: string;
@@ -31,6 +31,12 @@ export function parseMovementClaim(value: unknown): MovementClaim {
   check(typeof claim.minimum === 'number' && Number.isSafeInteger(claim.minimum) &&
     claim.minimum >= 1 && claim.minimum <= 20,
   'Choose a minimum of one to twenty physical forces.');
+  if (Object.hasOwn(claim, 'sector')) {
+    check(typeof claim.sector === 'number' && Number.isSafeInteger(claim.sector) &&
+      TERRITORIES.find(destination => destination.id === claim.territory)!.sectors.includes(claim.sector),
+    'Choose a printed sector of the ground-movement destination.');
+    return { territory: claim.territory, minimum: claim.minimum, sector: claim.sector };
+  }
   return { territory: claim.territory, minimum: claim.minimum };
 }
 export function validMovementClaim(value: unknown): value is MovementClaim {
@@ -41,10 +47,11 @@ export function validMovementClaim(value: unknown): value is MovementClaim {
   }
 }
 export function movementClaimText(claim: MovementClaim): string {
-  return `make a ground movement of at least ${claim.minimum} physical forces to ${territory(claim.territory).name}`;
+  return `make a ground movement of at least ${claim.minimum} physical forces to ${territory(claim.territory).name}${claim.sector === undefined ? '' : `, sector ${claim.sector}`}`;
 }
 export function movementMatches(claim: MovementClaim, event: MovementEvent | null): boolean {
   return event !== null && event.territory === claim.territory &&
+    (claim.sector === undefined || event.sector === claim.sector) &&
     Number.isSafeInteger(event.amount) && event.amount >= claim.minimum && event.amount <= 20;
 }
 export function liveMovementPromises<T extends MovementPromise>(

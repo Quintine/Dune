@@ -1,4 +1,4 @@
-import { TERRITORIES } from './board';
+import { TERRITORIES, validLocation } from './board';
 import { BribePromiseError, parseBribeClaim } from './bribe-promises';
 import { BidPromiseError, parseBidClaim } from './bid-promises';
 import { AlliancePromiseError, parseAllianceClaim } from './alliance-promises';
@@ -24,6 +24,7 @@ import {
   type TravelActionClaim,
   type TravelBranchLeaf,
   type TravelEvent,
+  type MovementSectorProgress,
 } from './travel-expression-promises';
 import type { TruthFact } from './truthtrance';
 
@@ -95,6 +96,8 @@ export type TurnActionPromise = TurnActionClaim & {
   shipment: { pending: boolean; event: TravelEvent | null };
   /** Largest physical ground group after this answer, never a sum of groups. */
   progress: { territory: string; maximum: number }[];
+  /** Present only for original questions naming a specific movement sector. */
+  sectorProgress?: MovementSectorProgress[];
   /** Actual completed ordinary payer actions after this answer. */
   payments: TurnActionPayment[];
   transportClosed: boolean;
@@ -232,7 +235,7 @@ function actionKey(action: TurnActionLeaf): string {
   if (action.kind === 'leader') return JSON.stringify([action.kind, action.leader]);
   if (action.kind === 'forces') return JSON.stringify([action.kind, action.counter, action.minimum]);
   if (action.kind === 'bid') return JSON.stringify([action.kind, action.lot, action.minimum]);
-  if (action.kind === 'ship' && action.sector !== undefined)
+  if ((action.kind === 'ship' || action.kind === 'move') && action.sector !== undefined)
     return JSON.stringify([action.kind, action.territory, action.minimum, action.sector]);
   return JSON.stringify(action.kind === 'payment' ? [action.kind, action.recipient, action.minimum] :
     [action.kind, action.territory, action.minimum]);
@@ -265,16 +268,21 @@ function readCompiled(value: unknown, originals: ReadonlySet<string>): CompiledM
 }
 
 function validateEvent(event: unknown): asserts event is TravelEvent {
+  // Events are native physical arrivals, which may be at the mobile
+  // stronghold or a revealed Discovery. Question claims remain printed-only;
+  // the engine independently validates that a dynamic site actually exists.
   check(object(event) && (keys(event, 'amount,territory') || keys(event, 'amount,sector,territory')) &&
-    printedTerritory(event.territory) && physical(event.amount) &&
-    (!('sector' in event) || typeof event.sector === 'number' && Number.isSafeInteger(event.sector) &&
-      TERRITORIES.find(destination => destination.id === event.territory)!.sectors.includes(event.sector)),
-    'Retain the printed destination, any actual printed sector and zero to twenty physical forces.');
+    typeof event.territory === 'string' && physical(event.amount) &&
+    ('sector' in event ? typeof event.sector === 'number' && Number.isSafeInteger(event.sector) &&
+      validLocation(event.territory, event.sector) :
+      printedTerritory(event.territory) || validLocation(event.territory, 0)),
+    'Retain a structurally valid destination, any actual sector and zero to twenty physical forces.');
 }
 
 function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnActionLeaf> {
   check(object(promise), 'Retain the complete original turn-action commitment and its metadata.');
   const fields = 'answer,asker,compiled,event,fulfilled,mixed,paymentClosed,payments,player,progress,released,shipment,transportClosed,turn'.split(',');
+  if ('sectorProgress' in promise) fields.push('sectorProgress');
   if ('preparation' in promise) fields.push('preparation');
   if ('alliance' in promise) fields.push('alliance');
   if ('combat' in promise) fields.push('combat');
@@ -295,6 +303,7 @@ function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnAction
   }
   const originals = new Set<string>();
   const destinations = new Set<string>();
+  const sectorDestinations = new Set<string>();
   const recipients = new Set<string>();
   const lots = new Set<number>();
   let hasRevival = false;
@@ -309,7 +318,10 @@ function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnAction
   const visit = (node: MixedActionExpression<TurnActionLeaf>): void => {
     if (node.kind === 'action') {
       originals.add(actionKey(node.action));
-      if (node.action.kind === 'move') destinations.add(node.action.territory);
+      if (node.action.kind === 'move') {
+        destinations.add(node.action.territory);
+        if (node.action.sector !== undefined) sectorDestinations.add(JSON.stringify([node.action.territory, node.action.sector]));
+      }
       if (node.action.kind === 'payment') recipients.add(node.action.recipient);
       if (node.action.kind === 'bid') lots.add(node.action.lot);
       if (node.action.kind === 'forces' || node.action.kind === 'leader') hasRevival = true;
@@ -464,6 +476,17 @@ function readPromise(promise: TurnActionPromise): CompiledMixedAction<TurnAction
     'Retain unique named movement destinations and actual physical group maxima.');
     seenDestinations.add(entry.territory);
   }
+  check(sectorDestinations.size ? Array.isArray(promise.sectorProgress) : !('sectorProgress' in promise),
+    'Retain per-sector movement maxima only for original sector-qualified questions.');
+  const seenSectors = new Set<string>();
+  for (const entry of promise.sectorProgress ?? []) {
+    const key = object(entry) ? JSON.stringify([entry.territory, entry.sector]) : '';
+    check(object(entry) && keys(entry, 'maximum,sector,territory') && sectorDestinations.has(key) &&
+      physical(entry.maximum) && !seenSectors.has(key) &&
+      (promise.progress.find(row => row.territory === entry.territory)?.maximum ?? 0) >= entry.maximum,
+    'Retain unique named physical sector maxima under the actual territory maximum.');
+    seenSectors.add(key);
+  }
   check(Array.isArray(promise.payments), 'Retain this answer’s cumulative ordinary payments.');
   const seenRecipients = new Set<string>();
   for (const payment of promise.payments) {
@@ -496,7 +519,10 @@ function actionValue(action: TurnActionLeaf, promise: TurnActionPromise): boolea
     promise.shipment.event.territory === action.territory &&
     (action.sector === undefined || promise.shipment.event.sector === action.sector) &&
     promise.shipment.event.amount >= action.minimum;
-  return (promise.progress.find(entry => entry.territory === action.territory)?.maximum ?? 0) >= action.minimum;
+  return ((action.sector === undefined
+    ? promise.progress.find(entry => entry.territory === action.territory)?.maximum
+    : promise.sectorProgress?.find(entry => entry.territory === action.territory && entry.sector === action.sector)?.maximum
+  ) ?? 0) >= action.minimum;
 }
 
 function evaluate(node: CompiledMixedAction<TurnActionLeaf>, promise: TurnActionPromise): boolean {
@@ -567,7 +593,7 @@ function sameAction(left: TurnActionBranchLeaf, right: TurnActionBranchLeaf): bo
   if (left.kind === 'bid') return right.kind === 'bid' && left.lot === right.lot && left.source === right.source;
   if (left.kind === 'payment') return right.kind === 'payment' && left.recipient === right.recipient && left.progress === right.progress;
   return (right.kind === 'ship' || right.kind === 'move') && left.territory === right.territory &&
-    (left.kind !== 'ship' || left.sector === right.sector);
+    left.sector === right.sector;
 }
 
 /** Legal values for all signed leaves tied to the same original dial. A caller
@@ -619,15 +645,15 @@ function mergeBranches(left: TurnActionBranchLeaf[], right: TurnActionBranchLeaf
     const no = merged.find(other => sameAction(other, leaf) && !other.answer);
     if (yes && no && 'minimum' in yes && 'minimum' in no &&
       yes.minimum >= no.minimum) return null;
-    if (leaf.kind === 'ship') {
-      if (leaf.answer && merged.some(other => other.kind === 'ship' && other.answer &&
+    if (leaf.kind === 'ship' || leaf.kind === 'move') {
+      if (leaf.kind === 'ship' && leaf.answer && merged.some(other => other.kind === 'ship' && other.answer &&
         (other.territory !== leaf.territory || other.sector !== undefined && leaf.sector !== undefined &&
           other.sector !== leaf.sector))) return null;
-      // One exact positive shipment necessarily satisfies any broader negative
-      // condition with an equal or lower minimum. A broad positive and exact
-      // negative remain separate: a different sector may still be available.
-      for (const required of merged) if (required.kind === 'ship' && required.answer)
-        for (const excluded of merged) if (excluded.kind === 'ship' && !excluded.answer &&
+      // One exact positive action necessarily satisfies a broader negative
+      // condition at an equal or lower minimum. A broad positive and an exact
+      // negative can coexist when another legal sector is available.
+      for (const required of merged) if (required.kind === leaf.kind && required.answer)
+        for (const excluded of merged) if (excluded.kind === leaf.kind && !excluded.answer &&
           required.territory === excluded.territory && required.minimum >= excluded.minimum &&
           (excluded.sector === undefined || required.sector !== undefined && required.sector === excluded.sector)) return null;
     }
@@ -1006,12 +1032,28 @@ export function recordTurnActionMovement<T extends TurnActionPromise>(promises: 
       : node.kind !== 'fact' && node.terms.some(named);
     if (!named(promise.mixed)) continue;
     const old = promise.progress.find(entry => entry.territory === event.territory)?.maximum ?? 0;
-    if (event.amount <= old) continue;
+    const namesSector = (node: MixedActionExpression<TurnActionLeaf>): boolean => node.kind === 'action'
+      ? node.action.kind === 'move' && node.action.territory === event.territory && node.action.sector === event.sector && event.sector !== undefined
+      : node.kind !== 'fact' && node.terms.some(namesSector);
+    const sectorNamed = event.sector !== undefined && namesSector(promise.mixed);
+    const oldSector = sectorNamed ? promise.sectorProgress!.find(entry => entry.territory === event.territory &&
+      entry.sector === event.sector)?.maximum ?? 0 : 0;
+    if (event.amount <= old && (!sectorNamed || event.amount <= oldSector)) continue;
     const progress = promise.progress.map(entry => ({ ...entry }));
-    const entry = progress.find(candidate => candidate.territory === event.territory);
-    if (entry) entry.maximum = event.amount;
-    else progress.push({ territory: event.territory, maximum: event.amount });
-    updates.set(promise, settle(promise, { ...promise, progress }));
+    if (event.amount > old) {
+      const entry = progress.find(candidate => candidate.territory === event.territory);
+      if (entry) entry.maximum = event.amount;
+      else progress.push({ territory: event.territory, maximum: event.amount });
+    }
+    let sectorProgress = promise.sectorProgress;
+    if (sectorNamed && event.amount > oldSector) {
+      sectorProgress = promise.sectorProgress!.map(entry => ({ ...entry }));
+      const entry = sectorProgress.find(candidate => candidate.territory === event.territory && candidate.sector === event.sector);
+      if (entry) entry.maximum = event.amount;
+      else sectorProgress.push({ territory: event.territory, sector: event.sector!, maximum: event.amount });
+    }
+    updates.set(promise, settle(promise, { ...promise, progress,
+      ...(sectorProgress ? { sectorProgress } : {}) }));
   }
   return promises.map(promise => updates.get(promise) ?? promise);
 }

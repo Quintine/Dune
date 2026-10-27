@@ -1,18 +1,22 @@
-import { TERRITORIES } from './board';
+import { TERRITORIES, validLocation } from './board';
 import { MovementClaimError, movementClaimText, parseMovementClaim, type MovementEvent } from './movement-promises';
 
 export { movementPromiseModeSupported as movementExpressionPromiseModeSupported } from './movement-promises';
 
-export type MovementExpression = { kind: 'move'; territory: string; minimum: number } |
+export type MovementExpression = { kind: 'move'; territory: string; minimum: number; sector?: number } |
   { kind: 'and' | 'or'; terms: MovementExpression[] };
 export type MovementExpressionClaim = { turn: number; claim: MovementExpression };
 export type MovementExpressionProgressEntry = { territory: string; maximum: number };
 export type MovementExpressionProgress = MovementExpressionProgressEntry[];
+export type MovementExpressionSectorProgressEntry = { territory: string; sector: number; maximum: number };
+export type MovementExpressionSectorProgress = MovementExpressionSectorProgressEntry[];
 export type MovementExpressionEvent = MovementEvent;
 export type MovementExpressionPromise = MovementExpressionClaim & {
   event: string; player: string; asker: string; answer: boolean;
   /** Largest actual physical ground move to each named destination after this answer. */
   progress: MovementExpressionProgress;
+  /** Present only for named exact-sector clauses; old territory-only saves omit it. */
+  sectorProgress?: MovementExpressionSectorProgress;
   fulfilled?: boolean; released?: boolean;
 };
 
@@ -56,7 +60,8 @@ export function parseMovementExpression(value: unknown): MovementExpression {
     }
     check(++leaves <= MOVEMENT_EXPRESSION_MAX_LEAVES,
       'Use at most sixteen ground-movement statements.');
-    check(input.kind === 'move' && keys(input, 'kind,minimum,territory'),
+    check(input.kind === 'move' && (keys(input, 'kind,minimum,territory') ||
+      keys(input, 'kind,minimum,sector,territory')),
       'Choose one physical ground-movement minimum and printed destination.');
     try { return { kind: 'move', ...parseMovementClaim(input) }; }
     catch (error) {
@@ -90,6 +95,18 @@ export function movementExpressionTerritories(expression: MovementExpression): s
   return [...destinations];
 }
 
+/** Exact named locations, useful for bounded native completion and progress. */
+export function movementExpressionSectors(expression: MovementExpression): { territory: string; sector: number }[] {
+  const locations = new Map<string, { territory: string; sector: number }>();
+  const visit = (node: MovementExpression): void => {
+    if ('terms' in node) node.terms.forEach(visit);
+    else if (node.sector !== undefined) locations.set(JSON.stringify([node.territory, node.sector]),
+      { territory: node.territory, sector: node.sector });
+  };
+  visit(parseMovementExpression(expression));
+  return [...locations.values()];
+}
+
 function validateProgress(value: unknown): asserts value is MovementExpressionProgress {
   check(Array.isArray(value), 'Retain the largest future physical ground move by named destination.');
   const destinations = new Set<string>();
@@ -101,17 +118,38 @@ function validateProgress(value: unknown): asserts value is MovementExpressionPr
   }
 }
 
-function evaluate(expression: MovementExpression, progress: readonly MovementExpressionProgressEntry[]): boolean {
-  if ('terms' in expression) return expression.kind === 'and' ?
-    expression.terms.every(term => evaluate(term, progress)) : expression.terms.some(term => evaluate(term, progress));
-  return (progress.find(entry => entry.territory === expression.territory)?.maximum ?? 0) >= expression.minimum;
+function validateSectorProgress(value: unknown): asserts value is MovementExpressionSectorProgress {
+  check(Array.isArray(value), 'Retain exact-sector physical ground-movement maxima.');
+  const locations = new Set<string>();
+  for (const entry of value) {
+    check(object(entry) && keys(entry, 'maximum,sector,territory') && printedTerritory(entry.territory) &&
+      typeof entry.sector === 'number' && Number.isSafeInteger(entry.sector) &&
+      TERRITORIES.find(destination => destination.id === entry.territory)!.sectors.includes(entry.sector) &&
+      count(entry.maximum) && !locations.has(JSON.stringify([entry.territory, entry.sector])),
+    'Retain unique printed sectors and physical ground-movement maxima from zero to twenty.');
+    locations.add(JSON.stringify([entry.territory, entry.sector]));
+  }
 }
 
+function evaluate(expression: MovementExpression, progress: readonly MovementExpressionProgressEntry[],
+  sectorProgress: readonly MovementExpressionSectorProgressEntry[]): boolean {
+  if ('terms' in expression) return expression.kind === 'and' ?
+    expression.terms.every(term => evaluate(term, progress, sectorProgress)) :
+    expression.terms.some(term => evaluate(term, progress, sectorProgress));
+  const maximum = expression.sector === undefined
+    ? progress.find(entry => entry.territory === expression.territory)?.maximum
+    : sectorProgress.find(entry => entry.territory === expression.territory && entry.sector === expression.sector)?.maximum;
+  return (maximum ?? 0) >= expression.minimum;
+}
+
+/** Missing sector progress is never inferred from territory-wide maxima. */
 export function evaluateMovementExpression(expression: MovementExpression,
-  progress: readonly MovementExpressionProgressEntry[]): boolean {
+  progress: readonly MovementExpressionProgressEntry[],
+  sectorProgress: readonly MovementExpressionSectorProgressEntry[] = []): boolean {
   const parsed = parseMovementExpression(expression);
   validateProgress(progress);
-  return evaluate(parsed, progress);
+  validateSectorProgress(sectorProgress);
+  return evaluate(parsed, progress, sectorProgress);
 }
 
 export function liveMovementExpressionPromises<T extends MovementExpressionPromise>(promises: readonly T[], player: string,
@@ -124,7 +162,16 @@ function readPromise(promise: MovementExpressionPromise): MovementExpression {
   check(object(promise), 'The ground-movement expression commitment record is invalid.');
   const { claim } = parseMovementExpressionClaim({ turn: promise.turn, claim: promise.claim });
   validateProgress(promise.progress);
-  const destinations = movementExpressionTerritories(claim);
+  const destinations = movementExpressionTerritories(claim), sectors = movementExpressionSectors(claim);
+  check(!sectors.length || Array.isArray(promise.sectorProgress),
+    'Retain the separate actual-sector progress for every exact-sector question.');
+  if (promise.sectorProgress !== undefined) {
+    validateSectorProgress(promise.sectorProgress);
+    check(sectors.length > 0 && promise.sectorProgress.every(entry =>
+      sectors.some(location => location.territory === entry.territory && location.sector === entry.sector) &&
+      entry.maximum <= (promise.progress.find(progress => progress.territory === entry.territory)?.maximum ?? 0)),
+    'Retain only named actual-sector maxima bounded by the territory-wide maxima.');
+  }
   check(typeof promise.answer === 'boolean' && optionalBoolean(promise.fulfilled) && optionalBoolean(promise.released) &&
     !(promise.fulfilled && promise.released) && promise.progress.every(entry => destinations.includes(entry.territory)),
   'Retain a definite whole movement answer and its own matching future physical move progress.');
@@ -136,22 +183,40 @@ function readPromise(promise: MovementExpressionPromise): MovementExpression {
  * event may have amount zero, which cannot advance a positive minimum. */
 export function recordMovementExpressionEvent<T extends MovementExpressionPromise>(promises: readonly T[], player: string,
   turn: number, event: MovementEvent): T[] {
-  check(object(event) && keys(event, 'amount,territory') && identifier(event.territory) && count(event.amount),
-    'Retain the exact destination and zero to twenty actual physical ground-moving forces.');
+  check(object(event) && (keys(event, 'amount,territory') || keys(event, 'amount,sector,territory')) &&
+    identifier(event.territory) && count(event.amount) && (!('sector' in event) ||
+      typeof event.sector === 'number' && Number.isSafeInteger(event.sector) &&
+      validLocation(event.territory, event.sector)),
+    'Retain the exact destination, any printed sector and zero to twenty actual physical ground-moving forces.');
   const updates = new Map<T, T>();
   for (const promise of liveMovementExpressionPromises(promises, player, turn)) {
     const claim = readPromise(promise);
     if (!movementExpressionTerritories(claim).includes(event.territory)) continue;
     const old = promise.progress.find(entry => entry.territory === event.territory)?.maximum ?? 0;
-    if (event.amount <= old) continue;
+    const namedSector = event.sector !== undefined && movementExpressionSectors(claim).some(location =>
+      location.territory === event.territory && location.sector === event.sector);
+    const oldSector = namedSector ? promise.sectorProgress?.find(entry =>
+      entry.territory === event.territory && entry.sector === event.sector)?.maximum ?? 0 : 0;
+    const advanceTerritory = event.amount > old, advanceSector = namedSector && event.amount > oldSector;
+    if (!advanceTerritory && !advanceSector) continue;
     const progress = promise.progress.map(entry => ({ ...entry }));
-    const entry = progress.find(entry => entry.territory === event.territory);
-    if (entry) entry.maximum = event.amount;
-    else progress.push({ territory: event.territory, maximum: event.amount });
-    const satisfied = evaluate(claim, progress);
+    if (advanceTerritory) {
+      const entry = progress.find(entry => entry.territory === event.territory);
+      if (entry) entry.maximum = event.amount;
+      else progress.push({ territory: event.territory, maximum: event.amount });
+    }
+    const sectorProgress = promise.sectorProgress?.map(entry => ({ ...entry })) ?? [];
+    if (advanceSector && event.sector !== undefined) {
+      const entry = sectorProgress.find(item => item.territory === event.territory && item.sector === event.sector);
+      if (entry) entry.maximum = event.amount;
+      else sectorProgress.push({ territory: event.territory, sector: event.sector, maximum: event.amount });
+    }
+    const satisfied = evaluate(claim, progress, sectorProgress);
     check(promise.answer || !satisfied,
       'This ground movement conflicts with your whole Truthtrance movement No answer.');
-    updates.set(promise, { ...promise, progress, ...(promise.answer && satisfied ? { fulfilled: true } : {}) });
+    updates.set(promise, { ...promise, progress,
+      ...(promise.sectorProgress !== undefined || advanceSector ? { sectorProgress } : {}),
+      ...(promise.answer && satisfied ? { fulfilled: true } : {}) });
   }
   return promises.map(promise => updates.get(promise) ?? promise);
 }
@@ -161,7 +226,7 @@ export function validateMovementExpressionPromises(promises: readonly MovementEx
   const events = new Set<string>();
   for (const promise of promises) {
     const claim = readPromise(promise);
-    const satisfied = evaluate(claim, promise.progress);
+    const satisfied = evaluate(claim, promise.progress, promise.sectorProgress ?? []);
     check(identifier(promise.event) && !events.has(promise.event) && identifier(promise.player) && identifier(promise.asker) &&
       players.includes(promise.player) && players.includes(promise.asker) && promise.player !== promise.asker &&
       (promise.answer || !satisfied) && (!promise.answer || promise.released || !!promise.fulfilled === satisfied),

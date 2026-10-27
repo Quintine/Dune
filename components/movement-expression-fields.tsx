@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactElement } from 'react';
+import { TERRITORIES } from '@/game/board';
 import {
   parseMovementExpression, MOVEMENT_EXPRESSION_MAX_DEPTH, MOVEMENT_EXPRESSION_MAX_LEAVES,
   type MovementExpression,
@@ -17,7 +18,7 @@ export function movementExpressionInputError(value: unknown): string | null {
 // Structural edits preserve repairable destination and numeric drafts. The
 // detached valid placeholders are used only to check tree shape and limits.
 const structuralDraft = (node: MovementExpression): MovementExpression => node.kind === 'move'
-  ? { ...node, territory: 'carthag', minimum: 1 }
+  ? { kind: 'move', territory: 'carthag', minimum: 1 }
   : { ...node, terms: node.terms.map(structuralDraft) };
 const inputSize = (node: MovementExpression): { leaves: number; depth: number } => {
   if (node.kind === 'move') return { leaves: 1, depth: 0 };
@@ -49,9 +50,20 @@ export function MovementExpressionFields({ value, territories, disabled, onChang
         <label htmlFor={`${id}-territory`}>Ground-movement destination</label>
         <select id={`${id}-territory`} value={territories.some(destination => destination.id === node.territory) ? node.territory : ''}
           disabled={disabled} aria-invalid={!territories.some(destination => destination.id === node.territory)}
-          onChange={event => change({ ...node, territory: event.currentTarget.value })}>
+          onChange={event => change({ kind: 'move', territory: event.currentTarget.value, minimum: node.minimum })}>
           <option value="">Choose a printed Arrakis territory</option>
           {territories.map(destination => <option key={destination.id} value={destination.id}>{destination.name}</option>)}
+        </select>
+        <label htmlFor={`${id}-sector`}>Ground-movement sector</label>
+        <select id={`${id}-sector`} disabled={disabled} value={node.sector === undefined ? '' : String(node.sector)}
+          aria-invalid={node.sector !== undefined && !TERRITORIES.find(row => row.id === node.territory)?.sectors.includes(node.sector)}
+          onChange={event => {
+            const selected = event.currentTarget.value, printed = TERRITORIES.find(row => row.id === node.territory);
+            if (selected === '') change({ kind: 'move', territory: node.territory, minimum: node.minimum });
+            else { const sector = Number(selected); if (printed?.sectors.includes(sector)) change({ ...node, sector }); }
+          }}>
+          <option value="">Any sector in this territory</option>
+          {TERRITORIES.find(row => row.id === node.territory)?.sectors.map(sector => <option key={sector} value={sector}>Sector {sector}</option>)}
         </select>
         <label htmlFor={`${id}-minimum`}>Minimum physical forces in one ground move</label>
         <Input id={`${id}-minimum`} type="number" min={1} max={20} step={1} required disabled={disabled}
@@ -98,7 +110,7 @@ export function MovementExpressionFields({ value, territories, disabled, onChang
       AND requires every condition; OR requires at least one. No makes the whole expression false,
       not necessarily every condition. Legal alternatives remain available; the question does not pin a fixed branch.
       Each condition needs one future actual ground move after the answer, before your Movement turn ends this round.
-      Smaller moves never add together; a shipment can prepare a move but does not fulfill a condition.
+      Name an exact sector when needed. Smaller moves never add together; a shipment can prepare a move but does not fulfill a condition.
     </p>
     <p className="fine">App input limits: {MOVEMENT_EXPRESSION_MAX_LEAVES} conditions and {MOVEMENT_EXPRESSION_MAX_DEPTH} levels of grouping.
       Groups do not count as conditions. These are input limits, not additional printed rules.</p>
