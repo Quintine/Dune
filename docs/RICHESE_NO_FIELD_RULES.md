@@ -2,6 +2,32 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Existing marker with same-source Homeworld forces — 28 October 2026
+
+**Prototyped / Partial.** In supported native Basic and Advanced Homeworld
+games, Richese may provisionally transfer its already-deployed concealed marker
+between distinct eligible foreign Homeworlds together with selected physical
+Richese forces actually at the marker's source. The marker remains concealed
+and retains its identity and last-shipment history. The physical group moves
+through ordinary typed Homeworld custody; no marker value is materialized from
+reserves. The departure and arrival are observed after both parts of the same
+shipment commit.
+
+Count the marker as one plus the selected physical counters for one shipment
+price. A separately purchased Guild rate halves that total, rounding up once;
+the marker is not a physical counter and does not consume the physical
+twenty-counter limit. Normal payment and Advanced Guild interception remain.
+No forces can be picked up from a different source. Initial placement of a
+fresh marker with companions, own-world return and optional-module overlays
+remain unsupported.
+
+The supplied Advanced revision permits Homeworld-to-Homeworld shipment
+(physical p. 22) and counts the concealed No-Field as one force for effects
+(physical p. 36). It does not explicitly address this combination; allowing
+the marker and same-source physical group together is a provisional
+composition, not a publisher ruling. This prototype does not certify complete
+Richese, Homeworld or expansion play, and broader acceptance remains open.
+
 ## Transfer between foreign Homeworlds and Ecaz victory — 28 October 2026
 
 **Prototyped / Partial.** Richese may provisionally ship its already-deployed
@@ -10,8 +36,8 @@ foreign Homeworld as one force. This uses the normal Homeworld shipment,
 payment and Advanced Guild interception, preserving the marker's identity,
 concealment and last-shipment history; it moves no physical reserve counters.
 The departure and arrival are observed through the existing occupation history.
-The own-world return, physical companions and optional modules remain outside
-this first route.
+The own-world return, physical companions and optional modules were outside
+this first route. The later same-source companion prototype is described above.
 
 High Ecaz Homeworld victory now counts an allied sole concealed marker as
 public presence at a qualifying foreign World, without reading its hidden
@@ -21,7 +47,7 @@ shipment (physical p. 22) and counts a concealed No-Field as one force
 (physical p. 36), but does not explicitly resolve their combination; the
 transfer is a provisional online interpretation.
 
-Seven related offline files pass 33 cases, including Basic and Advanced native
+The earlier marker-only route's seven related offline files pass 33 cases, including Basic and Advanced native
 turn progression and the Guild's stop. The native test selects an undealt
 Karama and makes actual reserve departures without staging forces or spice.
 The authenticated three-human Basic transfer case passed in four fresh

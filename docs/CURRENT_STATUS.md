@@ -16,6 +16,19 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Mixed Homeworld No-Field transfers — 28 October. Prototyped / Partial.** Richese may provisionally
+ship its existing concealed marker together with its own selected physical
+forces from that same foreign Homeworld to another eligible foreign World.
+The action retains `noFieldFrom` and supplies only that World's typed `sources`;
+the shared quote prices the marker plus physical group together, including
+rounding a purchased half rate on the total. Twenty-one related offline files
+pass 134 cases, including Basic and Advanced native turn progression and a
+Guild stop. One isolated authenticated Basic room exercises the transfer,
+payment, physical custody and another player's concealed-token view. New
+marker deployment with companions, own-world return, multiple sources,
+optional overlays and deployed acceptance remain open.
+[Scope](RICHESE_NO_FIELD_RULES.md#existing-marker-with-same-source-homeworld-forces--28-october-2026).
+
 **Homeworld No-Field continuation — 28 October. Prototyped / Partial.**
 High Ecaz victory counts an allied marker-only holding as public presence,
 without inventing physical counters. Richese may provisionally ship its own

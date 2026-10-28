@@ -31,6 +31,7 @@ export function richeseHomeworldMarkerChoice(
   tokenId: string,
   allyPayment = 0,
   source?: string,
+  forces?: HomeworldForces,
 ) {
   const result: { blocked: string | null; amount: number; cost: number;
     ownPayment: number; allyPayment: number; action: Action | null } = {
@@ -54,15 +55,6 @@ export function richeseHomeworldMarkerChoice(
     result.blocked = option.blocked ?? info.shipBlock ?? 'No-Field shipment is not available now.';
     return result;
   }
-  if (!Number.isSafeInteger(allyPayment) || allyPayment < 0 || allyPayment > 1 ||
-      allyPayment > (me.ally ? view.aid.available : 0)) {
-    result.blocked = 'Choose an allied contribution within the current pledge and one-spice price.';
-    return result;
-  }
-  if (result.ownPayment > (me.spice ?? 0)) {
-    result.blocked = 'Your spice and selected allied contribution cannot pay this shipment.';
-    return result;
-  }
   const context = {
     advanced: view.advanced,
     nativeGuildRateCanceled: view.guildRateCanceled,
@@ -78,11 +70,31 @@ export function richeseHomeworldMarkerChoice(
       visitors.map(([owner, forces]) => [owner, { ...forces }]));
   }
   try {
-    if (source === undefined)
+    if (source === undefined) {
+      if (forces !== undefined) {
+        result.blocked = 'Physical forces may accompany only a deployed Homeworld No-Field.';
+        return result;
+      }
       quoteRicheseHomeworldMarkerShipment(context, custody, { player: me.id, destination, tokenId }, info.private);
-    else
-      quoteRicheseHomeworldMarkerTransfer(context, custody, { player: me.id, destination, tokenId, source }, info.private);
-    result.action = { type: 'homeworldShip', event: option.event, destination, sources: {},
+    } else {
+      const quote = quoteRicheseHomeworldMarkerTransfer(context, custody,
+        { player: me.id, destination, tokenId, source, ...(forces === undefined ? {} : { forces }) }, info.private);
+      result.amount = quote.amount;
+      result.cost = quote.cost;
+    }
+    result.ownPayment = result.cost - allyPayment;
+    if (!Number.isSafeInteger(allyPayment) || allyPayment < 0 || allyPayment > result.cost ||
+        allyPayment > (me.ally ? view.aid.available : 0)) {
+      result.blocked = 'Choose an allied contribution within the current pledge and shipment price.';
+      return result;
+    }
+    if (result.ownPayment > (me.spice ?? 0)) {
+      result.blocked = 'Your spice and selected allied contribution cannot pay this shipment.';
+      return result;
+    }
+    const sources = source !== undefined && forces && forces.normal + forces.elite > 0
+      ? { [source]: forces } : {};
+    result.action = { type: 'homeworldShip', event: option.event, destination, sources,
       noField: tokenId, noFieldEvent: info.event, allyPayment, ...(source === undefined ? {} : { noFieldFrom: source }) };
   } catch (error) {
     if (!(error instanceof HomeworldCustodyError)) throw error;
@@ -398,7 +410,18 @@ export function homeworldShipmentActions(
     if (token) for (const target of targets) {
       const quote = richeseHomeworldMarkerChoice(view, target.world.id, token.id,
         Math.max(0, 1 - (me.spice ?? 0)), source);
-      if (quote.action) { actions.push(quote.action); break; }
+      if (quote.action) {
+        actions.push(quote.action);
+        const pool = source && view.homeworlds?.worlds?.find(world => world.id === source)?.forces[me.id];
+        if (pool && (pool.normal > 0 || pool.elite > 0)) {
+          const forces = { normal: pool.normal > 0 ? 1 : 0, elite: pool.normal > 0 ? 0 : 1 };
+          const initial = richeseHomeworldMarkerChoice(view, target.world.id, token.id, 0, source, forces);
+          const mixed = richeseHomeworldMarkerChoice(view, target.world.id, token.id,
+            Math.max(0, initial.cost - (me.spice ?? 0)), source, forces);
+          if (mixed.action) actions.push(mixed.action);
+        }
+        break;
+      }
     }
   }
   return actions;

@@ -12,8 +12,7 @@ import {
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
-/** This private control is separate from physical-source shipment: the marker
- * costs one but does not withdraw a reserve counter until it is revealed. */
+/** The concealed marker does not withdraw a reserve counter until revealed. */
 export function HomeworldNoFieldShipment({ game, act, busy }: {
   game: GameView; act: (action: Action) => void; busy: boolean;
 }) {
@@ -22,6 +21,7 @@ export function HomeworldNoFieldShipment({ game, act, busy }: {
   const [selectedDestination, setSelectedDestination] = useState('');
   const [selectedToken, setSelectedToken] = useState('');
   const [allyPayment, setAllyPayment] = useState(0);
+  const [forces, setForces] = useState({ normal: 0, elite: 0 });
   if (!me || me.faction !== 'richese' || info?.owner !== me.id || !info.private) return null;
   const deployed = info.private.deployed;
   const source = deployed && 'homeworld' in deployed.location ? deployed.location.homeworld : undefined;
@@ -30,13 +30,16 @@ export function HomeworldNoFieldShipment({ game, act, busy }: {
   const destination = targets.find(world => world.id === selectedDestination) ?? targets[0];
   const tokens = info.private.tokens.filter(token => source ? token.id === deployed?.tokenId : token.id !== info.private!.lastShipped);
   const token = tokens.find(candidate => candidate.id === selectedToken) ?? tokens[0];
-  const quote = richeseHomeworldMarkerChoice(game, destination?.id ?? '', token?.id ?? '', allyPayment, source);
+  const pool = source ? game.homeworlds?.worlds?.find(world => world.id === source)?.forces[me.id] : undefined;
+  const quote = richeseHomeworldMarkerChoice(game, destination?.id ?? '', token?.id ?? '', allyPayment, source,
+    source ? forces : undefined);
   return <fieldset disabled={busy || !!me.autopilot || !!game.homeworldShipment?.blocked}
     className="space-y-3 pt-3">
     <legend>Ship a concealed No-Field</legend>
     <p className="fine">Provisional Homeworld rule: ship one concealed marker {source ? `from ${homeworldName(game, source)}` : 'from your supply'} to
-      another non-allied Homeworld for one spice. Its value stays private and its physical forces
-      remain in your reserves until the marker is revealed. This uses your normal shipment.</p>
+      another non-allied Homeworld. Its value stays private and its represented forces
+      remain in your reserves until the marker is revealed. This uses your normal shipment.
+      {source && ' Physical forces already on the same Homeworld may accompany it.'}</p>
     <label className="block space-y-1">Destination Homeworld for No-Field
       <select aria-label="No-Field destination Homeworld" value={destination?.id ?? ''}
         onChange={event => setSelectedDestination(event.target.value)}>
@@ -53,12 +56,21 @@ export function HomeworldNoFieldShipment({ game, act, busy }: {
         {tokens.map(candidate => <option key={candidate.id} value={candidate.id}>No-Field {candidate.value}</option>)}
       </select>
     </label>
+    {source && pool && <fieldset className="space-y-2">
+      <legend>Accompanying forces from {homeworldName(game, source)}</legend>
+      {(['normal', 'elite'] as const).filter(kind => kind === 'normal' || pool.elite > 0).map(kind =>
+        <label key={kind} className="block space-y-1">
+          {kind === 'normal' ? 'Normal forces' : specialForceName(me.faction)} accompanying No-Field · {pool[kind]} available
+          <Input type="number" min={0} max={pool[kind]} step={1} value={forces[kind]}
+            onChange={event => setForces({ ...forces, [kind]: Number(event.target.value) })} />
+        </label>)}
+    </fieldset>}
     {me.ally && <label className="block space-y-1">Allied spice contribution · {game.aid.available} pledged
-      <Input type="number" min={0} max={Math.min(1, game.aid.available)} step={1} value={allyPayment}
+      <Input type="number" min={0} max={Math.min(quote.cost, game.aid.available)} step={1} value={allyPayment}
         onChange={event => setAllyPayment(Number(event.target.value))} />
     </label>}
     <output className="notice block" aria-live="polite">
-      One marker · one spice total · you pay {quote.ownPayment}, ally pays {quote.allyPayment}.
+      {quote.amount} total (including one marker) · {quote.cost === 1 ? 'one' : quote.cost} spice total · you pay {quote.ownPayment}, ally pays {quote.allyPayment}.
       {quote.blocked && ` ${quote.blocked}`}
     </output>
     <Button className="game-action" disabled={busy || !!me.autopilot || !quote.action}

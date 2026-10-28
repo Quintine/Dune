@@ -1,5 +1,18 @@
 # Rule decision index
 
+## Richese marker with same-source Homeworld forces — 28 October 2026
+
+The supplied Advanced revision permits Homeworld-to-Homeworld shipment
+(physical p. 22) and counts a concealed No-Field as one force for effects
+(physical p. 36), but does not explicitly resolve their combination. As a
+provisional composition, an already-deployed marker may travel with physical
+Richese counters from the same foreign source World to another eligible foreign
+World. Price the full group as one plus those counters; a purchased Guild rate
+halves the total with one upward rounding. Fresh marker deployment with
+companions, own-world return and optional-module overlays remain unsupported.
+This does not certify complete modes or establish a publisher ruling.
+[Scope](RICHESE_NO_FIELD_RULES.md#existing-marker-with-same-source-homeworld-forces--28-october-2026).
+
 ## Richese No-Field transfer between Homeworlds — 28 October 2026
 
 The supplied Advanced revision permits Homeworld-to-Homeworld shipment

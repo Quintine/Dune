@@ -1,7 +1,8 @@
 import {
   HomeworldCustodyError, homeworldForceGroups, type HomeworldCustody,
 } from './homeworld-custody';
-import type { HomeworldShipmentContext } from './homeworld-shipment';
+import { quoteHomeworldShipment, type HomeworldShipmentContext } from './homeworld-shipment';
+import type { HomeworldForces } from './homeworld-custody';
 import { deployRicheseNoField, isHomeworldNoFieldLocation, moveRicheseNoField, type RicheseNoField } from './richese-no-field';
 
 export type RicheseHomeworldMarkerShipmentIntent = {
@@ -9,7 +10,10 @@ export type RicheseHomeworldMarkerShipmentIntent = {
   destination: string;
   tokenId: string;
 };
-export type RicheseHomeworldMarkerTransferIntent = RicheseHomeworldMarkerShipmentIntent & { source: string };
+export type RicheseHomeworldMarkerTransferIntent = RicheseHomeworldMarkerShipmentIntent & {
+  source: string;
+  forces?: HomeworldForces;
+};
 
 const record = (value: unknown): value is Record<string, unknown> =>
   !!value && typeof value === 'object' && !Array.isArray(value);
@@ -69,7 +73,8 @@ export function quoteRicheseHomeworldMarkerShipment(
 }
 
 /** A deployed marker can be transported like one force between eligible
- * Homeworlds. Its denomination never enters the price or physical custody. */
+ * Homeworlds, provisionally alongside physical forces from that same source.
+ * Its denomination never enters the price or physical custody. */
 export function quoteRicheseHomeworldMarkerTransfer(
   context: HomeworldShipmentContext,
   custody: HomeworldCustody,
@@ -77,10 +82,18 @@ export function quoteRicheseHomeworldMarkerTransfer(
   noField: RicheseNoField,
 ) {
   const worlds = homeworldForceGroups(context, custody);
-  requireMarker(record(intent) && Object.keys(intent).sort().join(',') === 'destination,player,source,tokenId' &&
+  requireMarker(record(intent) &&
+    (Object.keys(intent).sort().join(',') === 'destination,player,source,tokenId' ||
+     Object.keys(intent).sort().join(',') === 'destination,forces,player,source,tokenId') &&
     typeof intent.player === 'string' && typeof intent.source === 'string' &&
     typeof intent.destination === 'string' && typeof intent.tokenId === 'string',
   'Choose the current Homeworld marker, its source and another Homeworld.');
+  if ('forces' in intent) {
+    requireMarker(record(intent.forces) && Object.keys(intent.forces).sort().join(',') === 'elite,normal' &&
+      Number.isSafeInteger(intent.forces.normal) && Number.isSafeInteger(intent.forces.elite) &&
+      intent.forces.normal >= 0 && intent.forces.elite >= 0,
+    'Choose a valid physical normal and special counter group.');
+  }
   requireMarker(context.players.every(seat => seat.ally === null ||
     typeof seat.ally === 'string' && seat.ally !== seat.id && context.players.some(other => other.id === seat.ally)),
   'Homeworld shipment needs valid seated alliance identities.');
@@ -102,6 +115,17 @@ export function quoteRicheseHomeworldMarkerTransfer(
     moved = moveRicheseNoField(noField, intent.tokenId, { homeworld: destination.id });
   } catch (error) {
     throw new HomeworldCustodyError(error instanceof Error ? error.message : 'Invalid No-Field transfer.');
+  }
+  const forces = intent.forces;
+  if (forces && forces.normal + forces.elite > 0) {
+    const physical = quoteHomeworldShipment(context, custody, {
+      player: player.id, destination: destination.id, sources: { [source.id]: forces },
+    });
+    const amount = 1 + physical.amount;
+    return { player: player.id, tokenId: intent.tokenId, source: source.id,
+      destination: destination.id, amount, elite: physical.elite,
+      cost: context.purchasedGuildRate ? Math.ceil(amount / 2) : amount, noField: moved,
+      state: physical.state, players: physical.players, sources: physical.sources };
   }
   return { player: player.id, tokenId: intent.tokenId, source: source.id,
     destination: destination.id, amount: 1, elite: 0, cost: 1, noField: moved };

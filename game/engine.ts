@@ -37140,16 +37140,21 @@ function homeworldShipmentQuote(g: Game, intent: HomeworldShipmentIntent & {rout
       !g.techTokens && !g.strongholdCards,
     'Homeworld No-Field shipment currently supports native Homeworld play without optional modules.');
     requireRule(!intent.route && !intent.guildSecretEvent && intent.sources && typeof intent.sources === 'object' &&
-      !Array.isArray(intent.sources) && Object.keys(intent.sources).length === 0 &&
+      !Array.isArray(intent.sources) &&
+      (intent.noField.from === undefined ? Object.keys(intent.sources).length === 0 :
+        Object.keys(intent.sources).every(source => source === intent.noField!.from)) &&
       p.noField && p.noFieldEvent === intent.noField.event &&
       (intent.noField.from !== undefined || p.noFieldBlockedTurn !== g.turn),
     'The original concealed Homeworld shipment is no longer available.');
-    const marker = homeworldRule(() => intent.noField!.from === undefined
-      ? quoteRicheseHomeworldMarkerShipment(context, g.homeworlds!.custody!,
-        {player:intent.player,destination:intent.destination,tokenId:intent.noField!.tokenId},p.noField!)
-      : quoteRicheseHomeworldMarkerTransfer(context, g.homeworlds!.custody!,
-        {player:intent.player,destination:intent.destination,tokenId:intent.noField!.tokenId,source:intent.noField!.from!},p.noField!));
-    return {...marker, state:g.homeworlds.custody, players:context.players, sources:[],
+    const marker = intent.noField.from === undefined
+      ? {...homeworldRule(() => quoteRicheseHomeworldMarkerShipment(context, g.homeworlds!.custody!,
+        {player:intent.player,destination:intent.destination,tokenId:intent.noField!.tokenId},p.noField!)),
+        state:g.homeworlds.custody, players:context.players, sources:[]}
+      : homeworldRule(() => quoteRicheseHomeworldMarkerTransfer(context, g.homeworlds!.custody!,
+        {player:intent.player,destination:intent.destination,tokenId:intent.noField!.tokenId,source:intent.noField!.from!,
+          ...(Object.hasOwn(intent.sources, intent.noField!.from!) ? {forces:intent.sources[intent.noField!.from!]} : {})},p.noField!));
+    return {...marker, state:marker.state ?? g.homeworlds.custody,
+      players:marker.players ?? context.players, sources:marker.sources ?? [],
       boardForces:undefined,boardEliteForces:undefined,sourceNames:[combatLocationName(g,marker.source)]};
   }
   const order = {player: intent.player, destination: intent.destination, sources: intent.sources};
@@ -37270,7 +37275,7 @@ function commitHomeworldShipment(g: Game, shipment: PendingHomeworldShipment, se
     { own: false, ally: !purchasedRate && !!guild && p.ally !== guild.id });
   finishShipmentPromises(g, p, null);
   if (purchasedRate) g.karamaShipping = null;
-  log(g, `${p.name} shipped ${shipment.noField ? 'one concealed No-Field' : `${quote.amount} physical forces (${quote.elite} special)`} from ${quote.sourceNames.join(' and ')} to ${combatLocationName(g, shipment.destination)} for ${quote.cost} spice (${quote.cost - shipment.allyPayment} own, ${shipment.allyPayment} pledged). This uses their shipment; movement remains available.${shipment.guildSecretEvent ? ' Guild Secret Ally is spent for this half-price shipment; the payment goes to the bank.' : ''}`,
+  log(g, `${p.name} shipped ${shipment.noField ? `one concealed No-Field${quote.amount > 1 ? ` and ${quote.amount - 1} physical forces` : ''}` : `${quote.amount} physical forces (${quote.elite} special)`} from ${quote.sourceNames.join(' and ')} to ${combatLocationName(g, shipment.destination)} for ${quote.cost} spice (${quote.cost - shipment.allyPayment} own, ${shipment.allyPayment} pledged). This uses their shipment; movement remains available.${shipment.guildSecretEvent ? ' Guild Secret Ally is spent for this half-price shipment; the payment goes to the bank.' : ''}`,
     {faction: shipment.guildSecretEvent ? 'guild' : p.faction, name: shipment.guildSecretEvent ? 'Secret Ally Homeworld shipment' : 'Homeworld shipment'});
   if (heldConversion) openAutomaticAdvisorFlip(g);
 }
@@ -37291,7 +37296,7 @@ function declareHomeworldShipment(g: Game, p: Player, intent: HomeworldShipmentI
     g.pendingHomeworldShipment = shipment;
     g.decision = {kind: 'homeworldShipmentGuild', player: guild.id, shipper: p.id,
       destination: intent.destination, amount: quote.amount, event: shipment.event};
-    log(g, `${p.name} declared ${quote.amount} physical forces for ${combatLocationName(g, intent.destination)}. Payment and departure await the Guild interception decision.`);
+    log(g, `${p.name} declared ${intent.noField ? `one concealed No-Field${quote.amount > 1 ? ` and ${quote.amount - 1} physical forces` : ''}` : `${quote.amount} physical forces`} for ${combatLocationName(g, intent.destination)}. Payment and departure await the Guild interception decision.`);
   } else continueHomeworldShipment(g, shipment);
 }
 function homeworldUsesGuildTransport(g: Game,
