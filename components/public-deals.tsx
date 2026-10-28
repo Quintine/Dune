@@ -126,7 +126,11 @@ export function PublicDeals({ game, act, busy }: {
   const [payer, setPayer] = useState('');
   const [paymentRecipient, setPaymentRecipient] = useState('');
   const [paymentAmount, setPaymentAmount] = useState('1');
-  const [paymentDueTurn, setPaymentDueTurn] = useState(() => String(game.turn));
+  const [deadlineDraft, setDeadlineDraft] = useState(() => ({ value: String(game.turn), turn: game.turn }));
+  const previousDeadline = Number(deadlineDraft.value);
+  const paymentDueTurn = deadlineDraft.turn !== game.turn && deadlineDraft.value.trim() !== '' &&
+    Number.isSafeInteger(previousDeadline) && previousDeadline < game.turn
+    ? String(game.turn) : deadlineDraft.value;
   const requests = publicDealRequests(game);
   const needsResponse = requests.length > 0;
   const paymentDue = requests.some(request => request[0] === 'payment');
@@ -216,7 +220,7 @@ export function PublicDeals({ game, act, busy }: {
         </label>
         {paymentKind === 'deferredBribe' && <label>Payment due by the end of turn
           <input type="number" inputMode="numeric" min={game.turn} step={1} value={paymentDueTurn} disabled={disabled}
-            required aria-invalid={!dueValid} onChange={event => setPaymentDueTurn(event.target.value)} />
+            required aria-invalid={!dueValid} onChange={event => setDeadlineDraft({ value: event.target.value, turn: game.turn })} />
         </label>}
         {paymentKind === 'immediateBribe'
           ? <p className="fine">No spice is reserved before final acceptance. The payer loses the full amount immediately; the recipient collects their share at the next Mentat opening. A Bureaucrat may divert two spice to the bank before the share is allocated. Native payment timing and available funds are checked at final acceptance.</p>

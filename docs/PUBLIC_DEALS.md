@@ -13,6 +13,8 @@ feasibility policy applies. Unpaid terms expire when the deadline passes or the
 game ends. Autopilot waits until the due turn before paying. An early payment
 must respect obligations already due. These deadline and feasibility policies
 are provisional implementations of public agreements, not publisher rulings.
+If a new turn begins while the offer form remains open, a past whole-number
+deadline advances to the current turn; a selected future deadline is retained.
 Broader combinations, free-text enforcement, browser and deployed acceptance
 remain open.
 

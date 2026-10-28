@@ -16,6 +16,13 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Public-deal deadline at turn rollover — 28 October. Prototyped / Partial.**
+When the mounted form observes a later turn, a past whole-number deadline
+advances to the current turn. A future deadline and incomplete edits stay in
+place. Three related controls files pass 18 cases, including a mounted form
+across turn changes and actual submission callbacks. Browser and deployed
+acceptance remain open.
+
 **Recovered Sapho after a suspended Movement turn — 28 October. Prototyped /
 Partial.** The holder may recover and replay the physical card to replace its
 own Last with First, without restoring spent shipment or movement. A different
@@ -39,8 +46,9 @@ Partial.** The unstarted holder may recover the physical card and use First to
 replace its own earlier Last, preserving completed turns and the active actor.
 Five related files pass 44 cases, including Basic real discard, paid Box
 recovery, Semuta responses and replay; Box possession uses a conserved staging
-exchange. Other holders' protections and suspended-own-turn replay remain
-guarded; broader combinations and deployed acceptance are open.
+exchange. The later checkpoint above extends replay to a suspended own turn;
+other holders' protections, broader combinations and deployed acceptance remain
+open.
 [Scope](JUICE_OF_SAPHO_RUNTIME.md#recovered-sapho-after-the-same-holders-last--28-october-2026).
 
 **Public-deal payments due on later turns — 28 October. Prototyped /
