@@ -6,7 +6,7 @@ import { createFactionSwap, validateFactionSwap, answerFactionSwap, cancelFactio
   FactionSwapError, type FactionSwap } from './faction-swap';
 import { createPublicDeal, createMultipartyPublicDeal, validatePublicDeals, respondPublicDeal, withdrawPublicDeal,
   releasePublicDeal, markPublicDealPaid, voidPublicDealPayment, PublicDealError, type PublicDeal, type PublicDealPayment } from './public-deals';
-import { pendingPublicDealPayments, publicDealPaymentTotal, PublicDealObligationError } from './public-deal-obligations';
+import { outstandingPublicDealPayments, pendingPublicDealPayments, publicDealPaymentTotal, PublicDealObligationError, type PendingPublicDealPayment } from './public-deal-obligations';
 import { CharityPromiseError, liveCharityPromises, charityPromiseAnswers, bindCharityPromise, guardCharityClaim, guardCharityReady, reconcileCharityPromises, type CharityPromise } from './charity-promises';
 import { victoryFinalTurn, continueVictoryCalendar, VictoryCalendarError } from './victory-calendar';
 import { createVictoryContinuation, validateVictoryContinuation, voteVictoryContinuation,
@@ -5929,15 +5929,26 @@ function publicDealInsolventAtBaseMentat(g: Game, player: string): boolean {
     publicDealObligationRule(() => publicDealPaymentTotal(g.deals ?? [],player,g.turn)) >
       Math.max(0,uncommittedSpice(g,getPlayer(g,player)));
 }
+/** An insolvent payer may choose among currently affordable payments, but an
+ * early future payment must not remove that choice at the current deadline. */
+function protectInsolventDueDeal(g: Game, payer: string, payment: PendingPublicDealPayment): void {
+  if (payment.dueTurn === g.turn || !publicDealInsolventAtBaseMentat(g,payer)) return;
+  const seat = getPlayer(g,payer), available = Math.max(0,uncommittedSpice(g,seat));
+  const affordable = publicDealObligationRule(() => pendingPublicDealPayments(g.deals ?? [],payer,g.turn));
+  requireRule(!affordable.some(debt => debt.recipient !== seat.ally && debt.amount <= available &&
+    debt.amount > available - payment.amount),
+  'Keep the funding for a currently payable deal before paying a later deal.');
+}
 /** Only the payer receives its exact native payment quote. */
 function projectedDeferredDealPaymentOptions(g: Game, player: string): Record<string,{blocked:string|null}> {
   const result: Record<string,{blocked:string|null}> = {};
-  for (const debt of pendingPublicDealPayments(g.deals ?? [],player,g.turn)) {
+  for (const debt of outstandingPublicDealPayments(g.deals ?? [],player,g.turn)) {
     try {
+      protectInsolventDueDeal(g,player,debt);
       const trial = structuredClone(g), index = trial.deals!.findIndex(deal => deal.id === debt.deal);
       trial.deals![index] = publicDealRule(() => markPublicDealPaid(trial.deals![index],trial.players,player));
       applyActionWithInitiator(trial,player,{type:'bribe',target:debt.recipient,amount:debt.amount},player,
-        {insolventDealPayment:publicDealInsolventAtBaseMentat(g,player)});
+        {insolventDealPayment:debt.dueTurn === g.turn && publicDealInsolventAtBaseMentat(g,player)});
       result[debt.deal] = {blocked:null};
     } catch (error) {
       if (!(error instanceof RuleError)) throw error;
@@ -40343,11 +40354,12 @@ function applyActionWithInitiator(state: Game, id: string, action: Action, initi
     const g = structuredClone(state), index = (g.deals ?? []).findIndex(deal => deal.id === action.deal);
     requireRule(index >= 0, 'This deal is no longer available.');
     const current = g.deals![index], payment = current.payment;
-    requireRule(payment?.kind === 'deferredBribe' && payment.dueTurn === g.turn,
-      'This deferred payment is not due in the current turn.');
+    requireRule(payment?.kind === 'deferredBribe' && payment.dueTurn >= g.turn,
+      'This deferred payment is no longer available.');
+    protectInsolventDueDeal(state,id,{deal:current.id,...payment});
     g.deals![index] = publicDealRule(() => markPublicDealPaid(current,g.players,id));
     return applyActionWithInitiator(g,id,{type:'bribe',target:payment.recipient,amount:payment.amount},id,
-      {insolventDealPayment:publicDealInsolventAtBaseMentat(state,id)});
+      {insolventDealPayment:payment.dueTurn === state.turn && publicDealInsolventAtBaseMentat(state,id)});
   }
   if (['dealOffer', 'dealRespond', 'dealWithdraw', 'dealRelease'].includes(action?.type)) {
     requireRule(state.status === 'playing', 'Public deals require a game in progress.');
@@ -40386,6 +40398,8 @@ function applyActionWithInitiator(state: Game, id: string, action: Action, initi
       let next: PublicDeal;
       if (action.type === 'dealRespond') {
         requireRule(typeof action.accept === 'boolean', 'Choose whether to accept or decline.');
+        requireRule(!action.accept || current.payment?.kind !== 'deferredBribe' || current.payment.dueTurn >= g.turn,
+          'The deferred payment deadline has passed; decline or withdraw this offer.');
         next = publicDealRule(() => respondPublicDeal(current, g.players, id, action.accept as boolean));
       } else if (action.type === 'dealRelease') {
         requireRule(typeof action.agree === 'boolean', 'Choose whether to request cancellation.');
@@ -40394,11 +40408,13 @@ function applyActionWithInitiator(state: Game, id: string, action: Action, initi
       g.deals = deals.map((deal, position) => position === index ? next : deal);
       if (current.status === 'offered' && next.status === 'active' && next.payment?.kind === 'deferredBribe') {
         const payer = getPlayer(g,next.payment.payer);
-        requireRule(next.payment.dueTurn === g.turn && publicDealCompletion(g,payer),
-          'The agreed payment needs a legal funded completion in this turn.');
-        if ((g.phase === 2 && !g.charityOrder || g.phase === 8 || g.phase === 7 && bribesCloseBeforeNextMentat(g)) &&
+        requireRule(next.payment.dueTurn >= g.turn &&
+          (next.payment.dueTurn > g.turn || publicDealCompletion(g,payer)),
+          'The agreed payment needs an unexpired deadline and, when due now, a legal funded completion.');
+        if (next.payment.dueTurn === g.turn &&
+            (g.phase === 2 && !g.charityOrder || g.phase === 8 || g.phase === 7 && bribesCloseBeforeNextMentat(g)) &&
             g.ready.includes(payer.id)) g.ready = g.ready.filter(playerId => playerId !== payer.id);
-        log(g, `${payer.name} agreed to pay ${next.payment.amount} spice to ${getPlayer(g,next.payment.recipient).name} by the end of turn ${g.turn}.`);
+        log(g, `${payer.name} agreed to pay ${next.payment.amount} spice to ${getPlayer(g,next.payment.recipient).name} by the end of turn ${next.payment.dueTurn}.`);
       }
       if (current.status === 'offered' && next.status === 'active' && next.payment?.kind === 'immediateBribe') {
         // The payer consented to these immutable terms. Run the native action

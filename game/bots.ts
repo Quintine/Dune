@@ -4299,7 +4299,10 @@ export function botActions(g: GameView): Action[] {
   const dealPayer = g.players.find(player => player.id === g.me);
   if ((dealPayer?.bot || dealPayer?.autopilot) && g.status === 'playing' &&
       !g.roomControl?.paused && !g.roomControl?.closed && !g.automaticContinuationPending) {
-    const payable = Object.entries(g.deferredDealPaymentOptions ?? {}).find(([,option]) => !option.blocked);
+    const payable = Object.entries(g.deferredDealPaymentOptions ?? {}).find(([id,option]) => {
+      const payment = g.deals.find(deal => deal.id === id)?.payment;
+      return !option.blocked && payment?.kind === 'deferredBribe' && payment.dueTurn <= g.turn;
+    });
     if (payable) return [{type:'dealPay',deal:payable[0]}];
   }
   if (g.decision?.kind === 'homeworldTupileCleanup' || g.homeworldTupileCleanup)

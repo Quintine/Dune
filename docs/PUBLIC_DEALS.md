@@ -1,5 +1,21 @@
 # Public deal records
 
+## Structured payments due in a later turn — 28 October 2026
+
+**Prototyped / Partial.** A structured payment may name its offer turn or a
+later turn as its deadline. The parties must all accept by that deadline. The
+payer can make the exact native bribe early or during its due turn; separate
+agreements require separate payments. Unanimous release cancels an unpaid term.
+
+Future payments do not reserve today's spice or rely on imagined future income.
+When the deadline arrives, the existing supported current-turn payment and
+feasibility policy applies. Unpaid terms expire when the deadline passes or the
+game ends. Autopilot waits until the due turn before paying. An early payment
+must respect obligations already due. These deadline and feasibility policies
+are provisional implementations of public agreements, not publisher rulings.
+Broader combinations, free-text enforcement, browser and deployed acceptance
+remain open.
+
 ## Structured payment due this turn — 28 October 2026
 
 **Prototyped / Partial.** A public offer may name a payer, recipient and exact

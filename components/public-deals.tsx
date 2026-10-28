@@ -28,20 +28,21 @@ export function publicDealRequests(game: GameView): string[][] {
       requests.push(['release', deal.id, ...deal.releaseVotes]);
     const pending = deal as unknown as { payment?: DealPayment; paymentStatus?: DeferredPaymentStatus };
     if (deal.status === 'active' && pending.payment?.kind === 'deferredBribe' &&
-        pending.payment.payer === game.me && pending.paymentStatus === 'pending')
+        pending.payment.payer === game.me && pending.paymentStatus === 'pending' && pending.payment.dueTurn <= game.turn)
       requests.push(['payment', deal.id]);
     return requests;
   });
 }
 
 /** Keep the legacy single-recipient wire packet when only one seat is chosen. */
-export function publicDealOfferAction(targets: readonly string[], terms: string, payment?: DealPayment, proposer?: string): Action | null {
+export function publicDealOfferAction(targets: readonly string[], terms: string, payment?: DealPayment, proposer?: string, currentTurn?: number): Action | null {
   const text = terms.trim();
   if (!targets.length || targets.length > 5 || new Set(targets).size !== targets.length || !text || text.length > 500) return null;
   if (payment && (!proposer || (payment.kind !== 'immediateBribe' && payment.kind !== 'deferredBribe') || payment.payer === payment.recipient ||
       ![proposer, ...targets].includes(payment.payer) || ![proposer, ...targets].includes(payment.recipient) ||
       !Number.isSafeInteger(payment.amount) || payment.amount < 1 ||
-      (payment.kind === 'deferredBribe' && (!Number.isSafeInteger(payment.dueTurn) || payment.dueTurn < 1)))) return null;
+      (payment.kind === 'deferredBribe' && (!Number.isSafeInteger(payment.dueTurn) || payment.dueTurn < 1 ||
+        (currentTurn !== undefined && (!Number.isSafeInteger(currentTurn) || currentTurn < 1 || payment.dueTurn < currentTurn)))))) return null;
   const offeredPayment = payment ? { payment } : {};
   return targets.length === 1
     ? { type: 'dealOffer', target: targets[0], terms: text, ...offeredPayment }
@@ -75,7 +76,7 @@ export function PublicDealList({ game, act, disabled }: {
       const paymentStatus = (deal as unknown as { paymentStatus?: DeferredPaymentStatus }).paymentStatus;
       const finalAcceptance = recipient && !accepted.includes(game.me) && accepted.length === participants.length - 1;
       const paymentBlocked = payment?.kind === 'immediateBribe' && finalAcceptance ? game.bribeOptions?.blocked : null;
-      const paymentExpired = payment?.kind === 'deferredBribe' && game.turn !== payment.dueTurn;
+      const paymentExpired = payment?.kind === 'deferredBribe' && game.turn > payment.dueTurn;
       const deferredOption = (game as DeferredPaymentProjection).deferredDealPaymentOptions?.[deal.id];
       const mayPay = payment?.kind === 'deferredBribe' && deal.status === 'active' && paymentStatus === 'pending' &&
         payment.payer === game.me && canAct;
@@ -83,7 +84,7 @@ export function PublicDealList({ game, act, disabled }: {
         <p><strong>{name(deal.from)} → {participants.filter(id => id !== deal.from).map(name).join(', ')}</strong> · Turn {deal.turn} · {deal.status}</p>
         <p>{deal.terms}</p>
         {payment?.kind === 'immediateBribe' && <p><strong>Immediate payment term:</strong> {name(payment.payer)} pays {payment.amount} spice to {name(payment.recipient)} on final acceptance. The payer loses the gross amount immediately; the recipient collects their share at the next Mentat opening. A Bureaucrat may divert two spice to the bank before that share is allocated. Releasing the deal later does not refund the payment.</p>}
-        {payment?.kind === 'deferredBribe' && <p><strong>Deferred payment term:</strong> {name(payment.payer)} pays exactly {payment.amount} spice to {name(payment.recipient)} by the end of turn {payment.dueTurn}. The recipient collects their share at the next Mentat opening; a Bureaucrat may divert two spice to the bank. {paymentStatus ? `Payment status: ${paymentStatus}.` : 'Payment becomes binding on final acceptance.'}</p>}
+        {payment?.kind === 'deferredBribe' && <p><strong>Deferred payment term:</strong> {name(payment.payer)} pays exactly {payment.amount} spice to {name(payment.recipient)} on or before the end of turn {payment.dueTurn}. The recipient collects their share at the next Mentat opening; a Bureaucrat may divert two spice to the bank. {paymentStatus ? `Payment status: ${paymentStatus}.` : 'Payment becomes binding on final acceptance.'}</p>}
         {deal.status === 'offered' && <p>
           Accepted by {accepted.map(name).join(', ')}. Waiting for {participants.filter(id => !accepted.includes(id)).map(name).join(', ')}.
         </p>}
@@ -125,6 +126,7 @@ export function PublicDeals({ game, act, busy }: {
   const [payer, setPayer] = useState('');
   const [paymentRecipient, setPaymentRecipient] = useState('');
   const [paymentAmount, setPaymentAmount] = useState('1');
+  const [paymentDueTurn, setPaymentDueTurn] = useState(() => String(game.turn));
   const requests = publicDealRequests(game);
   const needsResponse = requests.length > 0;
   const paymentDue = requests.some(request => request[0] === 'payment');
@@ -142,15 +144,18 @@ export function PublicDeals({ game, act, busy }: {
       selectedPlayers.slice(index + 1).every(other => !allied(player, other)));
   const parties = me ? [me, ...selectedPlayers] : [];
   const amount = Number(paymentAmount);
+  const dueTurn = Number(paymentDueTurn);
+  const dueValid = Number.isSafeInteger(dueTurn) && dueTurn >= game.turn;
   const payment: DealPayment | undefined = includePayment
     ? paymentKind === 'immediateBribe'
       ? { kind: paymentKind, payer, recipient: paymentRecipient, amount }
-      : { kind: paymentKind, payer, recipient: paymentRecipient, amount, dueTurn: game.turn }
+      : { kind: paymentKind, payer, recipient: paymentRecipient, amount, dueTurn }
     : undefined;
-  const paymentValid = !includePayment || !!me && payer !== paymentRecipient &&
+  const paymentPeopleAndAmountValid = !!me && payer !== paymentRecipient &&
     parties.some(player => player.id === payer) && parties.some(player => player.id === paymentRecipient) &&
     Number.isSafeInteger(amount) && amount > 0;
-  const offer = legalSelection && paymentValid ? publicDealOfferAction(selected, terms, payment, me?.id) : null;
+  const paymentValid = !includePayment || paymentPeopleAndAmountValid && (paymentKind !== 'deferredBribe' || dueValid);
+  const offer = legalSelection && paymentValid ? publicDealOfferAction(selected, terms, payment, me?.id, game.turn) : null;
   const disabled = busy || !!game.roomControl?.paused || !!game.roomControl?.closed || !!me?.autopilot;
   const mayOffer = game.status === 'playing' && me && !me.bot;
   return <details ref={panel} className="notice public-deals-panel">
@@ -180,7 +185,7 @@ export function PublicDeals({ game, act, busy }: {
       <label className="checkbox-row">
         <input type="checkbox" checked={includePayment} disabled={disabled}
           onChange={event => setIncludePayment(event.target.checked)} />
-        Include an immediate spice payment or a payment due this turn
+        Include a spice payment
       </label>
       {includePayment && <fieldset>
         <legend>Payment term</legend>
@@ -188,7 +193,7 @@ export function PublicDeals({ game, act, busy }: {
           <select value={paymentKind} disabled={disabled} onChange={event =>
             setPaymentKind(event.target.value === 'deferredBribe' ? 'deferredBribe' : 'immediateBribe')}>
             <option value="immediateBribe">Immediately on final acceptance</option>
-            <option value="deferredBribe">By the end of turn {game.turn}</option>
+            <option value="deferredBribe">By the end of a current or future turn</option>
           </select>
         </label>
         <label>Paying participant
@@ -209,10 +214,15 @@ export function PublicDeals({ game, act, busy }: {
           <input type="number" inputMode="numeric" min={1} step={1} value={paymentAmount} disabled={disabled}
             onChange={event => setPaymentAmount(event.target.value)} />
         </label>
+        {paymentKind === 'deferredBribe' && <label>Payment due by the end of turn
+          <input type="number" inputMode="numeric" min={game.turn} step={1} value={paymentDueTurn} disabled={disabled}
+            required aria-invalid={!dueValid} onChange={event => setPaymentDueTurn(event.target.value)} />
+        </label>}
         {paymentKind === 'immediateBribe'
           ? <p className="fine">No spice is reserved before final acceptance. The payer loses the full amount immediately; the recipient collects their share at the next Mentat opening. A Bureaucrat may divert two spice to the bank before the share is allocated. Native payment timing and available funds are checked at final acceptance.</p>
-          : <p className="fine">The agreed amount becomes due when all participants accept. The payer must pay it by the end of turn {game.turn} while payment remains possible. A separate pay control appears on the active deal; the recipient collects their share at the next Mentat opening. A Bureaucrat may divert two spice to the bank.</p>}
-        {legalSelection && !paymentValid && <p>Choose two different participants and a positive whole spice amount.</p>}
+          : <p className="fine">After all participants accept, the payer can pay on or before the end of the selected turn while payment remains possible. A separate pay control appears on the active deal; the recipient collects their share at the next Mentat opening. A Bureaucrat may divert two spice to the bank.</p>}
+        {legalSelection && !paymentPeopleAndAmountValid && <p>Choose two different participants and a positive whole spice amount.</p>}
+        {paymentKind === 'deferredBribe' && !dueValid && <p role="alert">Choose a whole due turn no earlier than turn {game.turn}.</p>}
       </fieldset>}
       <label>Public deal terms
         <textarea rows={3} maxLength={500} value={terms} onChange={event => setTerms(event.target.value)} disabled={disabled}

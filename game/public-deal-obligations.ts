@@ -23,9 +23,10 @@ const identifier = (value: unknown): value is string =>
 const nonnegative = (value: unknown): value is number =>
   typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
 
-/** Input ledger order is acceptance order; callers validate persisted deals
- * against seated players before using a quote. */
-export function pendingPublicDealPayments(
+/** Return a payer's unsettled active terms that can still be paid now,
+ * including future deadlines. Past-due rows stay in the authoritative ledger
+ * for the engine's expiry reconciliation; this helper never voids them. */
+export function outstandingPublicDealPayments(
   deals: readonly PublicDeal[], payer: string, turn: number,
 ): PendingPublicDealPayment[] {
   if (!Array.isArray(deals) || !identifier(payer) || !Number.isSafeInteger(turn) || turn < 1)
@@ -33,9 +34,17 @@ export function pendingPublicDealPayments(
   return deals.flatMap(deal => {
     const payment = deal.payment;
     if (deal.status !== 'active' || deal.paymentStatus !== 'pending' ||
-        payment?.kind !== 'deferredBribe' || payment.payer !== payer || payment.dueTurn !== turn) return [];
+        payment?.kind !== 'deferredBribe' || payment.payer !== payer || payment.dueTurn < turn) return [];
     return [{ deal: deal.id, payer, recipient: payment.recipient, dueTurn: payment.dueTurn, amount: payment.amount }];
   });
+}
+
+/** Existing turn-specific planners and funding totals consider only payments
+ * due in that turn. They must not reserve every future promise immediately. */
+export function pendingPublicDealPayments(
+  deals: readonly PublicDeal[], payer: string, turn: number,
+): PendingPublicDealPayment[] {
+  return outstandingPublicDealPayments(deals,payer,turn).filter(payment => payment.dueTurn === turn);
 }
 
 /** Separate deals add, including two deals for the same recipient. */

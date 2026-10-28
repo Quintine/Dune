@@ -22,7 +22,7 @@ void test('deferred deal terms bind an exact positive payment to this turn witho
   assert.deepEqual(parsePublicDealPayment(immediate, ['a', 'b']), immediate);
   assert.deepEqual(parsePublicDealPayment(deferred(4), ['a', 'b'], 3), deferred(4));
   for (const input of [
-    { ...deferred(4), dueTurn: 4 }, { ...deferred(0) },
+    { ...deferred(4), dueTurn: 2 }, { ...deferred(0) },
     { ...deferred(4), recipient: 'c' }, { ...deferred(4), extra: true },
   ]) assert.throws(() => parsePublicDealPayment(input, ['a', 'b'], 3), PublicDealError);
   assert.throws(() => parsePublicDealPayment(deferred(4), ['a', 'b']), PublicDealError);
@@ -61,7 +61,7 @@ void test('mutual release and proven impossibility end only an unpaid accepted p
   const bad = [
     { ...first, paymentStatus: undefined }, { ...first, paymentStatus: 'released' },
     { ...first, status: 'offered', paymentStatus: 'pending' },
-    { ...first, payment: { ...deferred(4), dueTurn: 4 } },
+    { ...first, payment: { ...deferred(4), dueTurn: 2 } },
     { ...first, payment: { kind: 'immediateBribe', payer: 'a', recipient: 'b', amount: 4 }, paymentStatus: 'paid' },
   ];
   for (const deal of bad) assert.throws(() => validatePublicDeals([deal], seats), PublicDealError);

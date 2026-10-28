@@ -46,7 +46,7 @@ void test('deal form exposes human non-allied recipients and clearly describes l
   assert.doesNotMatch(html, /Duncan · Spacing Guild/);
   assert.match(html, /cannot automatically enforce free-text promises/);
   assert.match(html, /free-text terms do not automatically transfer spice/);
-  assert.match(html, /Include an immediate spice payment/);
+  assert.match(html, /Include a spice payment/);
   assert.match(html, /Do not trade cards, forces, leaders or faction powers/);
   assert.match(html, /maxlength="500"/i);
   assert.match(html, /Alice \(Atreides\) → Basil \(Harkonnen\)/);

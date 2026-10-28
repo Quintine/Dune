@@ -1,5 +1,13 @@
 # Rule decision index
 
+## Structured public-deal payments due later — 28 October 2026
+
+The publisher permits legal public agreements but does not define an online
+payment receipt or a forecast across turns. A later deadline, optional early
+payment and the absence of a future-income or current-funds reservation are
+provisional software policies. Due-turn payments retain the existing supported
+feasibility rules. [Scope](PUBLIC_DEALS.md#structured-payments-due-in-a-later-turn--28-october-2026).
+
 ## Structured public-deal payment due this turn — 28 October 2026
 
 The publisher permits binding legal public agreements but does not define this

@@ -16,6 +16,18 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Public-deal payments due on later turns — 28 October. Prototyped /
+Partial.** Players may set a future turn and settle early or on the deadline.
+Before that turn the obligation does not reserve current spice or assume future
+income; once due, existing supported current-turn feasibility applies. Separate
+deals are paid separately, and unanimous release remains available. The 25
+related offline files pass 146 cases, including native turn progression, early
+and due payment, legal autopilot, release and a Basic Mentat shortfall. One
+isolated authenticated HTTP case covers consent, authority, early payment and
+replay. Type checking, lint and an isolated production build pass. Broader rule
+combinations, browser and deployed acceptance remain open.
+[Scope](PUBLIC_DEALS.md#structured-payments-due-in-a-later-turn--28-october-2026).
+
 **Structured public-deal payment due this turn — 28 October. Prototyped /
 Partial.** A public agreement can bind one exact current-turn bribe after
 unanimous consent. The payer sees a persistent request and pays each deal

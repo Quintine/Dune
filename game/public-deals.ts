@@ -94,10 +94,11 @@ export function parsePublicDealPayment(value: unknown, parties: readonly string[
   }
   requireDeal(value.kind === 'deferredBribe' &&
     Object.keys(value).sort().join(',') === 'amount,dueTurn,kind,payer,recipient' &&
-    Number.isSafeInteger(turn) && (turn as number) > 0 && value.dueTurn === turn,
-  'Choose a deferred bribe due in the deal’s current turn.');
+    Number.isSafeInteger(turn) && (turn as number) > 0 &&
+    typeof value.dueTurn === 'number' && Number.isSafeInteger(value.dueTurn) && value.dueTurn >= (turn as number),
+  'Choose a deferred bribe due no earlier than the deal’s turn.');
   return { kind: 'deferredBribe', payer: value.payer, recipient: value.recipient,
-    amount: value.amount, dueTurn: turn as number };
+    amount: value.amount, dueTurn: value.dueTurn };
 }
 
 /** Validate persisted ledger shape and lifecycle without applying current
