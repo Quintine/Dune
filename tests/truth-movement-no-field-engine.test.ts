@@ -102,7 +102,9 @@ void test('a mixed physical-plus-marker move fulfills only its physical quantity
     noField: f.token, event: player(g, f.target).noFieldEvent, territory: 'arrakeen', sector: 10 });
   assert.equal(g.movementPromises![0].fulfilled, true);
   assert.equal(player(g, f.target).forces['arrakeen:10'], 3);
-  assert.equal(player(g, f.target).noField?.deployed?.location.territory, 'arrakeen');
+  const marker = player(g, f.target).noField?.deployed?.location;
+  assert.ok(marker && 'territory' in marker);
+  assert.equal(marker.territory, 'arrakeen');
 });
 
 void test('controlled original Karama prevents a native No-Field preparation before payment and releases its now impossible promise', () => {

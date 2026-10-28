@@ -1,5 +1,6 @@
 import type { Action, GameView } from './engine';
 import { location, splitLocation } from './board';
+import { isBoardNoFieldLocation } from './richese-no-field';
 import { botGroundMoveAllowed } from './bot-mobility';
 import { planetologistFlightSelection, type PlanetologistFlight } from './planetologist-flight';
 import { planetologistLeader, planetologistMovementModeSupported,
@@ -21,7 +22,9 @@ export function botPlanetologistFlightActions(game: GameView,
     !planetologistLeader(game, me.id) || !planetologistMovementModeSupported(game) ||
     (!game.ornithopter?.active && !nexusGuildMovementAvailable(game))) return [];
   const info = game.richeseNoField?.owner === me.id ? game.richeseNoField : null;
-  const marker = info?.private?.deployed;
+  const deployed = info?.private?.deployed;
+  const marker = deployed && isBoardNoFieldLocation(deployed.location)
+    ? { ...deployed, location: deployed.location } : null;
   const result: Action[] = [];
   for (const transport of transports) {
     const flight = planetologistFlightSelection(game, transport);

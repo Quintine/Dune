@@ -2,6 +2,7 @@ import { MOBILE_STRONGHOLD, validLocation, splitLocation } from './board';
 import type { FactionId } from './catalog';
 import { fighterCount } from './advisors';
 import type { ForcePresence } from './force-presence';
+import { isHomeworldNoFieldLocation } from './richese-no-field';
 
 export type StrongholdId =
   | 'arrakeen'
@@ -189,7 +190,7 @@ export function strongholdControllers(
     }
     const marker = p.noField?.deployed?.location;
     requireValid(
-      !marker || validLocation(marker.territory, marker.sector),
+      !marker || isHomeworldNoFieldLocation(marker) || validLocation(marker.territory, marker.sector),
       'The No-Field must occupy a valid location.',
     );
   }

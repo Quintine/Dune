@@ -4,7 +4,7 @@ import { nexusCoreProfile } from './faction-module-profile';
 import { mixedE3NexusLeaderSkillsProfile, pairedE3NexusLeaderSkillsProfile, standaloneE3NexusLeaderSkillsProfile } from './leader-skill-profile';
 import { nexusCardMode, validateNexusCards } from './nexus-cards';
 import { mixedE3NexusProfile, pairedE3NexusProfile, standaloneE3NexusProfile } from './nexus-module-profile';
-import { validateRicheseNoField } from './richese-no-field';
+import { isBoardNoFieldLocation, validateRicheseNoField } from './richese-no-field';
 
 export type EcazBetrayalCounts = Readonly<{ normal: number; elite: number }>;
 export type EcazBetrayalTerritory = Readonly<{
@@ -117,7 +117,7 @@ function locations(g: Game, player: Player): Map<string, Record<string, EcazBetr
  * constructing offers, even for a zero marker or a controller with no reserves. */
 function markerSupplier(g: Game, ally: string, territory: string): Player | undefined {
   const suppliers = g.players.filter(p => p.noField?.deployed?.controller === ally &&
-    p.noField.deployed.location.territory === territory);
+    isBoardNoFieldLocation(p.noField.deployed.location) && p.noField.deployed.location.territory === territory);
   if (suppliers.length > 1) throw new Error('Ecaz Betrayal has multiple concealed marker sources.');
   return suppliers[0];
 }
@@ -127,6 +127,7 @@ function markerSource(g: Game, ally: string, territory: string): EcazBetrayalNoF
   if (!supplier) return undefined;
   const marker = supplier.noField!.deployed!;
   validateRicheseNoField(supplier.noField!);
+  if (!isBoardNoFieldLocation(marker.location)) return undefined;
   if (supplier.faction !== 'richese' || typeof supplier.noFieldEvent !== 'string' || !supplier.noFieldEvent ||
     !boardLocation(g, `${marker.location.territory}:${marker.location.sector}`))
     throw new Error('Ecaz Betrayal has invalid concealed marker custody.');
@@ -138,7 +139,7 @@ function allyLocations(g: Game, ally: Player): Map<string, Record<string, EcazBe
   const result = locations(g, ally);
   for (const supplier of g.players) {
     const marker = supplier.noField?.deployed;
-    if (!marker || marker.controller !== ally.id) continue;
+    if (!marker || marker.controller !== ally.id || !isBoardNoFieldLocation(marker.location)) continue;
     if (!boardLocation(g, `${marker.location.territory}:${marker.location.sector}`))
       throw new Error('Ecaz Betrayal has invalid concealed board custody.');
     if (!result.has(marker.location.territory)) result.set(marker.location.territory, {});

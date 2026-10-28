@@ -16,6 +16,21 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Concealed Richese No-Field on a foreign Homeworld — 28 October.
+Prototyped / Partial.** In native Homeworld games, Richese may ship its own
+face-down marker to a foreign non-allied world. It counts as one public marker
+without becoming a physical counter until reveal, when actual reserves move
+into visitor custody. Native payment, Karama and Advanced Guild interception
+remain in place. Forty related files pass 301 cases, including real Basic and
+Advanced lobby starts, all three values, battle, cancellation, Guild stop and
+the marker-only alliance restriction. One isolated authenticated HTTP case
+also exercises real Basic shipment and the other player's concealed-token
+view. The undealt Karama placement is selected to exercise responses;
+resources and forces are not staged. This off-planet
+composition is provisional; own-world placement, multiple simultaneous markers,
+optional modules, full mode and deployed acceptance remain open.
+[Scope](RICHESE_NO_FIELD_RULES.md#foreign-homeworld-marker--28-october-2026).
+
 **Public-deal deadline at turn rollover — 28 October. Prototyped / Partial.**
 When the mounted form observes a later turn, a past whole-number deadline
 advances to the current turn. A future deadline and incomplete edits stay in

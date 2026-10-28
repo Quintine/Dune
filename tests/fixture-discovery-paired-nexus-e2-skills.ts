@@ -348,6 +348,7 @@ export function discoveryPairedNexusE2SkillsCunningAction(game: Game, richese: s
 export function prepareDiscoveryPairedNexusE2SkillsBattle(f: DiscoveryPairedNexusE2SkillsFixture, shipped: Game,
   trained = true): DiscoveryPairedNexusE2SkillsBattle {
   const deployed = pairedSkillsPlayer(shipped, f.richese).noField!.deployed; assert.ok(deployed);
+  assert.ok('territory' in deployed.location);
   const destination = deployed.location.territory, key = `${destination}:${deployed.location.sector}`;
   let game = revealPairedSkillsRichese(shipped, f.richese, f.actions);
   assert.equal(pairedSkillsPlayer(game, f.richese).noField!.deployed, null);

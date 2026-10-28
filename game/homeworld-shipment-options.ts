@@ -11,6 +11,7 @@ import {
   type HomeworldForces,
 } from './homeworld-custody';
 import { quoteHomeworldShipment } from './homeworld-shipment';
+import { quoteRicheseHomeworldMarkerShipment } from './richese-homeworld-marker-shipment';
 
 export type HomeworldShipmentSources = Record<string, HomeworldForces>;
 export function homeworldName(view: GameView, id: string): string {
@@ -18,6 +19,72 @@ export function homeworldName(view: GameView, id: string): string {
   return (
     HOMEWORLD_CARDS.find((card) => card.id === home?.card)?.name ?? 'Homeworld'
   );
+}
+
+/** Owner-only marker quote. The face stays private; the amount and invoice are
+ * one regardless of denomination. Authoritative timing and payment remain in
+ * the normal Homeworld shipment action. */
+export function richeseHomeworldMarkerChoice(
+  view: GameView,
+  destination: string,
+  tokenId: string,
+  allyPayment = 0,
+) {
+  const result: { blocked: string | null; amount: number; cost: number;
+    ownPayment: number; allyPayment: number; action: Action | null } = {
+    blocked: null, amount: 1, cost: 1, ownPayment: 1 - allyPayment, allyPayment, action: null,
+  };
+  const option = view.homeworldShipment, worlds = view.homeworlds?.worlds;
+  const me = view.players.find(player => player.id === view.me);
+  const info = view.richeseNoField;
+  if (view.nexusCards || view.leaderSkills || view.discoveryEnabled || view.discoveries ||
+      view.techTokens || view.strongholdCards) {
+    result.blocked = 'Homeworld No-Field shipment currently supports native Homeworld play without optional modules.';
+    return result;
+  }
+  if (!option || !worlds?.length || !me || me.faction !== 'richese' ||
+      info?.owner !== me.id || !info.private || !info.event ||
+      view.roomControl?.paused || view.roomControl?.closed || !nexusGuildShipmentAvailable(view)) {
+    result.blocked = 'Use your available Richese No-Field during your shipment turn.';
+    return result;
+  }
+  if (option.blocked || !info.canShip) {
+    result.blocked = option.blocked ?? info.shipBlock ?? 'No-Field shipment is not available now.';
+    return result;
+  }
+  if (!Number.isSafeInteger(allyPayment) || allyPayment < 0 || allyPayment > 1 ||
+      allyPayment > (me.ally ? view.aid.available : 0)) {
+    result.blocked = 'Choose an allied contribution within the current pledge and one-spice price.';
+    return result;
+  }
+  if (result.ownPayment > (me.spice ?? 0)) {
+    result.blocked = 'Your spice and selected allied contribution cannot pay this shipment.';
+    return result;
+  }
+  const context = {
+    advanced: view.advanced,
+    nativeGuildRateCanceled: view.guildRateCanceled,
+    purchasedGuildRate: view.karamaShipping?.player === view.me,
+    players: view.players.map(player => ({ id: player.id, faction: player.faction,
+      reserves: player.reserves, eliteReserves: player.elites?.reserves ?? 0, ally: player.ally ?? null })),
+  };
+  const custody: HomeworldCustody = { salusa: null, visitors: {} };
+  for (const world of worlds) {
+    if (world.secondary) custody.salusa = { ...world.forces[world.native] };
+    const visitors = Object.entries(world.forces).filter(([owner]) => owner !== world.native);
+    if (visitors.length) custody.visitors[world.id] = Object.fromEntries(
+      visitors.map(([owner, forces]) => [owner, { ...forces }]));
+  }
+  try {
+    quoteRicheseHomeworldMarkerShipment(context, custody,
+      { player: me.id, destination, tokenId }, info.private);
+    result.action = { type: 'homeworldShip', event: option.event, destination, sources: {},
+      noField: tokenId, noFieldEvent: info.event, allyPayment };
+  } catch (error) {
+    if (!(error instanceof HomeworldCustodyError)) throw error;
+    result.blocked = error.message;
+  }
+  return result;
 }
 
 /** Only public physical counters and the actor's own available funding enter
@@ -315,6 +382,17 @@ export function homeworldShipmentActions(
         )
       )
         actions.push(quote.action);
+    }
+  }
+  // Minimal legal participation: offer one private marker route through the
+  // same quote used by the human control. Faction strategy remains deferred.
+  if (me.faction === 'richese' && view.richeseNoField?.owner === me.id && view.richeseNoField.private) {
+    const token = view.richeseNoField.private.tokens.find(candidate =>
+      candidate.id !== view.richeseNoField!.private!.lastShipped);
+    if (token) for (const target of targets) {
+      const quote = richeseHomeworldMarkerChoice(view, target.world.id, token.id,
+        Math.max(0, 1 - (me.spice ?? 0)));
+      if (quote.action) { actions.push(quote.action); break; }
     }
   }
   return actions;

@@ -2,7 +2,7 @@ import { stormExposesTerritory, stormSectorAfter, wormConsumesForces } from './d
 import type { Game, Player, ResponseWindow } from './engine';
 import { splitLocation, territory, validLocation } from './board';
 import { SPICE_CARDS } from './cards';
-import { revealRicheseNoField } from './richese-no-field';
+import { isBoardNoFieldLocation, revealRicheseNoField } from './richese-no-field';
 import { DISCOVERY_SPICE_CARDS } from './discoveries';
 
 export class DisasterPreflightError extends Error {}
@@ -52,7 +52,7 @@ function casualtyCustody(
   }
   const marker = p.noField?.deployed;
   if (
-    marker &&
+    marker && isBoardNoFieldLocation(marker.location) &&
     affected(`${marker.location.territory}:${marker.location.sector}`)
   ) {
     requireDisaster(

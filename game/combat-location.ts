@@ -3,8 +3,9 @@ import { gameTerritories } from './board';
 import { homeworldContext } from './homeworld-game';
 import {
   homeworldCombatLocation,
-  quoteHomeworldBattles,
 } from './homeworld-combat';
+import { quoteHomeworldBattlesWithNoField } from './richese-homeworld-marker-combat';
+import { isHomeworldNoFieldLocation } from './richese-no-field';
 import { homeworldLocations, type HomeworldForces } from './homeworld-custody';
 import {
   quoteBattleBoard,
@@ -86,7 +87,10 @@ export function quoteCombatBoard(g: Game) {
   const board = quoteBattleBoard(g);
   if (!g.homeworlds?.custody) return board;
   const context = homeworldContext(g);
-  const worlds = quoteHomeworldBattles(
+  const deployed = g.players.find(p => p.faction === 'richese')?.noField?.deployed;
+  const marker = deployed && isHomeworldNoFieldLocation(deployed.location)
+    ? {controller:deployed.controller,location:deployed.location} : null;
+  const worlds = quoteHomeworldBattlesWithNoField(
     {
       ...context,
       order: g.order,
@@ -96,6 +100,7 @@ export function quoteCombatBoard(g: Game) {
       })),
     },
     g.homeworlds.custody,
+    marker,
   );
   return {
     ...board,

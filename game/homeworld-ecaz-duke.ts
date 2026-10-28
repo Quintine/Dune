@@ -1,6 +1,8 @@
 import type { Game } from './engine';
 import { acquireDuke, releaseCapturedDuke, retireHomeworldDukeTenure, type DukeState } from './duke-vidal';
 import { HomeworldCustodyError } from './homeworld-custody';
+import { homeworldContext } from './homeworld-game';
+import { readHomeworldOccupationSnapshot, homeworldOccupationSnapshotPresence } from './homeworld-occupation-history';
 import {
   quoteStableHomeworldOccupation, type StableHomeworldOccupationContext,
 } from './homeworld-stable-occupation';
@@ -67,10 +69,8 @@ export function validateHomeworldEcazDukeGrants(g: HomeworldEcazDukeContext): vo
     const source = g.homeworldOccupationHistory?.sources.find(row => row.event === receipt.qualification);
     requireGrant(native && source && source.cause !== 'setup' && source.turn <= receipt.turn,
       'Occupied Ecaz Duke lost its original qualification source.');
-    const snapshot: unknown = JSON.parse(g.homeworldOccupationHistory!.snapshots[source.snapshot]);
-    requireGrant(Array.isArray(snapshot) && snapshot.some(row => Array.isArray(row) &&
-      row[0] === `homeworld:${native.id}` && Array.isArray(row[1]) && row[1].some(group =>
-        Array.isArray(group) && group[0] === receipt.occupier && group[1] + group[2] > 0)),
+    const snapshot = readHomeworldOccupationSnapshot(g.homeworldOccupationHistory!.snapshots[source.snapshot], homeworldContext(g));
+    requireGrant(homeworldOccupationSnapshotPresence(snapshot, `homeworld:${native.faction}`).includes(receipt.occupier),
     'Occupied Ecaz Duke qualification does not contain its original occupier.');
   }
 }

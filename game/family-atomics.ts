@@ -2,6 +2,7 @@ import { fighterCount, isAdvisor } from './advisors';
 import { splitLocation, TERRITORIES } from './board';
 import type { OrdinaryCardPlayer } from './card-availability';
 import { presenceByLocation } from './force-presence';
+import { isBoardNoFieldLocation } from './richese-no-field';
 
 export type FamilyAtomicsState = {
   advanced?: boolean;
@@ -29,10 +30,11 @@ export function familyAtomicsBlock(state: FamilyAtomicsState, player: FamilyAtom
   // including denomination0. Its public location suffices; never read private
   // value, reserve capacity or token inventory merely to qualify this card.
   const marker = player.noField?.deployed;
-  const markerHere = marker?.controller === player.id && nearby.some(territory =>
-    territory.id === marker.location.territory && territory.sectors.includes(marker.location.sector));
+  const markerLocation = marker && isBoardNoFieldLocation(marker.location) ? marker.location : null;
+  const markerHere = marker?.controller === player.id && markerLocation && nearby.some(territory =>
+    territory.id === markerLocation.territory && territory.sectors.includes(markerLocation.sector));
   const forces = presenceByLocation({ forces: player.forces,
-    noField: markerHere ? { deployed: { location: marker!.location } } : null });
+    noField: markerHere ? { deployed: { location: markerLocation! } } : null });
   const effective = { faction: player.faction, advisors: player.advisors, forces };
   if (!state.advanced)
     return nearby.some(territory => fighterCount(effective, territory.id) > 0)

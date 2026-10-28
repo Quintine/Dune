@@ -10,7 +10,7 @@ import {
 } from './discoveries';
 import { splitLocation, validGameLocation, type MobileBoard } from './board';
 import { territoryEntryBlock, type OccupancySeat } from './occupancy';
-import type { RicheseNoField } from './richese-no-field';
+import { isBoardNoFieldLocation, type RicheseNoField } from './richese-no-field';
 
 export class DiscoveryEntryError extends Error {}
 
@@ -375,7 +375,7 @@ function sourceOffer(
  * do not supply physical counters or alter this optional relocation. */
 function noFieldOffer(g: DiscoveryEntryContext, player: DiscoveryEntrySeat, parent: string): DiscoveryEntryNoField | undefined {
   const marker = player.noField?.deployed;
-  if (player.faction !== 'richese' || !marker || marker.controller !== player.id ||
+  if (player.faction !== 'richese' || !marker || !isBoardNoFieldLocation(marker.location) || marker.controller !== player.id ||
       !identifier(marker.tokenId) || !identifier(player.noFieldEvent) ||
       marker.location.territory !== parent || marker.location.sector === g.storm ||
       !validGameLocation(g, marker.location.territory, marker.location.sector)) return undefined;

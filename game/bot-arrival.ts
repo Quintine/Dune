@@ -1,6 +1,7 @@
 import type { Action, GameView } from './engine';
 import { arrivalAsAdvisor } from './advisors';
 import { splitLocation, territory, validLocation } from './board';
+import { isBoardNoFieldLocation } from './richese-no-field';
 import {
   MovementArrivalError,
   quoteCompletedMovementArrival,
@@ -159,7 +160,7 @@ export function botArrivalBlock(g: GameView, action: Action): string | null {
     const origins = new Set<string>();
     if (action.noField !== undefined) {
       const marker = me.noField?.deployed;
-      if (me.faction !== 'richese' || !marker) return null;
+      if (me.faction !== 'richese' || !marker || !isBoardNoFieldLocation(marker.location)) return null;
       origins.add(marker.location.territory);
     }
     for (const [key, count] of entries) {

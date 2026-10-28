@@ -76,8 +76,10 @@ function selectSpice(game: Game, position: number, worm = false): SpiceSelection
 }
 export function guildNoFieldTransportAction(game: Game, route: 'cross' | 'return' = 'cross'): Action {
   const own = guildNoFieldTransportPlayer(game, 'richese'), marker = own.noField?.deployed; assert.ok(marker && own.noFieldEvent);
+  const markerLocation = marker.location;
+  assert.ok('territory' in markerLocation);
   const forces = Object.fromEntries(Object.entries(own.forces).filter(([key, amount]) =>
-    amount > 0 && key.startsWith(`${marker.location.territory}:`)));
+    amount > 0 && key.startsWith(`${markerLocation.territory}:`)));
   const nexus = viewGame(game, own.id).nexusGuildSecretAlly;
   return { type: 'guildShip', noField: marker.tokenId, event: own.noFieldEvent, forces,
     territory: route === 'return' ? 'reserves' : 'polar_sink', sector: 0, allyPayment: 0,

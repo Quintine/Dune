@@ -6,10 +6,65 @@ import { specialForceName } from '@/game/combat';
 import {
   homeworldName,
   homeworldShipmentChoice,
+  richeseHomeworldMarkerChoice,
   type HomeworldShipmentSources,
 } from '@/game/homeworld-shipment-options';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+
+/** This private control is separate from physical-source shipment: the marker
+ * costs one but does not withdraw a reserve counter until it is revealed. */
+export function HomeworldNoFieldShipment({ game, act, busy }: {
+  game: GameView; act: (action: Action) => void; busy: boolean;
+}) {
+  const me = game.players.find(player => player.id === game.me);
+  const info = game.richeseNoField;
+  const [selectedDestination, setSelectedDestination] = useState('');
+  const [selectedToken, setSelectedToken] = useState('');
+  const [allyPayment, setAllyPayment] = useState(0);
+  if (!me || me.faction !== 'richese' || info?.owner !== me.id || !info.private) return null;
+  const targets = (game.homeworlds?.worlds ?? []).filter(world =>
+    world.native !== me.id && world.native !== me.ally);
+  const destination = targets.find(world => world.id === selectedDestination) ?? targets[0];
+  const tokens = info.private.tokens.filter(token => token.id !== info.private!.lastShipped);
+  const token = tokens.find(candidate => candidate.id === selectedToken) ?? tokens[0];
+  const quote = richeseHomeworldMarkerChoice(game, destination?.id ?? '', token?.id ?? '', allyPayment);
+  return <fieldset disabled={busy || !!me.autopilot || !!game.homeworldShipment?.blocked}
+    className="space-y-3 pt-3">
+    <legend>Ship a concealed No-Field</legend>
+    <p className="fine">Provisional Homeworld rule: ship one concealed marker from your supply to
+      another non-allied Homeworld for one spice. Its value stays private and its physical forces
+      remain in your reserves until the marker is revealed. This uses your normal shipment.</p>
+    <label className="block space-y-1">Destination Homeworld for No-Field
+      <select aria-label="No-Field destination Homeworld" value={destination?.id ?? ''}
+        onChange={event => setSelectedDestination(event.target.value)}>
+        {!targets.length && <option value="">No eligible destination</option>}
+        {targets.map(world => <option key={world.id} value={world.id}>
+          {homeworldName(game, world.id)} · {game.players.find(player => player.id === world.native)?.name}
+        </option>)}
+      </select>
+    </label>
+    <label className="block space-y-1">Private No-Field token
+      <select aria-label="Private No-Field token" value={token?.id ?? ''}
+        onChange={event => setSelectedToken(event.target.value)}>
+        {!tokens.length && <option value="">No different token available</option>}
+        {tokens.map(candidate => <option key={candidate.id} value={candidate.id}>No-Field {candidate.value}</option>)}
+      </select>
+    </label>
+    {me.ally && <label className="block space-y-1">Allied spice contribution · {game.aid.available} pledged
+      <Input type="number" min={0} max={Math.min(1, game.aid.available)} step={1} value={allyPayment}
+        onChange={event => setAllyPayment(Number(event.target.value))} />
+    </label>}
+    <output className="notice block" aria-live="polite">
+      One marker · one spice total · you pay {quote.ownPayment}, ally pays {quote.allyPayment}.
+      {quote.blocked && ` ${quote.blocked}`}
+    </output>
+    <Button className="game-action" disabled={busy || !!me.autopilot || !quote.action}
+      onClick={() => { if (quote.action) act(quote.action); }}>
+      Ship No-Field to {homeworldName(game, destination?.id ?? '')}
+    </Button>
+  </fieldset>;
+}
 
 export function HomeworldShipment({
   game: g,
@@ -265,6 +320,7 @@ export function HomeworldShipment({
           Ship to {homeworldName(g, destination)}
         </Button>
       </fieldset>
+      <HomeworldNoFieldShipment game={g} act={act} busy={busy} />
     </details>
   );
 }

@@ -3,6 +3,7 @@ import type { FactionId } from './catalog';
 import { specialForceName } from './combat';
 import { isAdvisor } from './advisors';
 import { HOMEWORLD_CARDS } from './homeworld-cards';
+import { isBoardNoFieldLocation, type NoFieldLocation } from './richese-no-field';
 
 /** Public physical custody only. No private cards, commitments or token faces. */
 export type PublicForcePlayer = {
@@ -14,7 +15,7 @@ export type PublicForcePlayer = {
   forces: Readonly<Record<string, number>>;
   elites?: { reserves: number; tanks: number; forces: Readonly<Record<string, number>> };
   advisors?: Record<string, { lockedTurn?: number }>;
-  noField?: { deployed: { location: { territory: string; sector: number } } | null } | null;
+  noField?: { deployed: { location: NoFieldLocation } | null } | null;
 };
 export type PublicForceWorld = {
   id: string;
@@ -41,6 +42,14 @@ function locationName(id: string, sector: number) {
   if (!Number.isSafeInteger(sector) || sector < 0) throw new Error('Invalid force location.');
   const name = territory(id).name;
   return sector > 0 ? `${name} · sector ${sector}` : name;
+}
+
+function markerLocationName(marker: NoFieldLocation) {
+  if (isBoardNoFieldLocation(marker)) return locationName(marker.territory, marker.sector);
+  const card = HOMEWORLD_CARDS.find(candidate => marker.homeworld ===
+    `homeworld:${candidate.faction}${candidate.id === 'salusa_secundus' ? ':salusa' : ''}`);
+  if (!card) throw new Error('Unknown No-Field Homeworld.');
+  return card.name;
 }
 
 function pool(id: string, name: string, total: number, elite = 0, advisors = false): ForcePool {
@@ -86,7 +95,7 @@ export function forceInventory(player: PublicForcePlayer, worlds: readonly Publi
       elite: rows.reduce((n, r) => n + r.elite, 0),
       advisors: rows.reduce((n, r) => n + (r.advisors ? r.total : 0), 0),
       split: !!player.elites,
-      marker: marker ? { name: locationName(marker.territory, marker.sector) } : null,
+      marker: marker ? { name: markerLocationName(marker) } : null,
     };
   } catch {
     return null;

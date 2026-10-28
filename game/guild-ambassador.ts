@@ -13,6 +13,7 @@ import { presenceAt } from './force-presence';
 import { territoryEntryBlock } from './occupancy';
 import { homeworldSpiritualAdvisorQuote } from './homeworld-mobility';
 import type { GuildAmbassadorMarker } from './guild-ambassador-no-field';
+import { isBoardNoFieldLocation } from './richese-no-field';
 
 export class GuildAmbassadorShipmentError extends Error {
   constructor(message: string) {
@@ -112,7 +113,7 @@ function beneficiary(g: Game, id: string) {
       );
     const marker = p.noField?.deployed;
     requireShipment(
-      !marker ||
+      !marker || !isBoardNoFieldLocation(marker.location) ||
         (usableLocation(
           g,
           location(marker.location.territory, marker.location.sector),

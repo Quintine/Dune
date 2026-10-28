@@ -188,7 +188,8 @@ void test('pending marker recall binds exact private source while leaving denomi
   const mutations: Array<(copy: Game) => void> = [
     copy => { copy.players.find(p => p.id === ally)!.noFieldEvent = 'new-event'; },
     copy => { copy.players.find(p => p.id === ally)!.noField!.deployed = null; },
-    copy => { copy.players.find(p => p.id === ally)!.noField!.deployed!.location.sector = 15; },
+    copy => { const location = copy.players.find(p => p.id === ally)!.noField!.deployed!.location;
+      assert.ok('territory' in location); location.sector = 15; },
     copy => { copy.players.find(p => p.id === ally)!.noField!.deployed!.controller = holder; },
     copy => {
       const state = copy.players.find(p => p.id === ally)!.noField!;

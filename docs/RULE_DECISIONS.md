@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Richese No-Field on a foreign Homeworld — 28 October 2026
+
+The user-authorized Advanced revision calls Homeworlds non-territories
+(physical p. 21) and describes No-Field materialization in a territory
+(physical p. 36), without resolving their combination. Provisionally permit
+one native face-down marker globally, shipped to a foreign non-allied active
+Homeworld; count its public presence separately and materialize real reserves
+there on reveal. Own-world and optional-module compositions remain excluded.
+[Scope](RICHESE_NO_FIELD_RULES.md#foreign-homeworld-marker--28-october-2026).
+
 ## Recovered Sapho after a suspended Movement turn — 28 October 2026
 
 The holder's fresh physical Sapho may provisionally replace its own protected

@@ -334,6 +334,7 @@ void test('marker movement and concurrent revelation persist once, reject stale 
     await f.action(f.owner, move, resumed);
     const moved = await resumed.readRoom(f.code);
     assert.notEqual(moved.players[0].noFieldEvent, oldEvent);
+    assert.ok('territory' in moved.players[0].noField!.deployed!.location);
     assert.equal(
       moved.players[0].noField!.deployed!.location.territory,
       'arrakeen',

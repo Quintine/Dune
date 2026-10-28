@@ -141,6 +141,7 @@ void test('all profiles move the actual marker explicitly, with no fabricated ph
       assert.deepEqual(moved.players[0].forces, {});
       assert.equal(moved.players[0].reserves, 20);
       assert.equal(moved.players[0].moved, 1);
+      assert.ok('territory' in moved.players[0].noField!.deployed!.location);
       assert.equal(
         moved.players[0].noField!.deployed!.location.territory,
         action.territory,

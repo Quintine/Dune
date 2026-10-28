@@ -6,6 +6,7 @@ import { botEntryAllowed, guildTransportCost } from './bot-mobility';
 import { shipmentPaymentBounds } from './shipment-price';
 import { quoteAdvisorTransportMatching, AdvisorTransportMatchingError } from './advisor-transport-matching';
 import { guildNoFieldSelection } from './guild-no-field-selection';
+import { isBoardNoFieldLocation } from './richese-no-field';
 
 /** Preview the submitted Guild transport using only this seat's entitled view.
  * The authoritative action still revalidates the selection when it arrives.
@@ -24,7 +25,9 @@ export function guildTransportQuote(g: GameView, action: Action) {
     unavailableReasons.push('Karama prevents native Guild cross/return transport for this shipment opportunity.');
   const fromReserves = action.from === 'reserves';
   const namesNoField = action.noField !== undefined;
-  const noField = namesNoField ? guildNoFieldSelection(g, action) : null;
+  const selectedMarker = namesNoField ? guildNoFieldSelection(g, action) : null;
+  const noField = selectedMarker && isBoardNoFieldLocation(selectedMarker.location)
+    ? { ...selectedMarker, location: selectedMarker.location } : null;
   let total = 0;
   let origin = noField?.location.territory;
   const matchingGroup:Record<string,number>={};

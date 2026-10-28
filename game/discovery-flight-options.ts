@@ -9,6 +9,7 @@ import { planetologistLeader, planetologistMovementModeSupported, planetologistG
 import { quoteAdvisorGatherMatching, AdvisorGatherMatchingError } from './advisor-gather-matching';
 import { nexusGuildMovementAvailable } from './nexus-guild-cunning-options';
 import { validateCohortSelection } from './ornithopter';
+import { isBoardNoFieldLocation } from './richese-no-field';
 
 const whole = (value: unknown): value is number =>
   Number.isSafeInteger(value) && (value as number) >= 0;
@@ -67,7 +68,7 @@ export function discoveryFlightMove(game: GameView, move: Action | null): Quote 
   }
   const deployed = game.richeseNoField?.owner === me.id
     ? game.richeseNoField.private?.deployed : undefined;
-  const marker = move.noField === undefined ? undefined : deployed &&
+  const marker = move.noField === undefined ? undefined : deployed && isBoardNoFieldLocation(deployed.location) &&
     deployed.tokenId === move.noField && game.richeseNoField?.event === move.event
     ? { tokenId: deployed.tokenId, event: String(move.event),
       from: location(deployed.location.territory, deployed.location.sector) } : null;

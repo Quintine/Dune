@@ -1,8 +1,24 @@
 import { MOBILE_STRONGHOLD } from './board';
 import { isDiscoveryLocationId } from './discoveries';
+import { HOMEWORLD_CARDS } from './homeworld-cards';
 
 export type NoFieldValue = 0 | 3 | 5;
-export type NoFieldLocation = { territory: string; sector: number };
+/** Existing planet records retain their original JSON shape. A Homeworld is a
+ * distinct location, not a territory or a synthetic sector. */
+export type NoFieldTerritoryLocation = { territory: string; sector: number };
+export type NoFieldHomeworldLocation = { homeworld: string };
+export type NoFieldLocation = NoFieldTerritoryLocation | NoFieldHomeworldLocation;
+
+const HOMEWORLD_LOCATIONS = new Set(HOMEWORLD_CARDS.map(card =>
+  `homeworld:${card.faction}${card.id === 'salusa_secundus' ? ':salusa' : ''}`));
+
+export function isHomeworldNoFieldLocation(location: NoFieldLocation): location is NoFieldHomeworldLocation {
+  return !!location && typeof location === 'object' && 'homeworld' in location;
+}
+
+export function isBoardNoFieldLocation(location: NoFieldLocation): location is NoFieldTerritoryLocation {
+  return !!location && typeof location === 'object' && 'territory' in location;
+}
 export type NoFieldToken = { id: string; value: NoFieldValue };
 export type NoFieldDeployment = {
   tokenId: string;
@@ -60,8 +76,15 @@ function validId(id: unknown): id is string {
   return typeof id === 'string' && id.trim().length > 0;
 }
 function validateLocation(location: NoFieldLocation) {
+  requireNoField(location && typeof location === 'object' && !Array.isArray(location),
+    'Choose a valid No-Field location.');
+  if (isHomeworldNoFieldLocation(location)) {
+    requireNoField(Object.keys(location).length === 1 && HOMEWORLD_LOCATIONS.has(location.homeworld),
+      'Choose a valid Homeworld for the No-Field.');
+    return;
+  }
   requireNoField(
-    location &&
+    isBoardNoFieldLocation(location) &&
       validId(location.territory) &&
       Number.isSafeInteger(location.sector) &&
       (location.sector >= 1 ||

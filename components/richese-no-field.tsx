@@ -6,7 +6,8 @@ import { faction } from '@/game/catalog';
 import { territory, MOBILE_STRONGHOLD } from '@/game/board';
 import { fighterCount } from '@/game/advisors';
 import { reserveShipmentCost } from '@/game/shipment-price';
-import type { RicheseNoFieldView } from '@/game/richese-no-field';
+import { isBoardNoFieldLocation, isHomeworldNoFieldLocation, type RicheseNoFieldView } from '@/game/richese-no-field';
+import { HOMEWORLD_CARDS } from '@/game/homeworld-cards';
 import { quoteSmugglerNoField } from '@/game/smuggler-no-field';
 import { quoteRicheseHomeworldForces, quoteRicheseHomeworldPair } from '@/game/richese-homeworld-shipment';
 import { RicheseHomeworldForces } from './richese-homeworld-forces';
@@ -58,7 +59,7 @@ export function NoFieldBoardMarkers({
 }) {
   return players.flatMap((player) => {
     const marker = player.noField?.deployed;
-    if (!marker) return [];
+    if (!marker || !isBoardNoFieldLocation(marker.location)) return [];
     const t = territory(marker.location.territory);
     const label = `${player.name}: concealed No-Field in ${t.name}, sector ${marker.location.sector}. Counts as one force until revealed.`;
     return [
@@ -135,6 +136,10 @@ export function RicheseNoFieldControls({
     ) ?? available.find((token) => token.id !== pairConcealed?.id);
   const nexus = game.nexusRicheseCunning;
   const deployed = state.deployed;
+  const deployedHomeworldId = deployed && isHomeworldNoFieldLocation(deployed.location)
+    ? deployed.location.homeworld : null;
+  const deployedHomeworld = game.homeworlds?.worlds?.find(world => world.id === deployedHomeworldId);
+  const deployedHomeworldName = HOMEWORLD_CARDS.find(card => card.id === deployedHomeworld?.card)?.name ?? 'a Homeworld';
   const selectedTerritory = territory(destination);
   const rate = {
     faction: me.faction,
@@ -225,7 +230,7 @@ export function RicheseNoFieldControls({
               <strong>No-Field {token.value}</strong>
               <span className="block text-sm">
                 {deployed?.tokenId === token.id
-                  ? 'Concealed on the board'
+                  ? 'Concealed in play'
                   : state.lastShipped === token.id
                     ? 'Last used · cannot repeat'
                     : 'Available'}
@@ -235,11 +240,14 @@ export function RicheseNoFieldControls({
         </ul>
         {deployed && (
           <>
-            <p>
+            {isBoardNoFieldLocation(deployed.location) ? <p>
               Concealed at {territory(deployed.location.territory).name}, sector{' '}
               {deployed.location.sector}. Use the movement controls to move the
               marker alone or with physical forces from that territory.
-            </p>
+            </p> : <p>
+              Concealed at {deployedHomeworldName}.
+              The marker counts as one force until it is revealed.
+            </p>}
             <Button
               className="min-h-11 whitespace-normal"
               disabled={busy || !info.canReveal}

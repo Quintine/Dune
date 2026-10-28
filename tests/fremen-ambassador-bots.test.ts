@@ -218,6 +218,7 @@ for (const level of DIFFICULTIES) {
     assert.deepEqual(done.players[2].forces, {});
     assert.equal(done.players[2].reserves, 20);
     assert.deepEqual(done.players[2].noField!.tokens, p.noField.tokens);
+    assert.ok('territory' in done.players[2].noField!.deployed!.location);
     assert.equal(
       done.players[2].noField!.deployed!.location.territory,
       a.territory,

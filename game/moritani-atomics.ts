@@ -2,6 +2,7 @@ import { TERRITORIES, splitLocation, validLocation } from './board';
 import type { Player } from './engine';
 import type { TerrorToken } from './moritani-terror';
 import { TERROR_STRONGHOLDS } from './moritani-terror';
+import { isBoardNoFieldLocation } from './richese-no-field';
 
 /** The sole Aftermath piece and the ally affected at activation belong in saved Game state. */
 export type AtomicsAftermath = Readonly<{
@@ -78,7 +79,8 @@ export function quoteMoritaniAtomics(input: {
     let total = 0, eliteTotal = 0;
     // The engine materializes any caught No-Field in a detached forecast before
     // quoting this physical effect. The pure calculator never invents counters.
-    requireAtomics(p.noField?.deployed?.location.territory !== token.location,
+    const marker = p.noField?.deployed?.location;
+    requireAtomics(!marker || !isBoardNoFieldLocation(marker) || marker.territory !== token.location,
       'Atomics with a concealed No-Field awaits its reveal and casualty rules.');
     for (const key of new Set([...Object.keys(p.forces),
       ...Object.keys(p.elites?.forces ?? {})])) {

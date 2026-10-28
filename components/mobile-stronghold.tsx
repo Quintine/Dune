@@ -13,6 +13,7 @@ import {
 import type { Action, GameView } from '@/game/engine';
 import { quoteSandmasterStronghold } from '@/game/sandmaster-movement';
 import { mobileStrongholdCollectionCapacity } from '@/game/mobile-stronghold-collection';
+import { isBoardNoFieldLocation } from '@/game/richese-no-field';
 const label = (key: string) => {
   const loc = splitLocation(key);
   return `${territory(loc.territory).name}${loc.sector ? ` · sector ${loc.sector}` : ''}`;
@@ -56,7 +57,12 @@ export function MobileStronghold({
         return chosen === false ? [] : [typeof chosen === 'string' && keys.includes(chosen) ? chosen : keys[0]];
       }) : [];
   const remaining: Record<string, number> = {};
-  const capacity = mobileStrongholdCollectionCapacity(g.players);
+  const capacity = mobileStrongholdCollectionCapacity(g.players.map(player => {
+    const marker = player.noField?.deployed;
+    return { ...player, noField: marker && isBoardNoFieldLocation(marker.location)
+      ? { deployed: { controller: marker.controller, location: marker.location } }
+      : null };
+  }));
   const collections = route.map((key, index) => {
     const before = remaining[key] ?? Math.max(0, (g.spice[key] ?? 0) - Number(skillPiles.includes(key)));
     const maximum = Math.min(before, capacity);

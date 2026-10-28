@@ -234,6 +234,7 @@ void test('storm only affects the hit sector and preserves a marker in another s
   g = applyAction(g, 'a', { type: 'ready' });
   assert.equal(g.players[0].tanks, 2);
   assert.equal(g.players[0].reserves, 18);
+  assert.ok('territory' in g.players[0].noField!.deployed!.location);
   assert.equal(g.players[0].noField!.deployed!.location.sector, safe);
   let sheltered = marker(fixture(), 3, 'imperial_basin', 10);
   sheltered.phase = 0;
@@ -332,6 +333,7 @@ void test('simultaneous entry reactions fail atomically and stale CHOAM continua
     sector: 10,
   });
   assert.equal(moving.decision?.kind, 'choamMovement');
+  assert.ok('territory' in moving.players[0].noField!.deployed!.location);
   assert.equal(
     moving.players[0].noField!.deployed!.location.territory,
     'imperial_basin',
@@ -341,6 +343,7 @@ void test('simultaneous entry reactions fail atomically and stale CHOAM continua
   const result = applyAction(moving, 'a', { type: 'decision', decline: true });
   assert.equal(result.pendingChoamMove, null);
   assert.equal(result.decision, null);
+  assert.ok('territory' in result.players[0].noField!.deployed!.location);
   assert.equal(
     result.players[0].noField!.deployed!.location.territory,
     'imperial_basin',

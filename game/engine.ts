@@ -185,7 +185,7 @@ import { CHOAM_NEXUS_EFFECTS, createNexusChoam, validateNexusChoam, type NexusCh
 import { createTraitorDeclaration, validateTraitorDeclarations, type TraitorDeclaration, type TraitorDeclarationContext } from './traitor-declarations';
 import { createNexusCards, validateNexusCards, drawNexusCard, replaceNexusCard, discardNexusCard, projectNexusCards, nexusCardMode, type NexusState } from './nexus-cards';
 import { createNexusCardPhase, markNexusCardOccurred, validateNexusCardPhase, closeNexusCardPhase, nexusCardChoices, finishNexusCardChoice, type NexusCardPhase, type NexusCardChoice } from './nexus-card-phase';
-import { createHomeworldOccupationHistory, observeHomeworldOccupation, validateHomeworldOccupationHistory, tupileOccupationStatus, type HomeworldOccupationHistory } from './homeworld-occupation-history';
+import { createHomeworldOccupationHistory, observeHomeworldOccupation, validateHomeworldOccupationHistory, homeworldOccupationMarker, tupileOccupationStatus, type HomeworldOccupationHistory } from './homeworld-occupation-history';
 import { tupileIntelligenceTargets, quoteTupileIntelligenceRequest, type TupileIntelligenceCategory } from './tupile-intelligence';
 import { quoteTupileIntelligenceAnswer } from './tupile-intelligence-answer';
 import { createTupileIntelligenceState, appendTupileIntelligenceObservation, validateTupileIntelligenceState, type TupileIntelligenceState } from './tupile-intelligence-state';
@@ -274,6 +274,7 @@ import {
 import {
   createHomeworldCustody,
   HomeworldCustodyError,
+  quoteHomeworldCustody,
   type HomeworldCustody,
 } from './homeworld-custody';
 import {
@@ -546,6 +547,7 @@ import {
   type RicheseGiftIntent,
 } from './richese-gift';
 import { richeseCards, richeseCardDefinition } from './richese-cards';
+import { quoteRicheseHomeworldMarkerShipment } from './richese-homeworld-marker-shipment';
 import {
   createRicheseNoField,
   deployRicheseNoField,
@@ -556,6 +558,8 @@ import {
   recallRicheseNoField,
   shipAlliedRicheseNoField,
   projectRicheseNoField,
+  isHomeworldNoFieldLocation,
+  isBoardNoFieldLocation,
   type RicheseNoField,
   type NoFieldRevealCause,
 } from './richese-no-field';
@@ -1223,7 +1227,7 @@ export type ResponseWindow = {
   occupiedPayment?: { event: string; contributions: { payer: string; amount: number }[] };
   /** Bank-paid portion of a frozen Homeworld charity claim. */
   charityHomeworld?: number;
-  source?: 'ambassador' | 'ambassadorRevival' | 'ambassadorNoField' | 'ambassadorNoFieldIncome';
+  source?: 'ambassador' | 'ambassadorRevival' | 'ambassadorNoField' | 'ambassadorNoFieldIncome' | 'homeworldNoField';
   intent?: string;
   advisors?: boolean;
   /** Saved exact ordinary Guild-rate response; not the independent Karama rate. */
@@ -1325,6 +1329,8 @@ type RichesePreCostDeclaration = { round: string; lot: string } & (
   | { kind: 'special'; intent: Extract<SpecialKaramaIntent, { kind: 'richese' }> }
 );
 type PendingHomeworldShipment = HomeworldShipmentIntent & {
+  /** The selected physical marker and its original private inventory event. */
+  noField?: { tokenId: string; event: string };
   guildSecretEvent?: string;
   guildNexusEvent?: string;
   guildRateEvent?: string;
@@ -4715,7 +4721,12 @@ function revealPlayerNoField(g: Game, p: Player, cause: NoFieldRevealCause) {
     p.faction === 'richese' && p.noField?.deployed,
     'No concealed No-Field is deployed.',
   );
-  requireRule(validGameLocation(g, p.noField!.deployed!.location.territory, p.noField!.deployed!.location.sector),
+  const deployedLocation = p.noField.deployed.location;
+  if (isHomeworldNoFieldLocation(deployedLocation)) {
+    requireRule(g.homeworlds?.custody &&
+      homeworldForceGroups(homeworldContext(g), g.homeworlds.custody).some(world => world.id === deployedLocation.homeworld),
+    'A No-Field can reveal only on an active Homeworld.');
+  } else requireRule(validGameLocation(g, deployedLocation.territory, deployedLocation.sector),
     'A No-Field can reveal only in a current board location.');
   const result = noFieldRule(() =>
     revealRicheseNoField(p.noField!, {
@@ -4734,19 +4745,35 @@ function revealPlayerNoField(g: Game, p: Player, cause: NoFieldRevealCause) {
     cohort?.noField?.tokenId === p.noField!.deployed!.tokenId &&
     cohort.noField.event === p.noFieldEvent
   ) {
+    requireRule(isBoardNoFieldLocation(result.location), 'A Homeworld No-Field cannot belong to a board movement cohort.');
     const key = location(result.location.territory, result.location.sector);
     cohort.forces[key] = (cohort.forces[key] ?? 0) + result.forces;
     delete cohort.noField;
   }
   p.noField = result.state;
   p.noFieldEvent = crypto.randomUUID();
-  p.reserves -= result.forces;
-  if (result.forces)
-    place(p, result.location.territory, result.location.sector, result.forces);
+  if (isHomeworldNoFieldLocation(result.location)) {
+    const destination = result.location.homeworld;
+    if (result.forces) {
+      const transfer = homeworldRule(() => quoteHomeworldCustody(homeworldContext(g), g.homeworlds!.custody!, [
+        { homeworld: 'homeworld:richese', player: p.id, withdraw: { normal: result.forces, elite: 0 }, deposit: { normal: 0, elite: 0 } },
+        { homeworld: destination, player: p.id, withdraw: { normal: 0, elite: 0 }, deposit: { normal: result.forces, elite: 0 } },
+      ]));
+      g.homeworlds!.custody = transfer.state;
+      for (const seat of transfer.players) {
+        const owner = getPlayer(g, seat.id);
+        owner.reserves = seat.reserves;
+        if (owner.elites) owner.elites.reserves = seat.eliteReserves;
+      }
+    }
+  } else {
+    p.reserves -= result.forces;
+    if (result.forces) place(p, result.location.territory, result.location.sector, result.forces);
+  }
   observeOccupation(g);
   log(
     g,
-    `${p.name} revealed the ${result.value} No-Field in ${territory(result.location.territory).name} (${cause === 'alliedSeparation' ? 'allied separation' : cause === 'discoveryBlow' ? 'Discovery spice blow; provisional destructive reveal' : cause}) and placed ${result.forces} physical forces from reserves.${result.forces < result.value ? ' Only the remaining reserves could be placed.' : ''}`,
+    `${p.name} revealed the ${result.value} No-Field in ${isHomeworldNoFieldLocation(result.location) ? combatLocationName(g, result.location.homeworld) : territory(result.location.territory).name} (${cause === 'alliedSeparation' ? 'allied separation' : cause === 'discoveryBlow' ? 'Discovery spice blow; provisional destructive reveal' : cause}) and placed ${result.forces} physical forces from reserves.${result.forces < result.value ? ' Only the remaining reserves could be placed.' : ''}`,
     { faction: 'richese', name: 'No-Field revealed' },
   );
   return result;
@@ -5546,10 +5573,10 @@ function currentAtomicsQuote(
   requireRule(terrorEntryLocationAllowed(g,entry), 'Atomics lost its original physical placement source.');
   // Provisional explosion composition: quote the same capped physical reveal
   // that allowance will perform. Forecasts never change or expose a live marker.
-  const forecast = g.players.some(player => player.noField?.deployed?.location.territory === entry.territory)
+  const forecast = g.players.some(player => noFieldAtCombatLocation(player,entry.territory))
     ? structuredClone(g) : g;
   if (forecast !== g) for (const player of forecast.players)
-    if (player.noField?.deployed?.location.territory === entry.territory)
+    if (noFieldAtCombatLocation(player,entry.territory))
       revealPlayerNoField(forecast, player, 'atomics');
   return atomicsRule(() => quoteMoritaniAtomics({
     token, territory: entry.territory, moritaniId: byFaction(g, 'moritani')!.id,
@@ -5567,7 +5594,7 @@ function resolveAtomics(
   quote: AtomicsQuote,
 ) {
   for (const player of g.players)
-    if (player.noField?.deployed?.location.territory === entry.territory)
+    if (noFieldAtCombatLocation(player,entry.territory))
       revealPlayerNoField(g, player, 'atomics');
   g.moritaniAtomics = quote.aftermath;
   for (const casualty of quote.casualties) {
@@ -8694,8 +8721,8 @@ function treacheryDiscardIntegrity(g: Game) {
             m.total - (m.noField ? 1 : 0) &&
           (owner.elites?.forces[location(m.to, m.sector)] ?? 0) >= m.elite &&
           (!m.noField ||
-            (owner.noField?.deployed?.location.territory === m.to &&
-              owner.noField.deployed.location.sector === m.sector)),
+            (boardNoFieldLocation(owner)?.territory === m.to &&
+              boardNoFieldLocation(owner)?.sector === m.sector)),
         'The retired Ornithopter arrival differs from its committed movement.',
       );
     } else
@@ -10302,6 +10329,14 @@ function settleHomeworldExplosion(g: Game, choice: HomeworldForces, automatic: b
   g.homeworldBattleLoss = null;
   finishBattle(g);
 }
+function boardNoFieldLocation(p: Player) {
+  const loc = p.noField?.deployed?.location;
+  return loc && isBoardNoFieldLocation(loc) ? loc : null;
+}
+function noFieldAtCombatLocation(p: Player, id: string): boolean {
+  const loc = p.noField?.deployed?.location;
+  return !!loc && (isHomeworldNoFieldLocation(loc) ? loc.homeworld === id : loc.territory === id);
+}
 function killTerritory(
   g: Game,
   p: Player,
@@ -10312,10 +10347,14 @@ function killTerritory(
 ) {
   if (t.startsWith('homeworld:')) {
     requireRule(battle && n === Infinity, 'Homeworld force removal requires an exact combat casualty allocation.');
+    if (noFieldAtCombatLocation(p,t)) {
+      requireRule(noFieldCause, 'This removal of a concealed No-Field awaits its specific reveal and casualty rules.');
+      revealPlayerNoField(g,p,noFieldCause);
+    }
     commitHomeworldLoss(g, p.id, t, combatArmy(g, p.id, t));
     return;
   }
-  if (p.noField?.deployed?.location.territory === t) {
+  if (noFieldAtCombatLocation(p,t)) {
     requireRule(
       noFieldCause,
       'This removal of a concealed No-Field awaits its specific reveal and casualty rules.',
@@ -10333,7 +10372,7 @@ function killTerritory(
  * before requesting a pool. Actual reveal remains the native component action. */
 function prospectiveNoFieldForces(p: Player, territory: string): number {
   const marker = p.noField?.deployed;
-  return marker?.location.territory === territory
+  return marker && noFieldAtCombatLocation(p,territory)
     ? Math.min(p.reserves, p.noField!.tokens.find(token => token.id === marker.tokenId)!.value)
     : 0;
 }
@@ -10379,7 +10418,7 @@ function occupyArmiesConnected(g: Game, ecaz: Player, ally: Player, t: string): 
     for (const y in ally.forces)
       if (ally.forces[y] > 0 && splitLocation(y).territory === t &&
         gameDistance(g, x, y, key => splitLocation(key).sector === g.storm) === 0) return true;
-    if (marker?.location.territory === t &&
+    if (marker && isBoardNoFieldLocation(marker.location) && marker.location.territory === t &&
       gameDistance(g, x, location(t, marker.location.sector), key => splitLocation(key).sector === g.storm) === 0) return true;
   }
   return false;
@@ -10395,7 +10434,7 @@ function battleNoFieldPlan(g: Game, id: string): boolean {
 }
 function battleConcealedForces(g: Game, id: string): boolean {
   const b = g.battle;
-  return !!b && getPlayer(g, battlePhysicalForceOwner(g, id)).noField?.deployed?.location.territory === b.territory;
+  return !!b && noFieldAtCombatLocation(getPlayer(g, battlePhysicalForceOwner(g, id)),b.territory);
 }
 function ecazBattleProfile(g: Game): EcazOccupyBattleProfile | null {
   const b = g.battle, occupy = b?.ecazOccupy;
@@ -13421,7 +13460,7 @@ function continueStorm(g: Game) {
           returnAmbassadorsIn(g, city, 'the storm crossed the exposed city');
     for (const p of g.players) {
       const marker = p.noField?.deployed?.location;
-      if (marker && marker.sector === s) {
+      if (marker && isBoardNoFieldLocation(marker) && marker.sector === s) {
         const t = territory(marker.territory);
         if (
           stormExposesTerritory(t.id, g.shieldWallDestroyed)
@@ -13895,8 +13934,8 @@ function discoveryEntryIntegrity(g: Game) {
       (owner.elites?.forces[key] ?? 0) === arrival.destinationEliteBefore + arrival.elite,
       'The Discovery arrival has lost its transferred ordinary or elite force custody.');
     if (marker) requireRule(owner.faction === 'richese' && owner.noField?.deployed?.tokenId === marker.tokenId &&
-      owner.noField.deployed.controller === owner.id && owner.noField.deployed.location.territory === arrival.destination &&
-      owner.noField.deployed.location.sector === 0 && !!owner.noFieldEvent && owner.noFieldEvent !== marker.event,
+      owner.noField.deployed.controller === owner.id && boardNoFieldLocation(owner)?.territory === arrival.destination &&
+      boardNoFieldLocation(owner)?.sector === 0 && !!owner.noFieldEvent && owner.noFieldEvent !== marker.event,
       'The Discovery arrival has lost its transferred concealed No-Field.');
   }
   const automatic = g.pendingAutomaticAdvisorRelocation;
@@ -13964,7 +14003,8 @@ function decideDiscoveryEntry(g: Game, p: Player, action: Action) {
     return;
   }
   const marker = action.noField === undefined && action.noFieldEvent === undefined ? undefined : (() => {
-    requireRule(p.noField?.deployed, 'Choose your currently deployed concealed No-Field.');
+    requireRule(p.noField?.deployed && isBoardNoFieldLocation(p.noField.deployed.location),
+      'Choose your currently deployed Arrakis No-Field.');
     return {tokenId:stringField(action.noField),event:stringField(action.noFieldEvent),
       source:location(p.noField.deployed.location.territory,p.noField.deployed.location.sector)};
   })();
@@ -18060,7 +18100,7 @@ function reinforcementsPreview(g: Game, p: Player) {
   return { blocked, normal, elite,
     ...(!blocked && g.homeworlds?.custody ? { homeworldSources: homeworldRule(() =>
       reinforcementsHomeworldSources(homeworldContext(g), g.homeworlds!.custody!, p.id)) } : {}),
-    ...(p.noField?.deployed?.location.territory === battle.territory
+    ...(noFieldAtCombatLocation(p,battle.territory)
       ? { noField: { materializes, reservesAfterReveal } } : {}) };
 }
 
@@ -18338,6 +18378,13 @@ function choamSaleCancellationQuote(g: Game, response: ResponseWindow) {
 }
 function noFieldCancellationQuote(g: Game, response: ResponseWindow) {
   if (response.kind !== 'richeseNoField') return null;
+  if (response.source === 'homeworldNoField') {
+    const shipment = g.pendingHomeworldShipment;
+    requireRule(shipment?.noField && shipment.player === response.owner,
+      'The Homeworld No-Field response lost its original shipment.');
+    validateHomeworldShipment(g, shipment);
+    return {kind:'own' as const,player:shipment.player,blockedTurn:g.turn,pendingShipment:null};
+  }
   if (response.source === 'ambassadorNoField') {
     const shipment = validateAmbassadorMarkerResponse(g,response);
     return {kind:'own' as const,player:shipment.ambassadorMarker!.owner,blockedTurn:g.turn,pendingShipment:null};
@@ -19606,6 +19653,7 @@ function forceGroup(g: Game, p: Player, action: Action, maxOrigins = 1) {
     requireRule(
       p.faction === 'richese' &&
         marker &&
+        isBoardNoFieldLocation(marker.location) &&
         marker.tokenId === action.noField &&
         p.noFieldEvent === action.event,
       'This concealed No-Field movement selection is stale.',
@@ -22367,7 +22415,7 @@ function groundMovementCompletionAtMovement(game: Game, actor: string, promises:
       // the actual declaration still validates exact speed/groups/custody.
       const marker = player.faction === 'richese' ? player.noField?.deployed : null;
       const sources = [...Object.keys(player.forces).filter(key => player.forces[key] > 0),
-        ...(marker ? [location(marker.location.territory, marker.location.sector)] : [])];
+        ...(marker && isBoardNoFieldLocation(marker.location) ? [location(marker.location.territory, marker.location.sector)] : [])];
       return sources.some(key => splitLocation(key).territory === origin &&
         gameDistance(state, key, location(destination, sector), point => pathBlocked(state, player, point, isAdvisor(player, origin))) <= Math.max(3, movementRange(state, player, 1)));
     },
@@ -22802,7 +22850,7 @@ function commitGroundMovementPieces(g: Game, move: MovementOrder) {
         pools.elites,
         Object.fromEntries(group),
         eliteGroup,
-        marker && p.noFieldEvent
+        marker && isBoardNoFieldLocation(marker.location) && p.noFieldEvent
           ? {
               tokenId: marker.tokenId,
               event: p.noFieldEvent,
@@ -22955,7 +23003,7 @@ function alliedSeparationView(g: Game, p: Player): {territories: string[]; noFie
   const territories = places.map(id => territory(id).name);
   const marker = p.noField?.deployed;
   return territories.length ? {territories,
-    ...(marker?.controller === p.id && places.includes(marker.location.territory) ? {noField:true as const} : {})} : null;
+    ...(marker?.controller === p.id && isBoardNoFieldLocation(marker.location) && places.includes(marker.location.territory) ? {noField:true as const} : {})} : null;
 }
 
 function basicAlliedShipmentView(g: Game, p: Player) {
@@ -28880,7 +28928,7 @@ function observeOccupation(g: Game, cause: 'change' | 'turnStart' | 'turnEnd' = 
     g.homeworldOccupationHistory!, homeworldContext(g), g.homeworlds!.custody!, g.turn, cause,
     cause === 'change'
       ? `homeworld-change-${g.homeworldOccupationHistory!.sources[0].event}-${g.homeworldOccupationHistory!.sources.length}`
-      : `homeworld-turn-${g.turn}-${cause}`));
+      : `homeworld-turn-${g.turn}-${cause}`, homeworldOccupationMarker(g.players)));
   syncTupileSlots(g);
 }
 /** A new Duke grant may precede the first sealed plan, but never changes a
@@ -29661,7 +29709,7 @@ function harassWithdrawContext(g: Game, p: Player): HarassWithdrawContext {
   const materializes = prospectiveNoFieldForces(p, b.territory);
   if (materializes) {
     const marker = p.noField!.deployed!;
-    const key = location(marker.location.territory, marker.location.sector);
+    const key = isHomeworldNoFieldLocation(marker.location) ? marker.location.homeworld : location(marker.location.territory, marker.location.sector);
     if (locations[key]) locations[key].normal += materializes;
     else locations[key] = { normal: materializes, elite: 0 };
   }
@@ -29702,7 +29750,7 @@ function harassWithdrawPreview(g: Game, p: Player): HarassWithdrawPreview | null
   const materializes = prospectiveNoFieldForces(p, b.territory);
   return { ...context, card: HARASS_WITHDRAW_CARD, allowAllocation: b.harassAllocationVersion === 1,
     blocked: context.blocked ?? (b.revealed || b.plans[p.id] ? 'Your Battle Plan is already sealed.' : null),
-    ...(p.noField?.deployed?.location.territory === b.territory
+    ...(noFieldAtCombatLocation(p,b.territory)
       ? { noField: { materializes, reservesAfterReveal: p.reserves - materializes } } : {}) };
 }
 function validateResidualPoison(
@@ -30003,7 +30051,7 @@ function stonePublicPools(
   const b = g.battle!, t = b.territory, occupy = b.ecazOccupy;
   const owner = occupy?.lead === p.id && !occupy.canceled ? getPlayer(g, occupy.ally) : p;
   const enemy = occupy?.lead === opponent.id && !occupy.canceled ? getPlayer(g, occupy.ally) : opponent;
-  const hiddenMarker = owner.noField?.deployed?.location.territory === t;
+  const hiddenMarker = noFieldAtCombatLocation(owner,t);
   const pool = combatForces(g, hiddenMarker ? { ...owner, noField: undefined } : owner, t, enemy);
   return hiddenMarker
     ? Array.from({ length: 6 }, (_, n) => ({
@@ -32434,7 +32482,7 @@ function currentBattleResolutionInput(g: Game, canceledVoter?: string): BattleRe
       faction: p.faction,
       ally: p.ally,
       noFieldAtTerritory:
-        p.noField?.deployed?.location.territory === b.territory,
+        noFieldAtCombatLocation(p,b.territory),
     })),
     physicalCards: physicalTreacheryCards(g),
     pendingAuditorPresent: !!g.pendingAuditor,
@@ -32529,7 +32577,7 @@ function diplomatRetreatOffer(g: Game, quote: BattleResolutionQuote) {
   const leader = controlledLeaders(g, p).find(candidate => candidate.id === plan.leader && !candidate.dead);
   if (!leader || (player === b.attacker ? quote.leaderDeaths.attacker : quote.leaderDeaths.defender) ||
       !battleLeaderSkills(g, p).some(skill => skill.skill === 'diplomat' && skill.leader === leader.id &&
-        (!skill.faceUp || skill.captured)) || p.noField?.deployed?.location.territory === b.territory) return null;
+        (!skill.faceUp || skill.captured)) || noFieldAtCombatLocation(p,b.territory)) return null;
   const opponent = getPlayer(g, quote.winner);
   const forces = combatForces(g, p, b.territory, opponent);
   const occupy = ecazBattleProfile(g);
@@ -35819,6 +35867,23 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
     g.decision = resume.decision;
     g.pendingKarama = resume.pendingKarama;
     g.phaseOpening = resume.phaseOpening;
+  } else if (response.kind === 'richeseNoField' && response.source === 'homeworldNoField') {
+    const shipment = g.pendingHomeworldShipment;
+    requireRule(shipment?.noField && shipment.player === response.owner,
+      'The Homeworld No-Field response lost its original shipment.');
+    validateHomeworldShipment(g, shipment);
+    g.pendingHomeworldShipment = null;
+    if (canceled) {
+      getPlayer(g,shipment.player).noFieldBlockedTurn = g.turn;
+      log(g, 'Karama prevented this Homeworld No-Field shipment. No spice, forces or token history changed; an ordinary shipment remains available.');
+    } else {
+      const guild = byFaction(g, 'guild');
+      if (g.advanced && guild && !guild.specialKaramaUsed) {
+        g.pendingHomeworldShipment = shipment;
+        g.decision = {kind:'homeworldShipmentGuild',player:guild.id,shipper:shipment.player,
+          destination:shipment.destination,amount:shipment.amount,event:shipment.event};
+      } else continueHomeworldShipment(g,shipment);
+    }
   } else if (response.kind === 'richeseNoField' && response.source === 'ambassadorNoField') {
     const shipment = validateAmbassadorMarkerResponse(g,response), entry = g.pendingAmbassador!;
     g.pendingShipment = null;
@@ -36862,7 +36927,7 @@ function finishResponse(g: Game, canceled: boolean, settlement?: BureaucratSettl
 }
 function homeworldAllianceReason(g: Game, first: string, second: string) {
   return g.homeworlds?.custody
-    ? homeworldRule(() => homeworldAllianceBlock(homeworldContext(g), g.homeworlds!.custody!, first, second)) : null;
+    ? homeworldRule(() => homeworldAllianceBlock(homeworldContext(g), g.homeworlds!.custody!, first, second, homeworldOccupationMarker(g.players))) : null;
 }
 function homeworldShipmentAutomatic(g: Game): boolean {
   const decision = g.decision;
@@ -37056,7 +37121,7 @@ function performJunctionTransport(g: Game, p: Player, action: Action) {
     contribution(g, p, quote.quote.cost, action.allyPayment);
   if(!openAdvisorTransportMatching(g,{kind:'junction',declaration}))commitJunctionTransport(g,p,declaration);
 }
-function homeworldShipmentQuote(g: Game, intent: HomeworldShipmentIntent & {route?: 'arrakis';guildSecretEvent?:string}) {
+function homeworldShipmentQuote(g: Game, intent: HomeworldShipmentIntent & {route?: 'arrakis';guildSecretEvent?:string;noField?:{tokenId:string;event:string}}) {
   requireRule(g.homeworlds?.custody, 'Homeworld shipment requires saved physical custody.');
   requireRule(!intent.guildSecretEvent || g.karamaShipping?.player !== intent.player,
     'Choose the purchased Karama price or Guild Secret Ally, not both.');
@@ -37069,6 +37134,20 @@ function homeworldShipmentQuote(g: Game, intent: HomeworldShipmentIntent & {rout
     purchasedGuildRate: g.karamaShipping?.player === intent.player,
     players: homeworldContext(g).players.map((seat) => ({...seat, ally: getPlayer(g, seat.id).ally})),
   };
+  if (intent.noField) {
+    const p = getPlayer(g, intent.player);
+    requireRule(!g.nexusCards && !g.leaderSkills && !g.discoveryEnabled && !g.discoveries &&
+      !g.techTokens && !g.strongholdCards,
+    'Homeworld No-Field shipment currently supports native Homeworld play without optional modules.');
+    requireRule(!intent.route && !intent.guildSecretEvent && intent.sources && typeof intent.sources === 'object' &&
+      !Array.isArray(intent.sources) && Object.keys(intent.sources).length === 0 &&
+      p.noField && p.noFieldEvent === intent.noField.event && p.noFieldBlockedTurn !== g.turn,
+    'The original concealed Homeworld shipment is no longer available.');
+    const marker = homeworldRule(() => quoteRicheseHomeworldMarkerShipment(context, g.homeworlds!.custody!,
+      {player:intent.player,destination:intent.destination,tokenId:intent.noField!.tokenId},p.noField!));
+    return {...marker, state:g.homeworlds.custody, players:context.players, sources:[],
+      boardForces:undefined,boardEliteForces:undefined,sourceNames:[combatLocationName(g,marker.source)]};
+  }
   const order = {player: intent.player, destination: intent.destination, sources: intent.sources};
   if (intent.route === 'arrakis') {
     const quote = homeworldRule(() => quoteGuildHomeworldShipment({...context, storm: g.storm, discoveries:g.discoveries,
@@ -37108,6 +37187,14 @@ function homeworldShipmentIntegrity(g: Game) {
   const decisions = homeworldSavedDecisions(g).filter((d) => d.kind === 'homeworldShipmentGuild');
   const shipment = g.pendingHomeworldShipment;
   if (!shipment && !decisions.length) return;
+  const markerResponses = shipment?.noField
+    ? savedNoFieldResponses(g).filter(response => response.kind === 'richeseNoField' && response.source === 'homeworldNoField') : [];
+  if (shipment?.noField && markerResponses.length) {
+    requireRule(!decisions.length && markerResponses.length === 1 && markerResponses[0].owner === shipment.player && !g.pendingShipment,
+      'The saved Homeworld No-Field declaration lost its original response.');
+    validateHomeworldShipment(g,shipment);
+    return;
+  }
   if (shipment?.guildTransportEvent) {
     const responses = savedNoFieldResponses(g).filter(response => response.kind === 'guildTransportPermission');
     requireRule(!decisions.length && responses.length === 1 && !g.pendingShipment,
@@ -37143,6 +37230,11 @@ function commitHomeworldShipment(g: Game, shipment: PendingHomeworldShipment, se
   payWithAlly(g, p, quote.cost, shipment.allyPayment);
   if (settlement?.recipient) getPlayer(g, settlement.recipient).spice += quote.cost;
   g.homeworlds!.custody = quote.state;
+  if (shipment.noField) {
+    requireRule('noField' in quote && quote.noField, 'The Homeworld shipment lost its physical No-Field.');
+    p.noField = quote.noField;
+    p.noFieldEvent = crypto.randomUUID();
+  }
   if (shipment.route === 'arrakis') {
     p.forces = quote.boardForces!;
     if (p.elites) p.elites.forces = quote.boardEliteForces!;
@@ -37174,16 +37266,22 @@ function commitHomeworldShipment(g: Game, shipment: PendingHomeworldShipment, se
     { own: false, ally: !purchasedRate && !!guild && p.ally !== guild.id });
   finishShipmentPromises(g, p, null);
   if (purchasedRate) g.karamaShipping = null;
-  log(g, `${p.name} shipped ${quote.amount} physical forces (${quote.elite} special) from ${quote.sourceNames.join(' and ')} to ${combatLocationName(g, shipment.destination)} for ${quote.cost} spice (${quote.cost - shipment.allyPayment} own, ${shipment.allyPayment} pledged). This uses their shipment; movement remains available.${shipment.guildSecretEvent ? ' Guild Secret Ally is spent for this half-price shipment; the payment goes to the bank.' : ''}`,
+  log(g, `${p.name} shipped ${shipment.noField ? 'one concealed No-Field' : `${quote.amount} physical forces (${quote.elite} special)`} from ${quote.sourceNames.join(' and ')} to ${combatLocationName(g, shipment.destination)} for ${quote.cost} spice (${quote.cost - shipment.allyPayment} own, ${shipment.allyPayment} pledged). This uses their shipment; movement remains available.${shipment.guildSecretEvent ? ' Guild Secret Ally is spent for this half-price shipment; the payment goes to the bank.' : ''}`,
     {faction: shipment.guildSecretEvent ? 'guild' : p.faction, name: shipment.guildSecretEvent ? 'Secret Ally Homeworld shipment' : 'Homeworld shipment'});
   if (heldConversion) openAutomaticAdvisorFlip(g);
 }
-function declareHomeworldShipment(g: Game, p: Player, intent: HomeworldShipmentIntent & {route?: 'arrakis';guildSecretEvent?:string}, allyPayment?: unknown) {
+function declareHomeworldShipment(g: Game, p: Player, intent: HomeworldShipmentIntent & {route?: 'arrakis';guildSecretEvent?:string;noField?:{tokenId:string;event:string}}, allyPayment?: unknown) {
   const quote = homeworldShipmentQuote(g, intent);
   const shipment: PendingHomeworldShipment = {...intent, ...(currentGuildCunning(g,p.id) ? {guildNexusEvent:currentGuildCunning(g,p.id)!.receipt.event} : {}), sources: structuredClone(intent.sources),
     event: homeworldShipmentEvent(g, p, intent.route), turn: g.turn, amount: quote.amount, elite: quote.elite,
     cost: quote.cost, allyPayment: contribution(g, p, quote.cost, allyPayment), pools: quote.sources};
   bindGuildCunningShipment(g,p,'homeworld',shipment);
+  if (shipment.noField) {
+    g.pendingHomeworldShipment = shipment;
+    g.response = {kind:'richeseNoField',source:'homeworldNoField',owner:p.id,passed:[]};
+    log(g, `${p.name} declared a concealed No-Field shipment to ${combatLocationName(g,intent.destination)}. Payment and placement await the response.`);
+    return;
+  }
   const guild = byFaction(g, 'guild');
   if (g.advanced && guild && !guild.specialKaramaUsed) {
     g.pendingHomeworldShipment = shipment;
@@ -37809,7 +37907,7 @@ function validateGuildTransportWindow(g: Game, response: ResponseWindow) {
       shipper.faction === 'richese' && !intent.fromReserves && !intent.advisors &&
       typeof marker.tokenId === 'string' && typeof marker.event === 'string' &&
       typeof marker.from === 'string' && deployed?.tokenId === marker.tokenId &&
-      deployed.controller === shipper.id && shipper.noFieldEvent === marker.event &&
+      deployed.controller === shipper.id && shipper.noFieldEvent === marker.event && isBoardNoFieldLocation(deployed.location) &&
       location(deployed.location.territory,deployed.location.sector) === marker.from &&
       deployed.location.territory === intent.origin) &&
     (intent.fromReserves
@@ -39176,12 +39274,14 @@ function gamontAvailable(
     return (
       !!marker &&
       p.noFieldEvent === noFieldEvent &&
+      isBoardNoFieldLocation(marker.location) &&
       location(marker.location.territory, marker.location.sector) === key &&
       elite === 0
     );
   }
   if (
     p.noField?.deployed &&
+    isBoardNoFieldLocation(p.noField.deployed.location) &&
     location(
       p.noField.deployed.location.territory,
       p.noField.deployed.location.sector,
@@ -39297,6 +39397,7 @@ function playChoamWorthless(g: Game, p: Player, action: Action, movementPreparat
     const marker = other.noField?.deployed;
     const concealed =
       !!marker &&
+      isBoardNoFieldLocation(marker.location) &&
       location(marker.location.territory, marker.location.sector) === key;
     requireRule(
       validGameLocation(g, loc.territory, loc.sector) &&
@@ -44392,11 +44493,22 @@ function applyActionInner(
     const route = t === 'guildHomeworldShip' ? 'arrakis' as const : undefined;
     const blocked = route ? guildHomeworldShipmentBlock(g, p) : homeworldShipmentBlock(g, p);
     requireRule(!blocked, blocked ?? 'Homeworld shipment is unavailable.');
-    requireRule(Object.keys(action).every((key) => ['type', 'event', 'destination', 'sources', 'allyPayment', ...(guildSecretEvent ? ['nexus'] : [])].includes(key)),
-      'Choose explicit typed source groups and a Homeworld destination without concealed tokens.');
+    requireRule(Object.keys(action).every((key) => ['type', 'event', 'destination', 'sources', 'allyPayment',
+      ...(guildSecretEvent ? ['nexus'] : []), ...(action.noField !== undefined ? ['noField','noFieldEvent'] : [])].includes(key)),
+      'Choose explicit typed source groups or a concealed No-Field and a Homeworld destination.');
     requireRule(action.event === homeworldShipmentEvent(g, p, route), 'This Homeworld source selection is stale.');
+    let noField: {tokenId:string;event:string} | undefined;
+    if (action.noField !== undefined) {
+      requireRule(t === 'homeworldShip' && !guildSecretEvent && !currentGuildCunning(g,id),
+        'This provisional No-Field route uses a native Homeworld shipment.');
+      const markerBlocked = noFieldShipBlock(g,p);
+      requireRule(!markerBlocked,markerBlocked ?? 'The No-Field shipment is unavailable.');
+      requireRule(action.noFieldEvent === p.noFieldEvent, 'This No-Field selection is stale.');
+      noField = {tokenId:stringField(action.noField),event:stringField(action.noFieldEvent)};
+    } else requireRule(action.noFieldEvent === undefined, 'Choose a physical No-Field for its inventory event.');
     declareHomeworldShipment(g, p, {player: id, destination: stringField(action.destination),
-      sources: action.sources as HomeworldShipmentIntent['sources'], ...(route ? {route} : {}), ...(guildSecretEvent ? {guildSecretEvent} : {})}, action.allyPayment);
+      sources: action.sources as HomeworldShipmentIntent['sources'], ...(route ? {route} : {}),
+      ...(guildSecretEvent ? {guildSecretEvent} : {}), ...(noField ? {noField} : {})}, action.allyPayment);
     return g;
   }
   if (t === 'ship') {
@@ -44812,15 +44924,14 @@ function applyActionInner(
       ally?.ally === ecaz.id && connected && !isAdvisor(ally, choice.territory) &&
       [choice.attacker, choice.defender].some(seat => seat === ecaz.id || seat === ally.id);
     const noFieldPlayers = g.players.filter(player =>
-      player.noField?.deployed?.location.territory === choice.territory &&
+      noFieldAtCombatLocation(player,choice.territory) &&
       (player.id === choice.attacker || player.id === choice.defender ||
         (combined && ecaz && player.id === ally?.id &&
           (choice.attacker === ecaz.id || choice.defender === ecaz.id)))).map(player => player.id);
     let mixedNoFieldPlayers: string[] | undefined;
     for (const playerId of noFieldPlayers) {
-      const mixed = Object.entries(getPlayer(g, playerId).forces).some(
-        ([key, n]) => n > 0 && splitLocation(key).territory === choice.territory,
-      );
+      const army = combatArmy(g,playerId,choice.territory);
+      const mixed = army.normal + army.elite > 0;
       if (!mixed) continue;
       requireRule(!combined || ecazOccupyCompositionSupported(g),
         'Combined mixed No-Field dialing requires an admitted native Occupy composition.');
@@ -45007,7 +45118,7 @@ function applyActionInner(
     if (b.plans[b.attacker] && b.plans[b.defender]) {
       for (const playerId of b.noFieldPlayers ?? []) {
         const owner = getPlayer(g, playerId);
-        if (owner.noField?.deployed?.location.territory === b.territory)
+        if (noFieldAtCombatLocation(owner,b.territory))
           revealPlayerNoField(g, owner, 'battle');
       }
       b.revealed = true;
@@ -46177,6 +46288,7 @@ export function viewGame(state: Game, id: string, now?: number) {
                     const marker = p.noField?.deployed;
                     const noField =
                       !!marker &&
+                      isBoardNoFieldLocation(marker.location) &&
                       location(
                         marker.location.territory,
                         marker.location.sector,

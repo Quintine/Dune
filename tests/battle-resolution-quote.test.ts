@@ -645,7 +645,8 @@ function normalize(g: Game): BattleResolutionInput {
       faction: p.faction,
       ally: p.ally,
       noFieldAtTerritory:
-        p.noField?.deployed?.location.territory === b.territory,
+        !!p.noField?.deployed && 'territory' in p.noField.deployed.location &&
+          p.noField.deployed.location.territory === b.territory,
     })),
     physicalCards: [
       ...g.deck,

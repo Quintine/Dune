@@ -6,6 +6,7 @@ import {
   type HomeworldCustody,
   type HomeworldCustodyContext,
 } from './homeworld-custody';
+import { isHomeworldNoFieldLocation, type NoFieldLocation } from './richese-no-field';
 
 type Cause = 'change' | 'turnStart' | 'turnEnd';
 type Source = {
@@ -34,7 +35,12 @@ export type HomeworldOccupationHistory = {
   qualifications: HomeworldOccupationQualification[];
   signature: string;
 };
-type Snapshot = [string, [string, number, number][]][];
+export type HomeworldOccupationGroups = [string, [string, number, number][]][];
+export type HomeworldOccupationMarker = { homeworld: string; controller: string };
+export type HomeworldOccupationSnapshot = {
+  groups: HomeworldOccupationGroups;
+  marker: HomeworldOccupationMarker | null;
+};
 const validText = (s: unknown): s is string =>
   typeof s === 'string' && s.trim().length > 0;
 const whole = (n: unknown): n is number =>
@@ -64,8 +70,9 @@ function seats(context: HomeworldCustodyContext): [string, FactionId][] {
 function sourceSnapshot(
   context: HomeworldCustodyContext,
   custody: HomeworldCustody,
+  marker?: HomeworldOccupationMarker | null,
 ): string {
-  const snapshot: Snapshot = homeworldForceGroups(context, custody).map(
+  const snapshot: HomeworldOccupationGroups = homeworldForceGroups(context, custody).map(
     (home) => [
       home.id,
       Object.entries(home.forces)
@@ -82,18 +89,51 @@ function sourceSnapshot(
     ],
   );
   snapshot.sort((a, b) => a[0].localeCompare(b[0]));
-  return JSON.stringify(snapshot);
+  if (!marker) return JSON.stringify(snapshot);
+  validateMarker(context, marker);
+  return JSON.stringify(['homeworldOccupationMarker', snapshot, marker.homeworld, marker.controller]);
 }
-function readSnapshot(
+function validateMarker(context: HomeworldCustodyContext, marker: HomeworldOccupationMarker): void {
+  requireHistory(keys(marker, ['homeworld', 'controller']) && validText(marker.homeworld) && validText(marker.controller),
+    'a public No-Field marker needs its original world and controller.');
+  const home = homeworldLocations(context).find(row => row.id === marker.homeworld);
+  const player = context.players.find(row => row.id === marker.controller);
+  requireHistory(home && player && player.faction === 'richese' && home.native !== player.id,
+    'a No-Field marker needs a seated Richese controller and an active foreign world.');
+}
+
+/** Extract only the public off-planet marker location. No token ID or hidden
+ * denomination becomes part of occupation history. */
+export function homeworldOccupationMarker(players: readonly {
+  id: string; faction: FactionId;
+  noField?: { deployed: { controller: string; location: NoFieldLocation } | null } | null;
+}[]): HomeworldOccupationMarker | null {
+  const owner = players.find(player => player.faction === 'richese');
+  if (!owner) return null;
+  const marker = owner.noField?.deployed;
+  if (!marker || !isHomeworldNoFieldLocation(marker.location)) return null;
+  requireHistory(marker.controller === owner.id, 'the Homeworld marker lost its native controller.');
+  return { homeworld: marker.location.homeworld, controller: marker.controller };
+}
+
+export function readHomeworldOccupationSnapshot(
   value: string,
   context: HomeworldCustodyContext,
-): Snapshot {
+): HomeworldOccupationSnapshot {
   requireHistory(typeof value === 'string', 'a source snapshot is missing.');
   let raw: unknown;
   try {
     raw = JSON.parse(value);
   } catch {
     requireHistory(false, 'a source snapshot is malformed.');
+  }
+  let marker: HomeworldOccupationMarker | null = null;
+  if (Array.isArray(raw) && raw[0] === 'homeworldOccupationMarker') {
+    requireHistory(raw.length === 4 && validText(raw[2]) && validText(raw[3]),
+      'a public No-Field source snapshot is malformed.');
+    marker = { homeworld: raw[2], controller: raw[3] };
+    validateMarker(context, marker);
+    raw = raw[1];
   }
   const homes = homeworldLocations(context);
   requireHistory(
@@ -158,10 +198,28 @@ function readSnapshot(
     }),
   };
   requireHistory(
-    sourceSnapshot(historical, custody) === value,
+    sourceSnapshot(historical, custody, marker) === value,
     'source armies are not canonical or physically valid.',
   );
-  return raw as Snapshot;
+  return { groups: raw as HomeworldOccupationGroups, marker };
+}
+
+/** Public occupiers are the union of positive physical groups and the single
+ * concealed marker. The marker never enters or changes a typed physical pool. */
+export function homeworldOccupationSnapshotPresence(snapshot: HomeworldOccupationSnapshot, world: string): string[] {
+  const row = snapshot.groups.find(([id]) => id === world);
+  requireHistory(row, 'a requested source world is missing.');
+  const present = row[1].filter(([, normal, elite]) => normal + elite > 0).map(([id]) => id);
+  if (snapshot.marker?.homeworld === world && !present.includes(snapshot.marker.controller)) {
+    present.push(snapshot.marker.controller);
+    present.sort((a, b) => a.localeCompare(b));
+  }
+  return present;
+}
+
+export function currentHomeworldOccupationSnapshot(context: HomeworldCustodyContext,
+  custody: HomeworldCustody, marker?: HomeworldOccupationMarker | null): HomeworldOccupationSnapshot {
+  return readHomeworldOccupationSnapshot(sourceSnapshot(context, custody, marker), context);
 }
 function sourceSignature(
   source: Omit<Source, 'signature'>,
@@ -189,22 +247,22 @@ function historySignature(history: HomeworldOccupationHistory): string {
 }
 function facts(
   source: Source,
-  snapshot: Snapshot,
+  snapshot: HomeworldOccupationSnapshot,
   context: HomeworldCustodyContext,
 ): HomeworldOccupationQualification[] {
   if (source.cause === 'setup') return [];
   const homes = homeworldLocations(context);
   const result: HomeworldOccupationQualification[] = [];
-  for (const [world, groups] of snapshot) {
+  for (const [world] of snapshot.groups) {
     const native = homes.find((home) => home.id === world)!.native;
-    const present = groups.filter(([, normal, elite]) => normal + elite > 0);
+    const present = homeworldOccupationSnapshotPresence(snapshot, world);
     const foreign =
       source.cause === 'change'
-        ? present.length === 1 && present[0][0] !== native
+        ? present.length === 1 && present[0] !== native
           ? present
           : []
-        : present.filter(([player]) => player !== native);
-    for (const [player] of foreign)
+        : present.filter((player) => player !== native);
+    for (const player of foreign)
       result.push({
         event: source.event,
         world,
@@ -258,7 +316,7 @@ export function validateHomeworldOccupationHistory(
     'source snapshots must be interned.',
   );
   const snapshots = history.snapshots.map((value) =>
-    readSnapshot(value, context),
+    readHomeworldOccupationSnapshot(value, context),
   );
   const events = new Set<string>(),
     used = new Set<number>(),
@@ -292,7 +350,7 @@ export function validateHomeworldOccupationHistory(
     if (index === 0) {
       const homes = homeworldLocations(context);
       requireHistory(
-        snapshots[source.snapshot].every(([world, groups]) =>
+        !snapshots[source.snapshot].marker && snapshots[source.snapshot].groups.every(([world, groups]) =>
           groups.every(
             ([player]) =>
               player === homes.find((home) => home.id === world)!.native,
@@ -368,6 +426,7 @@ export function observeHomeworldOccupation(
   turn: number,
   cause: Cause,
   event: string,
+  marker?: HomeworldOccupationMarker | null,
 ): HomeworldOccupationHistory {
   validateHomeworldOccupationHistory(history, context, turn);
   requireHistory(
@@ -377,7 +436,7 @@ export function observeHomeworldOccupation(
       ['change', 'turnStart', 'turnEnd'].includes(cause),
     'invalid observation event.',
   );
-  const snapshot = sourceSnapshot(context, custody);
+  const snapshot = sourceSnapshot(context, custody, marker);
   const prior = history.sources.find((source) => source.event === event);
   if (prior) {
     requireHistory(
@@ -409,7 +468,7 @@ export function observeHomeworldOccupation(
   source.signature = sourceSignature(source, snapshot);
   result.sources.push(source);
   const existing = new Set(result.qualifications.map(factKey));
-  for (const fact of facts(source, readSnapshot(snapshot, context), context)) {
+  for (const fact of facts(source, readHomeworldOccupationSnapshot(snapshot, context), context)) {
     if (!existing.has(factKey(fact))) {
       result.qualifications.push(fact);
       existing.add(factKey(fact));

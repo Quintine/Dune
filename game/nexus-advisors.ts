@@ -11,6 +11,7 @@ import {
   type BoardSeat,
 } from './board-resolution-quote';
 import { presenceAt } from './force-presence';
+import { isBoardNoFieldLocation } from './richese-no-field';
 import { territoryEntryBlock } from './occupancy';
 import { ecazOccupancyIdentity } from './ecaz-occupy';
 
@@ -109,7 +110,7 @@ function selection(player: BoardSeat, to: string): NexusAdvisorSelection {
     .map(([key, count]) => ({ location: key, count }));
   const marker = player.noField?.deployed?.location;
   const noField =
-    marker?.territory === to ? location(marker.territory, marker.sector) : null;
+    marker && isBoardNoFieldLocation(marker) && marker.territory === to ? location(marker.territory, marker.sector) : null;
   const count =
     locations.reduce((sum, group) => sum + group.count, 0) + (noField ? 1 : 0);
   return {

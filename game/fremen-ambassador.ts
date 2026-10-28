@@ -13,6 +13,7 @@ import { territoryEntryBlock } from './occupancy';
 import { ecazOccupancyRelation } from './ecaz-occupy';
 import { homeworldNoFieldMovementBlock } from './homeworld-mobility';
 import { sandmasterDestinationCollection } from './sandmaster-movement';
+import { isBoardNoFieldLocation } from './richese-no-field';
 
 export class FremenAmbassadorMoveError extends Error {
   constructor(message: string) {
@@ -122,7 +123,7 @@ function playerFor(g: Game, id: string) {
       );
     const marker = p.noField?.deployed;
     requireMove(
-      !marker ||
+      !marker || !isBoardNoFieldLocation(marker.location) ||
         usableLocation(
           g,
           location(marker.location.territory, marker.location.sector),
@@ -143,7 +144,7 @@ function playerFor(g: Game, id: string) {
 }
 function ownMarker(p: Player) {
   const marker = p.noField?.deployed;
-  if (!marker) return null;
+  if (!marker || !isBoardNoFieldLocation(marker.location)) return null;
   requireMove(
     p.faction === 'richese' &&
       marker.controller === p.id &&

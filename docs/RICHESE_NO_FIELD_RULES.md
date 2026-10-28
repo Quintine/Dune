@@ -2,6 +2,37 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Foreign Homeworld marker — 28 October 2026
+
+**Prototyped / Partial.** In supported native Homeworld games without optional
+modules, Richese may use its own shipment to place a face-down No-Field on a
+foreign non-allied Homeworld. It costs the one-force Homeworld price and uses
+the original Karama response, Advanced Guild stop and payment continuation.
+There is one deployed physical marker globally; a selected marker cannot be
+the last shipped. The marker's controller and location are public, its value
+and identity private. No reserve counter leaves until revelation. Occupation
+history records marker presence separately from typed physical forces and
+native population.
+
+Voluntary or battle revelation draws up to the printed value from actual
+Richese reserves into the foreign Homeworld's visitor custody. Zero remains
+a meaningful concealed presence until reveal. Basic and Advanced native lobby
+programmes cover each printed value, real battle continuation, Karama
+cancellation and the Advanced Guild stop. The owned source setup selects an
+undealt Karama but does not stage resources, phases or forces. An isolated
+authenticated Basic room also shipped the marker and confirmed the
+other player's view contains the location but not the private token IDs.
+Own-Homeworld
+placement, multiple markers, optional-module combinations, complete mode,
+browser and deployed acceptance remain open.
+
+The supplied Advanced revision distinguishes Homeworlds from territories
+(physical p. 21) and describes No-Field materialization in a territory
+(physical p. 36). It does not explicitly resolve this off-planet composition.
+The single-marker and foreign-Homeworld policy is therefore a provisional
+online interpretation, not a publisher clarification. Existing on-Arrakis
+records keep their original location shape.
+
 ## Free entry into a revealed Discovery location — 27 October 2026
 
 E3 printed12 and supplied Advanced physical23/printed21 grant a separate move
@@ -432,7 +463,7 @@ This table records the original adapter contract. The implemented subset and cur
 1. **Reserve shortage when destroyed.** Voluntary/battle text explicitly caps by reserves; the destruction sentence says to lose the indicated quantity without repeating the shortage clause. The pure model caps materialization to avoid creating physical units, but that is conservation-based composition for storm/worm losses, not an independently answered FAQ. It does not select substitute losses from unrelated board forces.
 2. **Mixed forces and battle dials.** The FAQ forbids dialing more than reserves in a No-Field battle. Existing ordinary counters are possible, but no retrieved specific answer defines the cap across those counters, multiple sectors, typed units or independent reserve uses. Basic/Advanced ordinary and the selected Advanced Occupy prototype use the explicitly provisional additive pool above. This does not settle that source question or admit Basic mixed coalition/module profiles.
 3. **Full-plan special Karama and structured Truthtrance.** The current prototype distinguishes supplied p27 F's special entire-plan power from p27 C/p36 B ordinary Prescience under the explicit provisional contract above; private reading does not reveal the physical token. No retrieved dedicated combined FAQ adjudicates that distinction or broader promise questions. Structured Truthtrance, public maxima, other-player legal previews and reasoning retain their original entitled boundaries.
-4. **Homeworld use.** R3 recommends Richese in a Homeworld combination but supplies no retrieved No-Field-specific rule defining off-planet hidden custody, one-on-planet versus off-planet coexistence, or homeworld threshold disclosure. General module availability is not an answer to those lifecycle questions. The isolated model represents a single Arrakis marker and does not authorize Homeworld placement.
+4. **Homeworld use.** R3 recommends Richese in a Homeworld combination but supplies no retrieved No-Field-specific rule defining off-planet hidden custody, one-on-planet versus off-planet coexistence, or homeworld threshold disclosure. General module availability is not an answer to those lifecycle questions. The later provisional foreign-Homeworld prototype above supersedes the earlier Arrakis-only model; broader placement and coexistence remain unresolved.
 5. **Capturing, transferring or returning a concealed marker as a force.** The selected Guild Secret Ally route above now provisionally recalls the marker face down while preserving last-use history. It does not establish a general conversion for every card, ordinary Guild ally return, foreign custody or Homeworld placement. Other return causes retain their own recorded contracts.
 6. **Allied discounts and reserve source.** Ordinary consent, typed allocation and funding are integrated. Guild-recipient and already-active Karama price/payee use the explicitly provisional prototype in both modes. Ordinary Fremen reserves are on-planet and remain ineligible for this off-planet method. See `RICHESE_ALLIED_SHIPMENT_AUDIT.md`.
 7. **Supply orientation.** Concealed denomination is explicit. Hiding unused IDs/values in public JSON is the minimum privacy consequence, not a claim about an otherwise undocumented physical supply layout. The last revealed used face is public until another deployment; historical log knowledge may legitimately remain.

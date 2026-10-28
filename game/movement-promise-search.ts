@@ -1,5 +1,6 @@
 import type { Action, Game, Player } from './engine';
 import { gameTerritories, splitLocation } from './board';
+import { isBoardNoFieldLocation } from './richese-no-field';
 import { liveMovementPromises, movementEventAllowed, movementMatches, settleMovementEvent, type MovementEvent, type MovementPromise } from './movement-promises';
 import { evaluateMovementExpression, liveMovementExpressionPromises, movementExpressionTerritories, movementExpressionSectors,
   MovementExpressionPromiseError, recordMovementExpressionEvent, type MovementExpression,
@@ -61,7 +62,9 @@ export function findMovementCompletion(source: Game, actor: string,
     // or Box reuse. Tanks are only an optimistic bound; the adapter still
     // validates every owned card and never inspects unknown Box faces here.
     const recovery = player.hand.some(card => card.effect === 'ghola' || card.effect === 'nullentropyBox') ? player.tanks : 0;
-    const marker = player.faction === 'richese' ? player.noField?.deployed : null;
+    const deployed = player.faction === 'richese' ? player.noField?.deployed : null;
+    const marker = deployed && isBoardNoFieldLocation(deployed.location)
+      ? { ...deployed, location: deployed.location } : null;
     const markerValue = marker ? player.noField!.tokens.find(token => token.id === marker.tokenId)?.value ?? 0 : 0;
     const revealable = Math.min(markerValue, player.reserves + recovery);
     const possiblePhysical = physical + (player.shipped ? revealable : player.reserves + recovery);

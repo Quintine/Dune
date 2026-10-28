@@ -1,6 +1,7 @@
 import { isAdvisor } from './advisors';
 import { MOBILE_STRONGHOLD, splitLocation } from './board';
 import type { Player } from './engine';
+import { isBoardNoFieldLocation, type NoFieldLocation } from './richese-no-field';
 
 /** Only public board presence is needed; concealed token values are never read. */
 export type MobileCollectionPlayer = Pick<Player, 'id' | 'faction' | 'advisors'> & {
@@ -8,7 +9,7 @@ export type MobileCollectionPlayer = Pick<Player, 'id' | 'faction' | 'advisors'>
   noField?: {
     deployed: {
       controller: string;
-      location: { territory: string; sector: number };
+      location: NoFieldLocation;
     } | null;
   } | null;
 };
@@ -31,7 +32,7 @@ export function mobileStrongholdCollectionCapacity(
       );
     }
     const marker = player.noField?.deployed;
-    if (marker?.location.territory === MOBILE_STRONGHOLD) {
+    if (marker && isBoardNoFieldLocation(marker.location) && marker.location.territory === MOBILE_STRONGHOLD) {
       const controller = players.find((seat) => seat.id === marker.controller);
       if (!controller || !isAdvisor(controller, MOBILE_STRONGHOLD)) fighters++;
     }

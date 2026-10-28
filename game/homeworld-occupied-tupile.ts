@@ -1,7 +1,8 @@
 import { nativeHandLimit } from './engine';
 import { HomeworldCustodyError } from './homeworld-custody';
 import { homeworldContext } from './homeworld-game';
-import { validateHomeworldOccupationHistory } from './homeworld-occupation-history';
+import { validateHomeworldOccupationHistory, readHomeworldOccupationSnapshot,
+  homeworldOccupationSnapshotPresence } from './homeworld-occupation-history';
 import { basicTupileActivations } from './basic-tupile-occupation';
 import {
   quoteStableHomeworldOccupation,
@@ -169,13 +170,11 @@ function originalEpochs(game: OccupiedTupileContext): Map<string, OccupiedTupile
   }
   let retained: string | null = null;
   for (const observation of history.sources) {
-    const snapshot = JSON.parse(history.snapshots[observation.snapshot]) as [string, [string, number, number][]][];
-    const row = snapshot.find(([world]) => world === 'homeworld:choam');
-    requireTupile(row, 'the original Tupile world is missing from history.');
-    const present = row[1].filter(([, normal, elite]) => normal + elite > 0);
-    if (retained && !present.some(([id]) => id === retained)) retained = null;
-    const candidate = observation.cause !== 'setup' && present.length === 1 && present[0][0] !== native.id
-      ? present[0][0] : null;
+    const snapshot = readHomeworldOccupationSnapshot(history.snapshots[observation.snapshot], homeworldContext(game));
+    const present = homeworldOccupationSnapshotPresence(snapshot, 'homeworld:choam');
+    if (retained && !present.includes(retained)) retained = null;
+    const candidate = observation.cause !== 'setup' && present.length === 1 && present[0] !== native.id
+      ? present[0] : null;
     if (!retained && candidate !== null) {
       const occupier = candidate;
       epochs.set(observation.event, sourceCopy({ world: 'homeworld:choam', card: 'tupile', native: native.id,

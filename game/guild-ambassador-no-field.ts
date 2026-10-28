@@ -14,6 +14,8 @@ import { presenceAt, type ForcePresence } from './force-presence';
 import { territoryEntryBlock } from './occupancy';
 import {
   deployRicheseNoField,
+  isBoardNoFieldLocation,
+  isHomeworldNoFieldLocation,
   revealRicheseNoField,
   shipAlliedRicheseNoField,
   validateRicheseNoField,
@@ -148,10 +150,10 @@ function context(g: Game, beneficiary: string): MarkerContext {
       'Only Richese may hold a No-Field inventory.');
     requireMarker(deployed === undefined || deployed === null ||
       (record(deployed) && record(deployed.location) &&
-        text(deployed.location.territory) && count(deployed.location.sector) &&
-        usableLocation(g, location(deployed.location.territory,
-          deployed.location.sector)) &&
-        count((totals[deployed.location.territory] ?? 0) + 1)),
+        (isHomeworldNoFieldLocation(deployed.location) ||
+         isBoardNoFieldLocation(deployed.location) && text(deployed.location.territory) &&
+         count(deployed.location.sector) && usableLocation(g, location(deployed.location.territory,
+          deployed.location.sector)) && count((totals[deployed.location.territory] ?? 0) + 1))),
     'The concealed marker has an invalid public location.');
     requireMarker(!p.advisors || record(p.advisors),
       'The advisor inventory is invalid.');
@@ -198,12 +200,15 @@ function forecastPriorReveal(c: MarkerContext) {
   }
   const previous = c.owner.noField!;
   if (!previous.deployed) return previous;
+  requireMarker(isBoardNoFieldLocation(previous.deployed.location),
+    'Reveal the existing Homeworld No-Field before using this board shipment.');
   const revealed = noFieldRule(() => revealRicheseNoField(previous, {
     tokenId: previous.deployed!.tokenId,
     reserves: c.owner.reserves,
     cause: 'beforeAlly',
   }));
   const owner = c.seats.find((seat) => seat.id === c.owner.id)!;
+  requireMarker(isBoardNoFieldLocation(revealed.location), 'The original marker must be on Arrakis.');
   const key = location(revealed.location.territory, revealed.location.sector);
   const total = (owner.forces[key] ?? 0) + revealed.forces;
   requireMarker(count(total), 'The prior reveal produces an invalid force quantity.');

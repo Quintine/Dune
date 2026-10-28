@@ -7,6 +7,7 @@ import {
   type OrnithopterMode,
 } from '@/game/ornithopter';
 import { location, splitLocation, gameTerritories } from '@/game/board';
+import { isBoardNoFieldLocation } from '@/game/richese-no-field';
 import { botGroundMoveAllowed } from '@/game/bot-mobility';
 import { Button } from './ui/button';
 import { CardInspector, CardRules } from './card-inspector';
@@ -82,7 +83,7 @@ export function OrnithopterMovement({
         me.elites?.forces ?? {},
         forces,
         elites,
-        typeof move.noField === 'string' && marker
+        typeof move.noField === 'string' && marker && isBoardNoFieldLocation(marker.location)
           ? {
               tokenId: move.noField,
               event: typeof move.event === 'string' ? move.event : '',

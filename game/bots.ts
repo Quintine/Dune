@@ -47,6 +47,7 @@ import { choamSaleGholaTiming } from './choam-market-ghola';
 import { junctionTransportActions } from './junction-transport-options';
 import { currentJunctionOffer, junctionSponsor } from './junction-offer';
 import { homeworldShipmentActions } from './homeworld-shipment-options';
+import { isBoardNoFieldLocation, isHomeworldNoFieldLocation } from './richese-no-field';
 import {
   emperorHomeworldMoveActions,
   withNativeShipmentSources,
@@ -461,7 +462,8 @@ function ornithopterMoves(g: GameView): Action[] {
     active = flight.active,
     cohort = active?.cohort;
   const noField = g.richeseNoField?.owner === me.id ? g.richeseNoField : null;
-  const marker = noField?.private?.deployed;
+  const deployed = noField?.private?.deployed;
+  const marker = deployed && isBoardNoFieldLocation(deployed.location) ? { ...deployed, location: deployed.location } : null;
   const markerSource = marker
     ? location(marker.location.territory, marker.location.sector)
     : null;
@@ -2103,7 +2105,7 @@ function policyActions(g: GameView): Action[] {
               splitLocation(key).sector !== g.storm),
         ) ||
         !!(
-          me.noField?.deployed &&
+          me.noField?.deployed && isBoardNoFieldLocation(me.noField.deployed.location) &&
           (me.noField.deployed.location.sector === 0 ||
             me.noField.deployed.location.sector !== g.storm)
         );
@@ -3531,19 +3533,21 @@ function policyActions(g: GameView): Action[] {
     const guildSecret = nexusGuildSecretAllyCanAct(g);
     const noField = g.richeseNoField;
     const ownNoField = noField?.owner === me.id ? noField.private : null;
-    const marker = ownNoField?.deployed;
+    const deployed = ownNoField?.deployed;
+    const marker = deployed && isBoardNoFieldLocation(deployed.location) ? { ...deployed, location: deployed.location } : null;
+    const deployedWorld = deployed && isHomeworldNoFieldLocation(deployed.location) ? deployed.location.homeworld : null;
     const deployedToken = ownNoField?.tokens.find(
-      (token) => token.id === marker?.tokenId,
+      (token) => token.id === deployed?.tokenId,
     );
     const materialized = Math.min(deployedToken?.value ?? 0, me.reserves);
     const physicalAlongsideMarker = marker
       ? countAt(me, marker.location.territory) > 0
-      : false;
+      : !!(deployedWorld && g.homeworlds?.worlds?.find(world => world.id === deployedWorld)?.forces[me.id]);
     const reveal =
       noField?.canReveal &&
-      marker &&
+      deployed &&
       (materialized > 0 || physicalAlongsideMarker)
-        ? { type: 'revealNoField', token: marker.tokenId, event: noField.event }
+        ? { type: 'revealNoField', token: deployed.tokenId, event: noField.event }
         : null;
     if (
       reveal &&
@@ -3557,7 +3561,7 @@ function policyActions(g: GameView): Action[] {
         to.t !== MOBILE_STRONGHOLD &&
         !territoryEntryBlock(g.players, me.id, to.t),
     );
-    if (noField?.canShip && ownNoField && !marker && !me.shipped) {
+    if (noField?.canShip && ownNoField && !deployed && !me.shipped) {
       const tokens = ownNoField.tokens.filter(
         (token) => token.id !== ownNoField.lastShipped,
       );

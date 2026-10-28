@@ -1,7 +1,8 @@
 import { homeworldForceGroups, HomeworldCustodyError } from './homeworld-custody';
 import { HOMEWORLD_CARDS } from './homeworld-cards';
 import { homeworldContext } from './homeworld-game';
-import type { StableHomeworldOccupationContext } from './homeworld-stable-occupation';
+import { liveHomeworldOccupationPresence, type StableHomeworldOccupationContext } from './homeworld-stable-occupation';
+import { homeworldOccupationSnapshotPresence, readHomeworldOccupationSnapshot } from './homeworld-occupation-history';
 
 export type BasicTupileActivation = {
   event: string;
@@ -25,11 +26,11 @@ export function basicTupileActivations(game: StableHomeworldOccupationContext): 
     throw new HomeworldCustodyError('Basic Tupile activation requires its original Basic occupation history.');
   const high = HOMEWORLD_CARDS.find(card => card.id === 'tupile')!.high.reserves.min;
   type Group = [string, number, number];
-  const eligible = (groups: readonly Group[]): string | null => {
+  const eligible = (groups: readonly Group[], presence: readonly string[]): string | null => {
     const nativeGroup = groups.find(([id]) => id === native.id);
     if (!nativeGroup || nativeGroup[1] + nativeGroup[2] >= high) return null;
-    const foreign = groups.filter(([id, normal, elite]) => id !== native.id && normal + elite > 0);
-    return foreign.length === 1 ? foreign[0][0] : null;
+    const foreign = presence.filter(id => id !== native.id);
+    return foreign.length === 1 ? foreign[0] : null;
   };
   const qualifications = new Map<string, string[]>();
   for (const fact of history.qualifications) if (fact.world === 'homeworld:choam') {
@@ -41,10 +42,10 @@ export function basicTupileActivations(game: StableHomeworldOccupationContext): 
   let activeIndex: number | null = null;
   for (const observation of history.sources) {
     for (const player of qualifications.get(observation.event) ?? []) qualified.add(player);
-    const snapshot = JSON.parse(history.snapshots[observation.snapshot]) as [string, Group[]][];
-    const groups = snapshot.find(([world]) => world === 'homeworld:choam');
+    const snapshot = readHomeworldOccupationSnapshot(history.snapshots[observation.snapshot], homeworldContext(game));
+    const groups = snapshot.groups.find(([world]) => world === 'homeworld:choam');
     if (!groups) throw new HomeworldCustodyError('The original Basic Tupile observation lost its native world.');
-    const candidate = eligible(groups[1]);
+    const candidate = eligible(groups[1], homeworldOccupationSnapshotPresence(snapshot, 'homeworld:choam'));
     if (activeIndex !== null && epochs[activeIndex].occupier !== candidate) activeIndex = null;
     if (activeIndex === null && candidate && qualified.has(candidate) && observation.cause !== 'setup') {
       activeIndex = epochs.length;
@@ -54,7 +55,8 @@ export function basicTupileActivations(game: StableHomeworldOccupationContext): 
   const world = homeworldForceGroups(homeworldContext(game), game.homeworlds.custody)
     .find(world => world.id === 'homeworld:choam')!;
   const current = activeIndex === null ? null : epochs[activeIndex];
-  const actual = eligible(Object.entries(world.forces).map(([id, forces]): Group => [id, forces.normal, forces.elite]));
+  const actual = eligible(Object.entries(world.forces).map(([id, forces]): Group => [id, forces.normal, forces.elite]),
+    liveHomeworldOccupationPresence(game, 'homeworld:choam'));
   if (actual !== current?.occupier) {
     return { epochs, current: null, blocked: actual && qualified.has(actual)
       ? 'The current Basic Tupile activation must be observed before its benefit settles.' : null };

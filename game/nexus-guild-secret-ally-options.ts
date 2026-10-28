@@ -2,6 +2,7 @@ import type { Action, GameView } from './engine';
 import { gameTerritories, MOBILE_STRONGHOLD, splitLocation, validGameLocation } from './board';
 import { quoteNexusGuildSecretShipment } from './nexus-guild-secret-ally';
 import { guildNoFieldSelection } from './guild-no-field-selection';
+import { isBoardNoFieldLocation } from './richese-no-field';
 
 /** Consume only the current actor's private offer and public faction roster. */
 export function nexusGuildSecretAllyCanAct(g: GameView): boolean {
@@ -84,7 +85,7 @@ export function nexusGuildSecretAllyAction(
   let amount: number;
   if (noField) {
     const marker = guildNoFieldSelection(g, action);
-    if (!marker || !action.forces || typeof action.forces !== 'object' || Array.isArray(action.forces) ||
+    if (!marker || !isBoardNoFieldLocation(marker.location) || !action.forces || typeof action.forces !== 'object' || Array.isArray(action.forces) ||
         !validGameLocation(g, marker.location.territory, marker.location.sector) || marker.location.sector === g.storm)
       return null;
     let physical = 0;

@@ -2,6 +2,7 @@ import type { Player } from './engine';
 import { advisorStanceAfterSettlement } from './advisor-automatic-flip';
 import type { ForcePresence } from './force-presence';
 import { presenceByLocation } from './force-presence';
+import { isHomeworldNoFieldLocation } from './richese-no-field';
 import { fighterCount, isAdvisor } from './advisors';
 import { quoteAidRefunds, PhaseResourceError } from './phase-resource-quote';
 import { ecazOccupancyIdentity } from './ecaz-occupy';
@@ -74,7 +75,7 @@ export function settledBoard(g: BoardContext) {
     const marker = p.noField?.deployed?.location;
     if (marker)
       requireBoard(
-        validGameLocation(g, marker.territory, marker.sector),
+        isHomeworldNoFieldLocation(marker) || validGameLocation(g, marker.territory, marker.sector),
         'The No-Field needs a valid board location.',
       );
   }

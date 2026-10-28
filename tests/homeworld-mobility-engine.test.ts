@@ -271,6 +271,7 @@ void test('high Richese moves the same physical token once and never borrows con
   population(g, 10, 'imperial_basin:10');
   const action = marker(g);
   const next = applyAction(reload(g), 'owner', action);
+  assert.ok('territory' in next.players[0].noField!.deployed!.location);
   assert.equal(
     next.players[0].noField!.deployed!.location.territory,
     'arrakeen',

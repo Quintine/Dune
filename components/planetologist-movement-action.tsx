@@ -12,6 +12,7 @@ import { botGroundMoveAllowed } from '@/game/bot-mobility';
 import { isAdvisor } from '@/game/advisors';
 import { quoteAdvisorGatherMatching, AdvisorGatherMatchingError } from '@/game/advisor-gather-matching';
 import { location, splitLocation, validGameLocation } from '@/game/board';
+import { isBoardNoFieldLocation } from '@/game/richese-no-field';
 import { nexusGuildMovementAvailable } from '@/game/nexus-guild-cunning-options';
 import { planetologistFlightSelection, type PlanetologistFlight } from '@/game/planetologist-flight';
 import { validateCohortSelection } from '@/game/ornithopter';
@@ -30,8 +31,9 @@ export function planetologistNoFieldMarker(game: GameView) {
   const state = info.private;
   const marker = state?.deployed;
   const publicMarker = info.public.deployed;
-  if (!state || !marker || marker.controller !== me.id ||
+  if (!state || !marker || !isBoardNoFieldLocation(marker.location) || marker.controller !== me.id ||
     !publicMarker || publicMarker.controller !== me.id ||
+    !isBoardNoFieldLocation(publicMarker.location) ||
     marker.location.territory !== publicMarker.location.territory ||
     marker.location.sector !== publicMarker.location.sector ||
     marker.tokenId !== state.lastShipped ||

@@ -84,6 +84,7 @@ void test('deserialized inventory, history and deployed references are validated
       s.deployed!.controller = '';
     },
     (s: RicheseNoField) => {
+      assert.ok('territory' in s.deployed!.location);
       s.deployed!.location.sector = 19;
     },
     (s: RicheseNoField) => {
@@ -164,6 +165,8 @@ void test('moving preserves hidden identity/history and exact sector without mat
     territory: 'imperial_basin',
     sector: 9,
   });
+  assert.ok('territory' in state.deployed!.location);
+  assert.ok('territory' in moved.deployed!.location);
   assert.equal(state.deployed!.location.sector, 10);
   assert.equal(moved.deployed!.location.sector, 9);
   assert.equal(moved.lastShipped, ids[2]);
@@ -473,13 +476,16 @@ void test('outputs and projections are independent clones and caller-provided pl
   };
   const state = deployRicheseNoField(initial, placement);
   placement.location.sector = 2;
+  assert.ok('territory' in state.deployed!.location);
   assert.equal(state.deployed!.location.sector, 10);
   const own = projectRicheseNoField(state, true);
   own.private.tokens[0].id = 'changed';
+  assert.ok('territory' in own.deployed!.location);
   own.deployed!.location.sector = 3;
   assert.equal(state.tokens[0].id, ids[0]);
   assert.equal(state.deployed!.location.sector, 10);
   const result = reveal(state);
+  assert.ok('territory' in result.location);
   result.location.sector = 4;
   result.state.tokens.reverse();
   assert.equal(state.deployed!.location.sector, 10);

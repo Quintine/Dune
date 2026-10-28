@@ -115,6 +115,7 @@ void test('irrelevant faces and hidden No-Field contents are not read at any pub
   frame = answerNexusFremenProtection(frame, 'a', false);
   assert.equal(frame.stage, 'complete');
   validateNexusFremenProtection(input, frame);
+  assert.ok('territory' in marker.deployed!.location);
   assert.equal(marker.deployed!.location.territory, 'hagga_basin');
 });
 

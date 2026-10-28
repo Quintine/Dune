@@ -6,6 +6,7 @@ import { strongholdPathBlocked } from './occupancy';
 import { botMovementRange } from './bot-mobility';
 import { planetologistFlightSelection as movementFlightSelection } from './planetologist-flight';
 import { validateCohortSelection, type MovementMarker, type OrnithopterMode } from './ornithopter';
+import { isBoardNoFieldLocation } from './richese-no-field';
 
 export class SandmasterMovementError extends Error {}
 export type SandmasterChoice = {
@@ -375,7 +376,7 @@ export function sandmasterActionOrder(
   const info = g.richeseNoField?.owner === player ? g.richeseNoField : null;
   const marker = info?.private?.deployed;
   const noField: MovementMarker | undefined = action.noField === undefined ? undefined
-    : info && marker?.controller === player && marker.tokenId === action.noField && info.event === action.event
+    : info && marker?.controller === player && isBoardNoFieldLocation(marker.location) && marker.tokenId === action.noField && info.event === action.event
       ? { tokenId: marker.tokenId, event: info.event,
         from: location(marker.location.territory, marker.location.sector) } : undefined;
   if (action.noField !== undefined && (!noField || g.homeworldMobility?.noFieldMovementBlocked)) return null;

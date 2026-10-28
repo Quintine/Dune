@@ -226,6 +226,7 @@ import { guildTransportQuote } from '@/game/transport-quote';
 import { fremenReserveEntry, botGroundMoveAllowed, botMovementRange, groundMoveRouteDistance } from '@/game/bot-mobility';
 import { isAlliedShipmentVisit } from '@/game/allied-separation';
 import { location as boardLocation } from '@/game/board';
+import { isBoardNoFieldLocation } from '@/game/richese-no-field';
 import { fighterCount, isAdvisor } from '@/game/advisors';
 import { useState } from 'react';
 import {
@@ -825,10 +826,13 @@ export function GameTable({
         ),
       }
     : { from: source, amount, elite: eliteAmount };
-  const ownNoField =
+  const ownedDeployedNoField =
     g.richeseNoField?.owner === me.id
       ? g.richeseNoField.private?.deployed
       : null;
+  const ownNoField = ownedDeployedNoField && isBoardNoFieldLocation(ownedDeployedNoField.location)
+    ? { ...ownedDeployedNoField, location: ownedDeployedNoField.location }
+    : null;
   const markerAtSource =
     !!ownNoField &&
     !!source &&
@@ -1958,19 +1962,18 @@ export function GameTable({
                   </span>
                 )),
             )}
-            {g.players
-              .filter(
-                (p) => p.noField?.deployed?.location.territory === selected,
-              )
-              .map((p) => (
-                <span
-                  key={`no-field-detail-${p.id}`}
-                  style={{ color: faction(p.faction).color }}
-                >
-                  {faction(p.faction).name}: concealed No-Field in sector{' '}
-                  {p.noField!.deployed!.location.sector} · counts as one force
-                </span>
-              ))}
+            {g.players.flatMap((p) => {
+              const marker = p.noField?.deployed;
+              if (!marker || !isBoardNoFieldLocation(marker.location) || marker.location.territory !== selected)
+                return [];
+              return [<span
+                key={`no-field-detail-${p.id}`}
+                style={{ color: faction(p.faction).color }}
+              >
+                {faction(p.faction).name}: concealed No-Field in sector{' '}
+                {marker.location.sector} · counts as one force
+              </span>];
+            })}
           </div>
           {g.status !== 'lobby' && (
             <section

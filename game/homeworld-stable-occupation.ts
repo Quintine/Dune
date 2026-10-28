@@ -2,7 +2,8 @@ import type { Game } from './engine';
 import { HOMEWORLD_CARDS, type HomeworldId } from './homeworld-cards';
 import { homeworldContext } from './homeworld-game';
 import { homeworldForceGroups, HomeworldCustodyError } from './homeworld-custody';
-import { validateHomeworldOccupationHistory } from './homeworld-occupation-history';
+import { currentHomeworldOccupationSnapshot, homeworldOccupationMarker, homeworldOccupationSnapshotPresence,
+  readHomeworldOccupationSnapshot, validateHomeworldOccupationHistory } from './homeworld-occupation-history';
 
 export type StableHomeworldOccupationContext = Pick<Game,
   'advanced' | 'turn' | 'players' | 'homeworlds' | 'homeworldOccupationHistory' | 'homeworldOccupationPreview'>;
@@ -20,11 +21,23 @@ export type StableHomeworldOccupationQuote = {
   entitlement: StableHomeworldOccupier | null;
   blocked: string | null;
 };
-type SourceWorld = [string, [string, number, number][]];
 type HomeworldCard = (typeof HOMEWORLD_CARDS)[number];
 type HomeworldWorld = ReturnType<typeof homeworldForceGroups>[number];
 type History = NonNullable<Game['homeworldOccupationHistory']>;
 type Player = Game['players'][number];
+
+/** Public marker presence is one, separate from the actual typed counters and
+ * native population. The hidden token identity and value never enter history. */
+export function liveHomeworldOccupationMarker(game: StableHomeworldOccupationContext) {
+  return homeworldOccupationMarker(game.players);
+}
+
+export function liveHomeworldOccupationPresence(game: StableHomeworldOccupationContext, world: string): string[] {
+  const custody = game.homeworlds?.custody;
+  if (!custody) throw new HomeworldCustodyError('Homeworld occupation needs current physical custody.');
+  return homeworldOccupationSnapshotPresence(currentHomeworldOccupationSnapshot(
+    homeworldContext(game), custody, liveHomeworldOccupationMarker(game)), world);
+}
 
 export type StableHomeworldOccupationOptions = {
   /** Basic-only policy selector. `currentSole` is the provisional default used
@@ -63,19 +76,18 @@ export function quoteStableHomeworldOccupation(
   if (game.advanced) {
     let retained: { player: string; event: string } | null = null;
     for (const source of history.sources) {
-      const snapshot = JSON.parse(history.snapshots[source.snapshot]) as SourceWorld[];
-      const groups = snapshot.find(row => row[0] === world.id)![1]
-        .filter(([, normal, elite]) => normal + elite > 0);
-      if (retained && !groups.some(([id]) => id === retained!.player)) retained = null;
-      if (!retained && source.cause !== 'setup' && groups.length === 1 && groups[0][0] !== native.id)
-        retained = { player: groups[0][0], event: source.event };
+      const snapshot = readHomeworldOccupationSnapshot(history.snapshots[source.snapshot], context);
+      const present = homeworldOccupationSnapshotPresence(snapshot, world.id);
+      if (retained && !present.includes(retained.player)) retained = null;
+      if (!retained && source.cause !== 'setup' && present.length === 1 && present[0] !== native.id)
+        retained = { player: present[0], event: source.event };
     }
-    const present = Object.entries(world.forces).filter(([, forces]) => forces.normal + forces.elite > 0);
-    if (retained && !present.some(([id]) => id === retained!.player)) retained = null;
+    const present = liveHomeworldOccupationPresence(game, world.id);
+    if (retained && !present.includes(retained.player)) retained = null;
     if (!retained) {
       // A producer may query between a physical write and its semantic
       // observation; do not invent a new qualifying event from that write.
-      return present.length === 1 && present[0][0] !== native.id
+      return present.length === 1 && present[0] !== native.id
         ? { entitlement: null, blocked: 'The original Advanced sole-occupation change must be observed before its benefit settles.' }
         : none;
     }
@@ -103,14 +115,14 @@ function basicCurrentSoleOccupation(
 ): StableHomeworldOccupationQuote {
   if (!history.qualifications.some(f => f.world === world.id)) return { entitlement: null, blocked: null };
   let nativeHigh = false;
-  const foreign: string[] = [];
   for (const [id, forces] of Object.entries(world.forces)) {
     const amount = forces.normal + forces.elite;
     if (id === native.id) {
       const population = card.reserveType === 'sardaukar' ? forces.elite : amount;
       if (population >= card.high.reserves.min) nativeHigh = true;
-    } else if (amount > 0) foreign.push(id);
+    }
   }
+  const foreign = liveHomeworldOccupationPresence(game, world.id).filter(id => id !== native.id);
   if (nativeHigh || foreign.length !== 1) return { entitlement: null, blocked: null };
   const qualified = history.qualifications.filter(f => f.world === world.id && f.player === foreign[0]).at(-1);
   if (!qualified)
@@ -149,35 +161,33 @@ function basicEpochOccupation(
   if (!qualifiedThisTurn) return blocked('entitlement/expiry');
   const start = history.sources.findIndex(source => source.event === first.event);
   if (start < 0) throw new HomeworldCustodyError('The occupier lost its original qualifying source.');
-  const check = (groups: readonly [string, number, number][]): string | null => {
-    let present = false;
+  const check = (groups: readonly [string, number, number][], presence: readonly string[]): string | null => {
     for (const [id, normal, elite] of groups) {
       const amount = normal + elite;
       if (id === native.id) {
         const population = card.reserveType === 'sardaukar' ? elite : amount;
         if (population >= card.high.reserves.min) return 'native-repopulation';
-      } else if (amount > 0) {
-        if (id !== first.player) return 'contested-occupation';
-        present = true;
       }
     }
-    return present ? null : 'departure/expiry';
+    const foreign = presence.filter(id => id !== native.id);
+    if (foreign.some(id => id !== first.player)) return 'contested-occupation';
+    return foreign.includes(first.player) ? null : 'departure/expiry';
   };
   let previous = -1;
   for (let i = start; i < history.sources.length; i++) {
     const index = history.sources[i].snapshot;
     if (index === previous) continue;
     previous = index;
-    const snapshot = JSON.parse(history.snapshots[index]) as SourceWorld[];
-    const row = snapshot.find(source => source[0] === world.id)!;
-    const reason = check(row[1]);
+    const snapshot = readHomeworldOccupationSnapshot(history.snapshots[index], homeworldContext(game));
+    const row = snapshot.groups.find(source => source[0] === world.id)!;
+    const reason = check(row[1], homeworldOccupationSnapshotPresence(snapshot, world.id));
     if (reason) return blocked(reason);
   }
   // Actions can query an effect after a physical change but before its semantic
   // observation. Never let the last recorded snapshot substitute for now.
   const current = Object.entries(world.forces).map(([id, forces]): [string, number, number] =>
     [id, forces.normal, forces.elite]);
-  const reason = check(current);
+  const reason = check(current, liveHomeworldOccupationPresence(game, world.id));
   if (reason) return blocked(reason);
   const occupier = game.players.find(p => p.id === first.player)!;
   const ally = occupier.ally && game.players.some(p => p.id === occupier.ally && p.ally === occupier.id)

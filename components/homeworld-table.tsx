@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { Action, GameView } from '@/game/engine';
 import { faction } from '@/game/catalog';
 import { HOMEWORLD_CARDS } from '@/game/homeworld-cards';
+import { isHomeworldNoFieldLocation } from '@/game/richese-no-field';
 import type { NativeReserveSelections } from '@/game/homeworld-native-reserves';
 import { emperorHomeworldMoveAction } from '@/game/homeworld-options';
 import type { EmperorHomeworldMove } from '@/game/homeworld-emperor-move';
@@ -54,6 +55,14 @@ export function HomeworldTable({ game: g }: { game: GameView }) {
                     : ''}
                 </p>
               ))}
+              {g.players.flatMap(player => {
+                const marker = player.noField?.deployed;
+                if (!marker || !isHomeworldNoFieldLocation(marker.location) || marker.location.homeworld !== world.id)
+                  return [];
+                return [<p key={`no-field-${player.id}`} className="text-base! leading-7!">
+                  {player.name}: concealed No-Field · counts as one force
+                </p>];
+              })}
               <details>
                 <summary className="cursor-pointer py-2">
                   {card.name} card

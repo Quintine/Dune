@@ -4,6 +4,7 @@ import {
   HomeworldCustodyError,
 } from './homeworld-custody';
 import { homeworldAllianceBlock } from './homeworld-alliance';
+import { homeworldOccupationMarker } from './homeworld-occupation-history';
 import { homeworldPopulations } from './homeworld-population';
 import { tleilaxuHomeworldFreeIncomeBlocked } from './homeworld-benefits';
 import { charityQuote } from './charity';
@@ -95,7 +96,7 @@ export function homeworldGameIntegrity(g: Game): void {
   const groups = homeworldForceGroups(homeworldContext(g), state.custody);
   for (const p of g.players) {
     if (p.ally && g.players.some((other) => other.id === p.ally && other.ally === p.id)) {
-      const blocked = homeworldAllianceBlock(homeworldContext(g), state.custody, p.id, p.ally);
+      const blocked = homeworldAllianceBlock(homeworldContext(g), state.custody, p.id, p.ally, homeworldOccupationMarker(g.players));
       if (blocked) throw new HomeworldCustodyError(blocked);
     }
     let away = 0,

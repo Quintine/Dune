@@ -24,6 +24,7 @@ import {
 } from './stronghold-cards';
 import { ecazHomeworldVictoryProgress, type EcazHomeworldVictoryContext, type EcazHomeworldVictoryProgress } from './ecaz-homeworld-victory';
 import type { TwoPlayerControllers } from './two-player-controllers';
+import { isHomeworldNoFieldLocation } from './richese-no-field';
 
 export class VictoryQuoteError extends Error {}
 function requireVictory(
@@ -108,7 +109,7 @@ export function quoteVictory(g: VictoryContext, ecazContext?: EcazHomeworldVicto
     if (marker)
       requireVictory(
         record(marker.location) &&
-          validLocation(marker.location.territory, marker.location.sector),
+          (isHomeworldNoFieldLocation(marker.location) || validLocation(marker.location.territory, marker.location.sector)),
         'Victory needs a valid deployed No-Field location.',
       );
   }
