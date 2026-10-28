@@ -1,9 +1,17 @@
 # Rule decision index
 
+## Richese No-Field transfer between Homeworlds — 28 October 2026
+
+The supplied Advanced revision permits Homeworld-to-Homeworld shipment
+(physical p. 22) and counts a concealed No-Field as one force (physical p. 36).
+Provisionally compose those rules for the native holder's one-marker shipment
+between distinct non-allied foreign Worlds; this is not a publisher ruling.
+Its identity and last-shipment history persist. [Scope](RICHESE_NO_FIELD_RULES.md#transfer-between-foreign-homeworlds-and-ecaz-victory--28-october-2026).
+
 ## Richese No-Field on a foreign Homeworld — 28 October 2026
 
 The user-authorized Advanced revision calls Homeworlds non-territories
-(physical p. 21) and describes No-Field materialization in a territory
+(physical p. 22) and describes No-Field materialization in a territory
 (physical p. 36), without resolving their combination. Provisionally permit
 one native face-down marker globally, shipped to a foreign non-allied active
 Homeworld; count its public presence separately and materialize real reserves

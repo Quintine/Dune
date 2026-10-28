@@ -2,13 +2,14 @@ import {
   HomeworldCustodyError, homeworldForceGroups, type HomeworldCustody,
 } from './homeworld-custody';
 import type { HomeworldShipmentContext } from './homeworld-shipment';
-import { deployRicheseNoField, type RicheseNoField } from './richese-no-field';
+import { deployRicheseNoField, isHomeworldNoFieldLocation, moveRicheseNoField, type RicheseNoField } from './richese-no-field';
 
 export type RicheseHomeworldMarkerShipmentIntent = {
   player: string;
   destination: string;
   tokenId: string;
 };
+export type RicheseHomeworldMarkerTransferIntent = RicheseHomeworldMarkerShipmentIntent & { source: string };
 
 const record = (value: unknown): value is Record<string, unknown> =>
   !!value && typeof value === 'object' && !Array.isArray(value);
@@ -65,4 +66,43 @@ export function quoteRicheseHomeworldMarkerShipment(
     cost: 1,
     noField: deployed,
   };
+}
+
+/** A deployed marker can be transported like one force between eligible
+ * Homeworlds. Its denomination never enters the price or physical custody. */
+export function quoteRicheseHomeworldMarkerTransfer(
+  context: HomeworldShipmentContext,
+  custody: HomeworldCustody,
+  intent: RicheseHomeworldMarkerTransferIntent,
+  noField: RicheseNoField,
+) {
+  const worlds = homeworldForceGroups(context, custody);
+  requireMarker(record(intent) && Object.keys(intent).sort().join(',') === 'destination,player,source,tokenId' &&
+    typeof intent.player === 'string' && typeof intent.source === 'string' &&
+    typeof intent.destination === 'string' && typeof intent.tokenId === 'string',
+  'Choose the current Homeworld marker, its source and another Homeworld.');
+  requireMarker(context.players.every(seat => seat.ally === null ||
+    typeof seat.ally === 'string' && seat.ally !== seat.id && context.players.some(other => other.id === seat.ally)),
+  'Homeworld shipment needs valid seated alliance identities.');
+  const player = context.players.find(seat => seat.id === intent.player);
+  const source = worlds.find(world => world.id === intent.source);
+  const destination = worlds.find(world => world.id === intent.destination);
+  requireMarker(player?.faction === 'richese' && source && destination &&
+    source.native !== player.id && destination.native !== player.id && source.id !== destination.id,
+  'Choose two different active foreign Homeworlds for native Richese.');
+  const native = context.players.find(seat => seat.id === destination.native)!;
+  requireMarker(!(player.ally === native.id && native.ally === player.id),
+    'You cannot ship to your ally’s Homeworld.');
+  const marker = noField?.deployed;
+  requireMarker(marker?.controller === player.id && marker.tokenId === intent.tokenId &&
+    isHomeworldNoFieldLocation(marker.location) && marker.location.homeworld === source.id,
+  'The chosen concealed marker is no longer on its original Homeworld.');
+  let moved: RicheseNoField;
+  try {
+    moved = moveRicheseNoField(noField, intent.tokenId, { homeworld: destination.id });
+  } catch (error) {
+    throw new HomeworldCustodyError(error instanceof Error ? error.message : 'Invalid No-Field transfer.');
+  }
+  return { player: player.id, tokenId: intent.tokenId, source: source.id,
+    destination: destination.id, amount: 1, elite: 0, cost: 1, noField: moved };
 }

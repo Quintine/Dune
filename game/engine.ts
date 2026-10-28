@@ -547,7 +547,7 @@ import {
   type RicheseGiftIntent,
 } from './richese-gift';
 import { richeseCards, richeseCardDefinition } from './richese-cards';
-import { quoteRicheseHomeworldMarkerShipment } from './richese-homeworld-marker-shipment';
+import { quoteRicheseHomeworldMarkerShipment, quoteRicheseHomeworldMarkerTransfer } from './richese-homeworld-marker-shipment';
 import {
   createRicheseNoField,
   deployRicheseNoField,
@@ -1330,7 +1330,7 @@ type RichesePreCostDeclaration = { round: string; lot: string } & (
 );
 type PendingHomeworldShipment = HomeworldShipmentIntent & {
   /** The selected physical marker and its original private inventory event. */
-  noField?: { tokenId: string; event: string };
+  noField?: { tokenId: string; event: string; from?: string };
   guildSecretEvent?: string;
   guildNexusEvent?: string;
   guildRateEvent?: string;
@@ -37121,7 +37121,7 @@ function performJunctionTransport(g: Game, p: Player, action: Action) {
     contribution(g, p, quote.quote.cost, action.allyPayment);
   if(!openAdvisorTransportMatching(g,{kind:'junction',declaration}))commitJunctionTransport(g,p,declaration);
 }
-function homeworldShipmentQuote(g: Game, intent: HomeworldShipmentIntent & {route?: 'arrakis';guildSecretEvent?:string;noField?:{tokenId:string;event:string}}) {
+function homeworldShipmentQuote(g: Game, intent: HomeworldShipmentIntent & {route?: 'arrakis';guildSecretEvent?:string;noField?:{tokenId:string;event:string;from?:string}}) {
   requireRule(g.homeworlds?.custody, 'Homeworld shipment requires saved physical custody.');
   requireRule(!intent.guildSecretEvent || g.karamaShipping?.player !== intent.player,
     'Choose the purchased Karama price or Guild Secret Ally, not both.');
@@ -37141,10 +37141,14 @@ function homeworldShipmentQuote(g: Game, intent: HomeworldShipmentIntent & {rout
     'Homeworld No-Field shipment currently supports native Homeworld play without optional modules.');
     requireRule(!intent.route && !intent.guildSecretEvent && intent.sources && typeof intent.sources === 'object' &&
       !Array.isArray(intent.sources) && Object.keys(intent.sources).length === 0 &&
-      p.noField && p.noFieldEvent === intent.noField.event && p.noFieldBlockedTurn !== g.turn,
+      p.noField && p.noFieldEvent === intent.noField.event &&
+      (intent.noField.from !== undefined || p.noFieldBlockedTurn !== g.turn),
     'The original concealed Homeworld shipment is no longer available.');
-    const marker = homeworldRule(() => quoteRicheseHomeworldMarkerShipment(context, g.homeworlds!.custody!,
-      {player:intent.player,destination:intent.destination,tokenId:intent.noField!.tokenId},p.noField!));
+    const marker = homeworldRule(() => intent.noField!.from === undefined
+      ? quoteRicheseHomeworldMarkerShipment(context, g.homeworlds!.custody!,
+        {player:intent.player,destination:intent.destination,tokenId:intent.noField!.tokenId},p.noField!)
+      : quoteRicheseHomeworldMarkerTransfer(context, g.homeworlds!.custody!,
+        {player:intent.player,destination:intent.destination,tokenId:intent.noField!.tokenId,source:intent.noField!.from!},p.noField!));
     return {...marker, state:g.homeworlds.custody, players:context.players, sources:[],
       boardForces:undefined,boardEliteForces:undefined,sourceNames:[combatLocationName(g,marker.source)]};
   }
@@ -37270,13 +37274,13 @@ function commitHomeworldShipment(g: Game, shipment: PendingHomeworldShipment, se
     {faction: shipment.guildSecretEvent ? 'guild' : p.faction, name: shipment.guildSecretEvent ? 'Secret Ally Homeworld shipment' : 'Homeworld shipment'});
   if (heldConversion) openAutomaticAdvisorFlip(g);
 }
-function declareHomeworldShipment(g: Game, p: Player, intent: HomeworldShipmentIntent & {route?: 'arrakis';guildSecretEvent?:string;noField?:{tokenId:string;event:string}}, allyPayment?: unknown) {
+function declareHomeworldShipment(g: Game, p: Player, intent: HomeworldShipmentIntent & {route?: 'arrakis';guildSecretEvent?:string;noField?:{tokenId:string;event:string;from?:string}}, allyPayment?: unknown) {
   const quote = homeworldShipmentQuote(g, intent);
   const shipment: PendingHomeworldShipment = {...intent, ...(currentGuildCunning(g,p.id) ? {guildNexusEvent:currentGuildCunning(g,p.id)!.receipt.event} : {}), sources: structuredClone(intent.sources),
     event: homeworldShipmentEvent(g, p, intent.route), turn: g.turn, amount: quote.amount, elite: quote.elite,
     cost: quote.cost, allyPayment: contribution(g, p, quote.cost, allyPayment), pools: quote.sources};
   bindGuildCunningShipment(g,p,'homeworld',shipment);
-  if (shipment.noField) {
+  if (shipment.noField && shipment.noField.from === undefined) {
     g.pendingHomeworldShipment = shipment;
     g.response = {kind:'richeseNoField',source:'homeworldNoField',owner:p.id,passed:[]};
     log(g, `${p.name} declared a concealed No-Field shipment to ${combatLocationName(g,intent.destination)}. Payment and placement await the response.`);
@@ -44494,18 +44498,21 @@ function applyActionInner(
     const blocked = route ? guildHomeworldShipmentBlock(g, p) : homeworldShipmentBlock(g, p);
     requireRule(!blocked, blocked ?? 'Homeworld shipment is unavailable.');
     requireRule(Object.keys(action).every((key) => ['type', 'event', 'destination', 'sources', 'allyPayment',
-      ...(guildSecretEvent ? ['nexus'] : []), ...(action.noField !== undefined ? ['noField','noFieldEvent'] : [])].includes(key)),
+      ...(guildSecretEvent ? ['nexus'] : []), ...(action.noField !== undefined ? ['noField','noFieldEvent','noFieldFrom'] : [])].includes(key)),
       'Choose explicit typed source groups or a concealed No-Field and a Homeworld destination.');
     requireRule(action.event === homeworldShipmentEvent(g, p, route), 'This Homeworld source selection is stale.');
-    let noField: {tokenId:string;event:string} | undefined;
+    let noField: {tokenId:string;event:string;from?:string} | undefined;
     if (action.noField !== undefined) {
       requireRule(t === 'homeworldShip' && !guildSecretEvent && !currentGuildCunning(g,id),
         'This provisional No-Field route uses a native Homeworld shipment.');
-      const markerBlocked = noFieldShipBlock(g,p);
-      requireRule(!markerBlocked,markerBlocked ?? 'The No-Field shipment is unavailable.');
+      if (action.noFieldFrom === undefined) {
+        const markerBlocked = noFieldShipBlock(g,p);
+        requireRule(!markerBlocked,markerBlocked ?? 'The No-Field shipment is unavailable.');
+      }
       requireRule(action.noFieldEvent === p.noFieldEvent, 'This No-Field selection is stale.');
-      noField = {tokenId:stringField(action.noField),event:stringField(action.noFieldEvent)};
-    } else requireRule(action.noFieldEvent === undefined, 'Choose a physical No-Field for its inventory event.');
+      noField = {tokenId:stringField(action.noField),event:stringField(action.noFieldEvent),
+        ...(action.noFieldFrom === undefined ? {} : {from:stringField(action.noFieldFrom)})};
+    } else requireRule(action.noFieldEvent === undefined && action.noFieldFrom === undefined, 'Choose a physical No-Field for its inventory event.');
     declareHomeworldShipment(g, p, {player: id, destination: stringField(action.destination),
       sources: action.sources as HomeworldShipmentIntent['sources'], ...(route ? {route} : {}),
       ...(guildSecretEvent ? {guildSecretEvent} : {}), ...(noField ? {noField} : {})}, action.allyPayment);

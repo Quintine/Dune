@@ -16,6 +16,18 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Homeworld No-Field continuation — 28 October. Prototyped / Partial.**
+High Ecaz victory counts an allied marker-only holding as public presence,
+without inventing physical counters. Richese may provisionally ship its own
+deployed marker between distinct eligible foreign Homeworlds at the one-force
+price; its identity, concealment and shipment history persist. Seven related
+offline files pass 33 cases, including Basic and Advanced native turn
+progression, victory, a stopped transfer and physical conservation. One
+isolated authenticated Basic room exercises the transfer and foreign view.
+Applying World shipment to a face-down marker is provisional; own-world return,
+mixed groups, optional module overlays and deployed acceptance remain open.
+[Scope](RICHESE_NO_FIELD_RULES.md#transfer-between-foreign-homeworlds-and-ecaz-victory--28-october-2026).
+
 **Concealed Richese No-Field on a foreign Homeworld — 28 October.
 Prototyped / Partial.** In native Homeworld games, Richese may ship its own
 face-down marker to a foreign non-allied world. It counts as one public marker

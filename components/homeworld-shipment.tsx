@@ -23,16 +23,18 @@ export function HomeworldNoFieldShipment({ game, act, busy }: {
   const [selectedToken, setSelectedToken] = useState('');
   const [allyPayment, setAllyPayment] = useState(0);
   if (!me || me.faction !== 'richese' || info?.owner !== me.id || !info.private) return null;
+  const deployed = info.private.deployed;
+  const source = deployed && 'homeworld' in deployed.location ? deployed.location.homeworld : undefined;
   const targets = (game.homeworlds?.worlds ?? []).filter(world =>
-    world.native !== me.id && world.native !== me.ally);
+    world.native !== me.id && world.native !== me.ally && world.id !== source);
   const destination = targets.find(world => world.id === selectedDestination) ?? targets[0];
-  const tokens = info.private.tokens.filter(token => token.id !== info.private!.lastShipped);
+  const tokens = info.private.tokens.filter(token => source ? token.id === deployed?.tokenId : token.id !== info.private!.lastShipped);
   const token = tokens.find(candidate => candidate.id === selectedToken) ?? tokens[0];
-  const quote = richeseHomeworldMarkerChoice(game, destination?.id ?? '', token?.id ?? '', allyPayment);
+  const quote = richeseHomeworldMarkerChoice(game, destination?.id ?? '', token?.id ?? '', allyPayment, source);
   return <fieldset disabled={busy || !!me.autopilot || !!game.homeworldShipment?.blocked}
     className="space-y-3 pt-3">
     <legend>Ship a concealed No-Field</legend>
-    <p className="fine">Provisional Homeworld rule: ship one concealed marker from your supply to
+    <p className="fine">Provisional Homeworld rule: ship one concealed marker {source ? `from ${homeworldName(game, source)}` : 'from your supply'} to
       another non-allied Homeworld for one spice. Its value stays private and its physical forces
       remain in your reserves until the marker is revealed. This uses your normal shipment.</p>
     <label className="block space-y-1">Destination Homeworld for No-Field

@@ -6,6 +6,7 @@ import { homeworldForceGroups } from './homeworld-custody';
 import { homeworldPopulations } from './homeworld-population';
 import { validateHomeworldOccupationHistory } from './homeworld-occupation-history';
 import {
+  liveHomeworldOccupationPresence,
   quoteStableHomeworldOccupation,
   type StableHomeworldOccupationContext,
 } from './homeworld-stable-occupation';
@@ -40,8 +41,9 @@ export type EcazHomeworldVictoryProgress = {
 
 /** Printed High Ecaz victory, separate from ordinary points and occupied Duke
  * benefits. Foreign holdings require the existing original source authority AND
- * the entitled holder's current physical presence; a departed garrison is never
- * a victory holding. Advanced p.22 retained occupation is otherwise respected.
+ * the entitled holder's current public presence; a concealed No-Field counts
+ * as one, while a departed garrison is never a victory holding. Advanced p.22
+ * retained occupation is otherwise respected.
  * This returns public facts only, never an income receipt or a winning action. */
 export function ecazHomeworldVictoryProgress(
   g: EcazHomeworldVictoryContext,
@@ -98,11 +100,21 @@ export function ecazHomeworldVictoryProgress(
       advanced: g.advanced, turn: g.turn, homeworlds: state,
       homeworldOccupationPreview: g.homeworldOccupationPreview,
       homeworldOccupationHistory: g.homeworldOccupationHistory,
-      players: g.players.map(player => ({
-        id: player.id, faction: player.faction, ally: player.ally,
-        reserves: player.reserves,
-        elites: player.elites ? { reserves: player.elites.reserves } : undefined,
-      })),
+      players: g.players.map(player => {
+        const marker = player.noField?.deployed;
+        // BoardSeat exposes location but older callers need not include the
+        // controller. A native marker belongs to its player; when a public
+        // controller is supplied, retain it for the existing validation.
+        const controller = marker && 'controller' in marker ? marker.controller : player.id;
+        if (marker && typeof controller !== 'string')
+          throw new VictoryProgressError('A public No-Field needs a valid controller.');
+        return {
+          id: player.id, faction: player.faction, ally: player.ally,
+          reserves: player.reserves,
+          elites: player.elites ? { reserves: player.elites.reserves } : undefined,
+          ...(marker ? { noField: { deployed: { controller, location: { ...marker.location } } } } : {}),
+        };
+      }),
     } as StableHomeworldOccupationContext;
     for (const world of worlds) {
       // Ecaz and its ally's own native worlds are not "other factions".
@@ -114,10 +126,8 @@ export function ecazHomeworldVictoryProgress(
       const quote = originalHistory
         ? quoteStableHomeworldOccupation(publicOccupation, card.id)
         : { entitlement: null, blocked: 'Ecaz Homeworld holdings require the original fresh occupation history.' };
-      const alliancePresent = members.some(member => {
-        const forces = world.forces[member];
-        return forces && forces.normal + forces.elite > 0;
-      });
+      const present = liveHomeworldOccupationPresence(publicOccupation, world.id);
+      const alliancePresent = members.some(member => present.includes(member));
       if (quote.blocked) {
         // Pending facts can block a possible win, but cannot manufacture a
         // holding; unrelated occupiers and empty departed worlds cannot block it.
@@ -129,8 +139,7 @@ export function ecazHomeworldVictoryProgress(
       }
       const holding = quote.entitlement;
       if (!holding || !members.includes(holding.occupier)) continue;
-      const present = world.forces[holding.occupier];
-      if (!present || present.normal + present.elite === 0) continue;
+      if (!present.includes(holding.occupier)) continue;
       foreignHomeworlds.push({
         world: world.id, card: card.id, native: world.native,
         faction, holder: holding.occupier,

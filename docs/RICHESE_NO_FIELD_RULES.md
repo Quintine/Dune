@@ -2,6 +2,32 @@
 
 Audit date: 2026-09-06. This document distinguishes the printed token lifecycle from engine integration and unresolved combinations. It does not certify Richese, Homeworlds, or any other gated game mode.
 
+## Transfer between foreign Homeworlds and Ecaz victory — 28 October 2026
+
+**Prototyped / Partial.** Richese may provisionally ship its already-deployed
+concealed marker from one foreign Homeworld to another eligible non-allied
+foreign Homeworld as one force. This uses the normal Homeworld shipment,
+payment and Advanced Guild interception, preserving the marker's identity,
+concealment and last-shipment history; it moves no physical reserve counters.
+The departure and arrival are observed through the existing occupation history.
+The own-world return, physical companions and optional modules remain outside
+this first route.
+
+High Ecaz Homeworld victory now counts an allied sole concealed marker as
+public presence at a qualifying foreign World, without reading its hidden
+value or creating a physical counter. Departure or contest still affects the
+actual holding. The supplied Advanced revision permits Homeworld-to-Homeworld
+shipment (physical p. 22) and counts a concealed No-Field as one force
+(physical p. 36), but does not explicitly resolve their combination; the
+transfer is a provisional online interpretation.
+
+Seven related offline files pass 33 cases, including Basic and Advanced native
+turn progression and the Guild's stop. The native test selects an undealt
+Karama and makes actual reserve departures without staging forces or spice.
+The authenticated three-human Basic transfer case passed in four fresh
+isolated rooms. Broader combinations, browser and deployed acceptance remain
+open.
+
 ## Foreign Homeworld marker — 28 October 2026
 
 **Prototyped / Partial.** In supported native Homeworld games without optional
@@ -27,7 +53,7 @@ placement, multiple markers, optional-module combinations, complete mode,
 browser and deployed acceptance remain open.
 
 The supplied Advanced revision distinguishes Homeworlds from territories
-(physical p. 21) and describes No-Field materialization in a territory
+(physical p. 22) and describes No-Field materialization in a territory
 (physical p. 36). It does not explicitly resolve this off-planet composition.
 The single-marker and foreign-Homeworld policy is therefore a provisional
 online interpretation, not a publisher clarification. Existing on-Arrakis

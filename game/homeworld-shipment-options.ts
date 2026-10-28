@@ -11,7 +11,8 @@ import {
   type HomeworldForces,
 } from './homeworld-custody';
 import { quoteHomeworldShipment } from './homeworld-shipment';
-import { quoteRicheseHomeworldMarkerShipment } from './richese-homeworld-marker-shipment';
+import { quoteRicheseHomeworldMarkerShipment, quoteRicheseHomeworldMarkerTransfer } from './richese-homeworld-marker-shipment';
+import { isHomeworldNoFieldLocation } from './richese-no-field';
 
 export type HomeworldShipmentSources = Record<string, HomeworldForces>;
 export function homeworldName(view: GameView, id: string): string {
@@ -29,6 +30,7 @@ export function richeseHomeworldMarkerChoice(
   destination: string,
   tokenId: string,
   allyPayment = 0,
+  source?: string,
 ) {
   const result: { blocked: string | null; amount: number; cost: number;
     ownPayment: number; allyPayment: number; action: Action | null } = {
@@ -48,7 +50,7 @@ export function richeseHomeworldMarkerChoice(
     result.blocked = 'Use your available Richese No-Field during your shipment turn.';
     return result;
   }
-  if (option.blocked || !info.canShip) {
+  if (option.blocked || (source === undefined && !info.canShip)) {
     result.blocked = option.blocked ?? info.shipBlock ?? 'No-Field shipment is not available now.';
     return result;
   }
@@ -76,10 +78,12 @@ export function richeseHomeworldMarkerChoice(
       visitors.map(([owner, forces]) => [owner, { ...forces }]));
   }
   try {
-    quoteRicheseHomeworldMarkerShipment(context, custody,
-      { player: me.id, destination, tokenId }, info.private);
+    if (source === undefined)
+      quoteRicheseHomeworldMarkerShipment(context, custody, { player: me.id, destination, tokenId }, info.private);
+    else
+      quoteRicheseHomeworldMarkerTransfer(context, custody, { player: me.id, destination, tokenId, source }, info.private);
     result.action = { type: 'homeworldShip', event: option.event, destination, sources: {},
-      noField: tokenId, noFieldEvent: info.event, allyPayment };
+      noField: tokenId, noFieldEvent: info.event, allyPayment, ...(source === undefined ? {} : { noFieldFrom: source }) };
   } catch (error) {
     if (!(error instanceof HomeworldCustodyError)) throw error;
     result.blocked = error.message;
@@ -387,11 +391,13 @@ export function homeworldShipmentActions(
   // Minimal legal participation: offer one private marker route through the
   // same quote used by the human control. Faction strategy remains deferred.
   if (me.faction === 'richese' && view.richeseNoField?.owner === me.id && view.richeseNoField.private) {
-    const token = view.richeseNoField.private.tokens.find(candidate =>
-      candidate.id !== view.richeseNoField!.private!.lastShipped);
+    const privateState = view.richeseNoField.private, deployed = privateState.deployed;
+    const source = deployed && isHomeworldNoFieldLocation(deployed.location) ? deployed.location.homeworld : undefined;
+    const token = source ? privateState.tokens.find(candidate => candidate.id === deployed?.tokenId)
+      : privateState.tokens.find(candidate => candidate.id !== privateState.lastShipped);
     if (token) for (const target of targets) {
       const quote = richeseHomeworldMarkerChoice(view, target.world.id, token.id,
-        Math.max(0, 1 - (me.spice ?? 0)));
+        Math.max(0, 1 - (me.spice ?? 0)), source);
       if (quote.action) { actions.push(quote.action); break; }
     }
   }
