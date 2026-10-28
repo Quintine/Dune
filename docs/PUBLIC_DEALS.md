@@ -1,5 +1,48 @@
 # Public deal records
 
+## Structured payment due this turn — 28 October 2026
+
+**Prototyped / Partial.** A public offer may name a payer, recipient and exact
+gross bribe due by the end of its current turn. Everyone sees the immutable
+term and every signatory must accept; final acceptance creates a pending
+obligation without transferring spice. The payer's persistent deal panel
+offers a dedicated payment action. That action settles exactly one agreement
+through the normal bribe path, including the deferred Mentat receipt and any
+Bureaucrat diversion. An unrelated bribe does not silently settle the deal.
+Two independent agreements require two transfers, even to the same recipient.
+
+The acceptance and subsequent voluntary-action quote considers the payer's
+actual uncommitted funds, supported existing commitments, possible native
+Charity/CHOAM income and already-earned incoming bribes. Exact payments may
+occur on either side of an eligible Charity claim. The bounded planner tries
+whole-payment orders and up to 2,048 candidate states; unavailable or more
+complex combinations can be rejected rather than treated as proven impossible.
+The quote never creates funds. A binding deal and a compatible Truthtrance
+minimum can both be satisfied by the same actual deal payment, but independent
+deals cannot share it. A payer may not voluntarily spend or close the payment
+window while an achievable obligation remains.
+
+Unanimous release cancels the unpaid term and does not refund a completed
+payment. A temporary decision, funding shortage or alliance does not by itself
+void the deal. In a quiet, supported Basic Mentat, a term individually larger
+than the payer's remaining funds is void; after an external shortfall leaving
+several individually payable terms, the payer can choose which to settle.
+Unpaid terms also become void when their turn actually ends or the game ends.
+The selection/feasibility policy is provisional. It does not yet decide all
+impossibility, optional-module or cross-turn cases, interpret free text, or
+enable AI negotiation. An already-offered immediate payment remains unreserved;
+its final acceptance can fail if it would undercut an active obligation.
+
+The publisher's rulebook permits legal public deals and voids impossible parts;
+this explicit receipt and deadline are an online representation, not a new
+printed restriction. Twenty-one related offline files pass 129 cases, including
+native consent, each separate payment, release, Charity, earned income,
+Truthtrance, autopilot and selected external-loss cases. One isolated
+authenticated HTTP case verifies consent, payer authority, deferred receipt and
+replay rejection on a separate test database. Broader combinations, free-form
+enforcement, browser and deployed acceptance remain open. Type checking, lint
+and the production build pass for this checkpoint.
+
 ## Source and prototype scope — 28 October 2026
 
 **Prototyped / Partial.** The [publisher's 2019 rulebook](https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf)
@@ -50,7 +93,7 @@ Free-text terms alone move no spice and create no automatically enforced game
 action. Players remain responsible for honoring valid terms, and an impossible
 part is void under the rules. Existing [bribe controls](BRIBE_CONTROLS.md)
 also make actual eligible payments into the recipient's deferred Mentat supply.
-Automatic interpretation, enforcement and impossibility handling,
+Automatic interpretation and full enforcement and impossibility handling,
 AI negotiation and complete multiplayer/deployed acceptance remain
 open. The text interface is an online convention, not a publisher ruling.
 

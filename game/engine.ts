@@ -5,7 +5,8 @@ import { createFactionDraft, validateFactionDraft, currentFactionDrafter, choose
 import { createFactionSwap, validateFactionSwap, answerFactionSwap, cancelFactionSwap,
   FactionSwapError, type FactionSwap } from './faction-swap';
 import { createPublicDeal, createMultipartyPublicDeal, validatePublicDeals, respondPublicDeal, withdrawPublicDeal,
-  releasePublicDeal, PublicDealError, type PublicDeal, type PublicDealPayment } from './public-deals';
+  releasePublicDeal, markPublicDealPaid, voidPublicDealPayment, PublicDealError, type PublicDeal, type PublicDealPayment } from './public-deals';
+import { pendingPublicDealPayments, publicDealPaymentTotal, PublicDealObligationError } from './public-deal-obligations';
 import { CharityPromiseError, liveCharityPromises, charityPromiseAnswers, bindCharityPromise, guardCharityClaim, guardCharityReady, reconcileCharityPromises, type CharityPromise } from './charity-promises';
 import { victoryFinalTurn, continueVictoryCalendar, VictoryCalendarError } from './victory-calendar';
 import { createVictoryContinuation, validateVictoryContinuation, voteVictoryContinuation,
@@ -5814,6 +5815,136 @@ function publicDealRule<T>(operation: () => T): T {
 }
 function publicDealIntegrity(g: Game): void {
   if (g.deals !== undefined) publicDealRule(() => validatePublicDeals(g.deals, g.players));
+}
+function publicDealObligationRule<T>(operation: () => T): T {
+  try { return operation(); }
+  catch (error) { if (error instanceof PublicDealObligationError) throw new RuleError(error.message); throw error; }
+}
+/** A detached quote spends each deal separately, so two agreements cannot be
+ * satisfied by one transfer. It also lets a real deal payment satisfy an
+ * overlapping Truthtrance bribe while retaining other live obligations. */
+function publicDealCompletion(g: Game, payer: Player): boolean {
+  const allDebts = publicDealObligationRule(() => pendingPublicDealPayments(g.deals ?? [],payer.id,g.turn));
+  // An allied recipient cannot currently receive a bribe. Keep that term
+  // pending, but do not let it mask other independently payable debts.
+  const debts = allDebts.filter(debt => debt.recipient !== payer.ally);
+  if (!debts.length) return true;
+  publicDealObligationRule(() => publicDealPaymentTotal(g.deals ?? [],payer.id,g.turn));
+  if (g.status !== 'playing') return false;
+  const source = structuredClone(g);
+  source.truthtrance = null; source.response = null; source.decision = null; source.phaseOpening = null;
+  source.pendingKarama = null; source.pendingTreacheryDiscard = null;
+  let visited = 0;
+  const visit = (candidate: Game, remaining: typeof debts): boolean => {
+    // Limit adversarially large ledgers. Exhaustion is not proof that an
+    // externally changed deal is impossible; no automatic void uses it.
+    if (++visited > 2048) return false;
+    try {
+      if (candidate.inflation?.side === 'double') return false;
+      if (remaining.length) {
+        // Each agreement is one exact transfer. Try real whole payments in
+        // different orders; a payer may become eligible for Charity between
+        // them, but a partial transfer never settles a separate deal.
+        for (const [index,debt] of remaining.entries()) {
+          const trial = structuredClone(candidate);
+          try {
+            quoteOrdinaryPayments(trial,payer.id,[{recipient:debt.recipient,amount:debt.amount}]);
+            if (visit(trial,remaining.filter((_,position) => position !== index))) return true;
+          } catch (error) { if (!(error instanceof RuleError)) throw error; }
+        }
+        const charity = forecastOrdinaryCharity(candidate,payer.id);
+        if (charity && visit(charity,remaining)) return true;
+        const income = forecastChoamOpeningIncome(candidate,payer.id);
+        if (income && visit(income,remaining)) return true;
+        // Existing bribes are already earned and arrive at this turn's
+        // Mentat opening; no other player's future payment is invented.
+        if (candidate.phase < 8 && getPlayer(candidate,payer.id).bribes > 0 &&
+            !bribesCloseBeforeNextMentat(candidate)) {
+          const opening = structuredClone(candidate), recipient = getPlayer(opening,payer.id);
+          opening.phase = 8; opening.ready = [];
+          recipient.spice += recipient.bribes; recipient.bribes = 0;
+          if (visit(opening,remaining)) return true;
+        }
+        return false;
+      }
+      const trial = candidate, seat = getPlayer(trial,payer.id);
+      if (hasBribePromises(trial,payer.id,true) && !bribePromiseCompletion(trial,seat)) return false;
+      if (liveTurnActionPromises(trial.turnActionPromises ?? [],payer.id,trial.turn).length &&
+          !turnActionCompletion(trial,payer.id)) return false;
+      const voluntary = {actor:payer.id,action:{type:'bribe'}};
+      reconcileBattlePromises(trial,voluntary);
+      reconcileShipmentPromises(trial,voluntary);
+      reconcileGroundMovementPromises(trial,payer.id,voluntary.action,g.phase);
+      reconcileBidPromises(trial,voluntary);
+      reconcilePhaseBids(trial,voluntary);
+      reconcileEarlyRicheseTruth(trial,voluntary);
+      reconcileRicheseBids(trial,voluntary);
+      reconcileRevivalPromises(trial,voluntary);
+      return true;
+    } catch (error) { if (error instanceof RuleError) return false; throw error; }
+  };
+  return visit(source,debts);
+}
+/** Hold accepted obligations while their current-turn continuation remains
+ * possible. Only settled, proven expiry or a base-game Mentat shortfall voids
+ * a term; temporary pending decisions do not establish impossibility. */
+function reconcilePublicDealTruth(g: Game, voluntary?: {actor:string;action:Action}, before?: Game): void {
+  if (!g.deals?.some(deal => deal.payment?.kind === 'deferredBribe' && deal.paymentStatus === 'pending')) return;
+  for (const p of g.players) {
+    const pending: PublicDeal[] = (g.deals ?? []).filter(deal => deal.status === 'active' && deal.payment?.kind === 'deferredBribe' &&
+      deal.payment.payer === p.id && deal.paymentStatus === 'pending');
+    if (!pending.length) continue;
+    const beforePayer = before && getPlayer(before,p.id);
+    const wasPossible = !!before && !!beforePayer && voluntary?.actor === p.id &&
+      pendingPublicDealPayments(before.deals ?? [],p.id,before.turn).some(debt => debt.recipient !== beforePayer.ally) &&
+      publicDealCompletion(before,beforePayer);
+    const expiredByAction = pending.some(deal => deal.payment?.kind === 'deferredBribe' &&
+      (g.turn > deal.payment.dueTurn || g.status === 'finished'));
+    const closesPaymentWindow = wasPossible && voluntary?.action.type === 'ready' &&
+      (before!.phase === 8 || before!.phase === 7 && bribesCloseBeforeNextMentat(before!));
+    if (wasPossible && (closesPaymentWindow || expiredByAction || !publicDealCompletion(g,p)))
+      throw new RuleError('Keep a legal completion for your accepted public deal payments.');
+    const quiet = !g.truthtrance && !g.response && !g.decision && !g.phaseOpening &&
+      !g.pendingKarama && !g.pendingTreacheryDiscard && !g.bureaucratPayments?.pending;
+    const available = Math.max(0,uncommittedSpice(g,p));
+    for (const deal of pending) {
+      const payment = deal.payment!;
+      if (payment.kind !== 'deferredBribe') continue;
+      const expired = g.turn > payment.dueTurn || g.status === 'finished';
+      if (!expired && payment.recipient === p.ally) continue;
+      const baseMentatShortfall = quiet && g.turn === payment.dueTurn && g.phase === 8 &&
+        g.expansions.length === 0 && bribePromiseModeSupported(g) && available < payment.amount;
+      if (expired || baseMentatShortfall) {
+        g.deals = g.deals!.map(row => row.id === deal.id ? publicDealRule((): PublicDeal => voidPublicDealPayment(row,g.players)) : row);
+        log(g, `${p.name}'s agreed ${payment.amount}-spice payment can no longer be completed and is void.`);
+      }
+    }
+  }
+}
+/** Once Basic Mentat has opened, outstanding promises can exceed funds
+ * after an external loss. Let the payer choose which still-payable deal to
+ * settle; the other individually impossible terms are then voided. */
+function publicDealInsolventAtBaseMentat(g: Game, player: string): boolean {
+  return g.phase === 8 && g.expansions.length === 0 && bribePromiseModeSupported(g) &&
+    publicDealObligationRule(() => publicDealPaymentTotal(g.deals ?? [],player,g.turn)) >
+      Math.max(0,uncommittedSpice(g,getPlayer(g,player)));
+}
+/** Only the payer receives its exact native payment quote. */
+function projectedDeferredDealPaymentOptions(g: Game, player: string): Record<string,{blocked:string|null}> {
+  const result: Record<string,{blocked:string|null}> = {};
+  for (const debt of pendingPublicDealPayments(g.deals ?? [],player,g.turn)) {
+    try {
+      const trial = structuredClone(g), index = trial.deals!.findIndex(deal => deal.id === debt.deal);
+      trial.deals![index] = publicDealRule(() => markPublicDealPaid(trial.deals![index],trial.players,player));
+      applyActionWithInitiator(trial,player,{type:'bribe',target:debt.recipient,amount:debt.amount},player,
+        {insolventDealPayment:publicDealInsolventAtBaseMentat(g,player)});
+      result[debt.deal] = {blocked:null};
+    } catch (error) {
+      if (!(error instanceof RuleError)) throw error;
+      result[debt.deal] = {blocked:error.message};
+    }
+  }
+  return result;
 }
 function assignLobbyFaction(player: Player, chosen: FactionId): void {
   player.faction = chosen;
@@ -16091,6 +16222,7 @@ function bribeTruthAnswers(g: Game, p: Player, claim: BribeClaim): ('yes' | 'no'
     const promises = [...(g.bribePromises ?? []), { ...claim, event: 'candidate', player: p.id,
       asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes', progress: 0 }];
     return !!bribePromiseCompletion(source, p, promises) &&
+      publicDealCompletion({ ...source, bribePromises: promises },p) &&
       phaseBidCompatibleBribeAnswer({ ...source, bribePromises: promises }, p) &&
       richeseBidCompatibleLaterPromises({ ...source, bribePromises: promises },p);
   });
@@ -16103,6 +16235,7 @@ function bribeExpressionTruthAnswers(g: Game, p: Player, claim: BribeExpressionC
     const expressions = [...(g.bribeExpressionPromises ?? []), { ...claim, event: 'candidate', player: p.id,
       asker: g.truthtrance?.queue[0]?.player ?? g.host, answer: answer === 'yes', progress: [] }];
     return !!bribePromiseCompletion(source, p, g.bribePromises ?? [], expressions) &&
+      publicDealCompletion({ ...source, bribeExpressionPromises: expressions },p) &&
       phaseBidCompatibleBribeAnswer({ ...source, bribeExpressionPromises: expressions }, p) &&
       richeseBidCompatibleLaterPromises({ ...source, bribeExpressionPromises: expressions },p);
   });
@@ -40129,7 +40262,8 @@ export function applyAction(state: Game, id: string, action: Action): Game {
 }
 /** The initiator can differ from the payer only for a previously consented
  * automatic deal payment; it is never supplied by a client action. */
-function applyActionWithInitiator(state: Game, id: string, action: Action, initiator: string): Game {
+function applyActionWithInitiator(state: Game, id: string, action: Action, initiator: string,
+  options?: {insolventDealPayment?: boolean}): Game {
   twoPlayerControllersIntegrity(state);
   factionDraftIntegrity(state);
   factionSwapIntegrity(state);
@@ -40203,6 +40337,18 @@ function applyActionWithInitiator(state: Game, id: string, action: Action, initi
   ambassadorRevivalIncomeIntegrity(state);
   ecazCollectionIntegrity(state);
   ecazAllianceIntegrity(state);
+  if (action?.type === 'dealPay') {
+    requireRule(state.status === 'playing' && Object.keys(action).sort().join(',') === 'deal,type' &&
+      typeof action.deal === 'string', 'Choose your pending deal payment.');
+    const g = structuredClone(state), index = (g.deals ?? []).findIndex(deal => deal.id === action.deal);
+    requireRule(index >= 0, 'This deal is no longer available.');
+    const current = g.deals![index], payment = current.payment;
+    requireRule(payment?.kind === 'deferredBribe' && payment.dueTurn === g.turn,
+      'This deferred payment is not due in the current turn.');
+    g.deals![index] = publicDealRule(() => markPublicDealPaid(current,g.players,id));
+    return applyActionWithInitiator(g,id,{type:'bribe',target:payment.recipient,amount:payment.amount},id,
+      {insolventDealPayment:publicDealInsolventAtBaseMentat(state,id)});
+  }
   if (['dealOffer', 'dealRespond', 'dealWithdraw', 'dealRelease'].includes(action?.type)) {
     requireRule(state.status === 'playing', 'Public deals require a game in progress.');
     const player = getPlayer(state, id);
@@ -40246,7 +40392,15 @@ function applyActionWithInitiator(state: Game, id: string, action: Action, initi
         next = publicDealRule(() => releasePublicDeal(current, g.players, id, action.agree as boolean));
       } else next = publicDealRule(() => withdrawPublicDeal(current, g.players, id));
       g.deals = deals.map((deal, position) => position === index ? next : deal);
-      if (current.status === 'offered' && next.status === 'active' && next.payment) {
+      if (current.status === 'offered' && next.status === 'active' && next.payment?.kind === 'deferredBribe') {
+        const payer = getPlayer(g,next.payment.payer);
+        requireRule(next.payment.dueTurn === g.turn && publicDealCompletion(g,payer),
+          'The agreed payment needs a legal funded completion in this turn.');
+        if ((g.phase === 2 && !g.charityOrder || g.phase === 8 || g.phase === 7 && bribesCloseBeforeNextMentat(g)) &&
+            g.ready.includes(payer.id)) g.ready = g.ready.filter(playerId => playerId !== payer.id);
+        log(g, `${payer.name} agreed to pay ${next.payment.amount} spice to ${getPlayer(g,next.payment.recipient).name} by the end of turn ${g.turn}.`);
+      }
+      if (current.status === 'offered' && next.status === 'active' && next.payment?.kind === 'immediateBribe') {
         // The payer consented to these immutable terms. Run the native action
         // on the same cloned state so a failed payment also rolls back consent.
         try {
@@ -40444,6 +40598,7 @@ function applyActionWithInitiator(state: Game, id: string, action: Action, initi
   reconcileCharityTruth(g, voluntary);
   reconcileRevivalPromises(g, voluntary);
   reconcileBribePromises(g, voluntary);
+  reconcilePublicDealTruth(g, voluntary, options?.insolventDealPayment ? undefined : state);
   reconcileGroundMovementPromises(g, promiseActor, action, state.phase);
   reconcileTraitorTruth(g, id, action);
   harkonnenNexusBetrayalIntegrity(g);
@@ -40572,6 +40727,7 @@ function applyActionWithInitiator(state: Game, id: string, action: Action, initi
   reconcileCharityTruth(g, { actor: id, action });
   reconcileRevivalPromises(g, { actor: id, action });
   reconcileBribePromises(g, { actor: id, action });
+  reconcilePublicDealTruth(g, voluntary, options?.insolventDealPayment ? undefined : state);
   reconcileAlliancePromises(g, { actor: id, action });
   settleAutomaticContinuations(g);
   observeOccupation(g);
@@ -40807,6 +40963,7 @@ function settleAutomaticContinuations(g: Game) {
     reconcileCharityTruth(g);
     reconcileRevivalPromises(g);
     reconcileBribePromises(g);
+    reconcilePublicDealTruth(g);
     reconcileGroundMovementPromises(g);
     reconcileAlliancePromises(g);
     reconcileTraitorTruth(g);
@@ -40924,6 +41081,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   reconcileCharityTruth(g);
   reconcileRevivalPromises(g);
   reconcileBribePromises(g);
+  reconcilePublicDealTruth(g);
   reconcileGroundMovementPromises(g);
   reconcileAlliancePromises(g);
   reconcileTraitorTruth(g);
@@ -45466,6 +45624,7 @@ export function viewGame(state: Game, id: string, now?: number) {
     host: g.host,
     status: g.status,
     deals: g.deals ?? [],
+    deferredDealPaymentOptions: projectedDeferredDealPaymentOptions(g,id),
     factionDraft: g.factionDraft ?? null,
     factionSwap: g.factionSwap ?? null,
     twoPlayerControllers: g.twoPlayerControllers ?? null,

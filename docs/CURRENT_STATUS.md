@@ -16,6 +16,18 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Structured public-deal payment due this turn — 28 October. Prototyped /
+Partial.** A public agreement can bind one exact current-turn bribe after
+unanimous consent. The payer sees a persistent request and pays each deal
+separately through the native bribe; release cancels an unpaid term without
+refunding a paid one. A bounded forecast protects supported obligations and
+allows real Charity and already-earned Mentat income. Twenty-one related
+offline files pass 129 cases, including genuine multi-party games, multiple
+debts, Truthtrance, Charity, autopilot and selected conserved staging. One
+isolated authenticated HTTP case covers consent, payer authority, escrow and
+replay. Complete deal interpretation, impossibility, other combinations,
+browser and deployed acceptance remain open. [Scope](PUBLIC_DEALS.md#structured-payment-due-this-turn--28-october-2026).
+
 **Basic phase-wide bids through Ixian/Richese preparation — 28 October.
 Prototyped / Partial.** Existing ordinary-bid questions can survive real Ixian
 inspection or cancellation and Richese cache-first/last preparation, including

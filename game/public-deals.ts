@@ -1,11 +1,18 @@
-/** Public agreements record written terms without parsing or enforcing them.
- * Older two-seat records omit participants and acceptVotes entirely. */
+/** Written terms remain player-managed. Typed payment terms use the native
+ * bribe rules; older two-seat records omit participants and acceptVotes. */
 export type PublicDealPayment = {
   kind: 'immediateBribe';
   payer: string;
   recipient: string;
   amount: number;
+} | {
+  kind: 'deferredBribe';
+  payer: string;
+  recipient: string;
+  amount: number;
+  dueTurn: number;
 };
+export type PublicDealPaymentStatus = 'pending' | 'paid' | 'void' | 'released';
 export type PublicDeal = {
   id: string;
   from: string;
@@ -17,8 +24,10 @@ export type PublicDeal = {
   /** Present together only on the multi-party record format. */
   participants?: string[];
   acceptVotes?: string[];
-  /** Exact gross bribe due when the last participant accepts. */
+  /** Exact gross bribe; immediate payment settles on final acceptance. */
   payment?: PublicDealPayment;
+  /** Present only for accepted or released deferred payments. */
+  paymentStatus?: PublicDealPaymentStatus;
 };
 
 export type PublicDealSeat = { id: string; bot?: unknown; ally?: string | null };
@@ -73,13 +82,22 @@ function orderedSubset(votes: readonly string[], parties: readonly string[]): bo
 }
 
 /** Parse one public gross payment term; no funds move until native settlement. */
-export function parsePublicDealPayment(value: unknown, parties: readonly string[]): PublicDealPayment {
-  requireDeal(object(value) && Object.keys(value).sort().join(',') === 'amount,kind,payer,recipient' &&
-    value.kind === 'immediateBribe' && id(value.payer) && id(value.recipient) && value.payer !== value.recipient &&
+export function parsePublicDealPayment(value: unknown, parties: readonly string[], turn?: number): PublicDealPayment {
+  requireDeal(object(value) && id(value.payer) && id(value.recipient) && value.payer !== value.recipient &&
     parties.includes(value.payer) && parties.includes(value.recipient) &&
     typeof value.amount === 'number' && Number.isSafeInteger(value.amount) && value.amount > 0,
-  'Choose a positive whole immediate bribe between two deal participants.');
-  return { kind: 'immediateBribe', payer: value.payer, recipient: value.recipient, amount: value.amount };
+  'Choose a positive whole bribe between two deal participants.');
+  if (value.kind === 'immediateBribe') {
+    requireDeal(Object.keys(value).sort().join(',') === 'amount,kind,payer,recipient',
+      'Choose an exact immediate bribe term.');
+    return { kind: 'immediateBribe', payer: value.payer, recipient: value.recipient, amount: value.amount };
+  }
+  requireDeal(value.kind === 'deferredBribe' &&
+    Object.keys(value).sort().join(',') === 'amount,dueTurn,kind,payer,recipient' &&
+    Number.isSafeInteger(turn) && (turn as number) > 0 && value.dueTurn === turn,
+  'Choose a deferred bribe due in the deal’s current turn.');
+  return { kind: 'deferredBribe', payer: value.payer, recipient: value.recipient,
+    amount: value.amount, dueTurn: turn as number };
 }
 
 /** Validate persisted ledger shape and lifecycle without applying current
@@ -89,7 +107,7 @@ export function validatePublicDeals(value: unknown, players: readonly PublicDeal
   requireDeal(Array.isArray(value), 'The public deal ledger is malformed.');
   const ids = new Set<string>();
   for (const deal of value) {
-    const keys = object(deal) ? Object.keys(deal).filter(key => key !== 'payment').sort().join(',') : '';
+    const keys = object(deal) ? Object.keys(deal).filter(key => key !== 'payment' && key !== 'paymentStatus').sort().join(',') : '';
     const multi = keys === 'acceptVotes,from,id,participants,releaseVotes,status,terms,to,turn';
     requireDeal(object(deal) && (multi || keys === 'from,id,releaseVotes,status,terms,to,turn') &&
       id(deal.id) && id(deal.from) && id(deal.to) && deal.from !== deal.to &&
@@ -118,7 +136,15 @@ export function validatePublicDeals(value: unknown, players: readonly PublicDeal
       parties = [deal.from, deal.to];
       participants(players, parties);
     }
-    if (Object.prototype.hasOwnProperty.call(deal, 'payment')) parsePublicDealPayment(deal.payment, parties);
+    const payment = Object.prototype.hasOwnProperty.call(deal, 'payment')
+      ? parsePublicDealPayment(deal.payment, parties, deal.turn as number) : undefined;
+    if (payment?.kind === 'deferredBribe') {
+      const status = deal.paymentStatus;
+      requireDeal(deal.status === 'active' ? status === 'pending' || status === 'paid' || status === 'void' :
+        deal.status === 'released' ? status === 'released' || status === 'paid' :
+          !Object.hasOwn(deal, 'paymentStatus'), 'The deferred payment status does not match the deal lifecycle.');
+    } else requireDeal(!Object.hasOwn(deal, 'paymentStatus'),
+      'Only an accepted deferred payment has a payment status.');
     const votes = deal.releaseVotes as string[];
     requireDeal(new Set(votes).size === votes.length && votes.every(vote => parties.includes(vote)) &&
       (!multi || orderedSubset(votes, parties)) &&
@@ -143,7 +169,7 @@ export function createPublicDeal(
   payment?: PublicDealPayment,
 ): PublicDeal {
   const text = validOffer(players, actor, [target], terms, turn, event);
-  const paymentTerm = arguments.length >= 7 ? { payment: parsePublicDealPayment(payment, [actor, target]) } : {};
+  const paymentTerm = arguments.length >= 7 ? { payment: parsePublicDealPayment(payment, [actor, target], turn) } : {};
   return { id: event, from: actor, to: target, terms: text, turn, status: 'offered', releaseVotes: [],
     ...paymentTerm };
 }
@@ -155,7 +181,7 @@ export function createMultipartyPublicDeal(
   requireDeal(Array.isArray(targets) && targets.length >= 2 && targets.length <= 5,
     'Choose two through five other participants.');
   const text = validOffer(players, actor, targets, terms, turn, event);
-  const paymentTerm = arguments.length >= 7 ? { payment: parsePublicDealPayment(payment, [actor, ...targets]) } : {};
+  const paymentTerm = arguments.length >= 7 ? { payment: parsePublicDealPayment(payment, [actor, ...targets], turn) } : {};
   return { id: event, from: actor, to: targets[0], terms: text, turn, status: 'offered',
     releaseVotes: [], participants: [actor, ...targets], acceptVotes: [actor],
     ...paymentTerm };
@@ -168,11 +194,14 @@ export function respondPublicDeal(deal: PublicDeal, players: readonly PublicDeal
     'Only an invited recipient may accept or decline an outstanding deal.');
   if (!accept) return { ...deal, status: 'declined', releaseVotes: [] };
   notAllied(participants(players, parties));
-  if (!deal.participants) return { ...deal, status: 'active', releaseVotes: [] };
+  if (!deal.participants) return { ...deal, status: 'active', releaseVotes: [],
+    ...(deal.payment?.kind === 'deferredBribe' ? { paymentStatus: 'pending' as const } : {}) };
   const alreadyAccepted = publicDealAcceptVotes(deal);
   requireDeal(!alreadyAccepted.includes(actor), 'This participant already accepted the offer.');
   const accepts = parties.filter(seat => seat === actor || alreadyAccepted.includes(seat));
-  return { ...deal, acceptVotes: accepts, status: accepts.length === parties.length ? 'active' : 'offered', releaseVotes: [] };
+  const active = accepts.length === parties.length;
+  return { ...deal, acceptVotes: accepts, status: active ? 'active' : 'offered', releaseVotes: [],
+    ...(active && deal.payment?.kind === 'deferredBribe' ? { paymentStatus: 'pending' as const } : {}) };
 }
 
 export function withdrawPublicDeal(deal: PublicDeal, players: readonly PublicDealSeat[], actor: string): PublicDeal {
@@ -191,5 +220,27 @@ export function releasePublicDeal(deal: PublicDeal, players: readonly PublicDeal
   let votes = deal.releaseVotes.filter(vote => vote !== actor);
   if (agree) votes.push(actor);
   if (deal.participants) votes = parties.filter(seat => votes.includes(seat));
-  return { ...deal, status: votes.length === parties.length ? 'released' : 'active', releaseVotes: votes };
+  const released = votes.length === parties.length;
+  return { ...deal, status: released ? 'released' : 'active', releaseVotes: votes,
+    ...(released && deal.payment?.kind === 'deferredBribe' && deal.paymentStatus !== 'paid'
+      ? { paymentStatus: 'released' as const } : {}) };
+}
+
+/** The engine must first authorize the native payer and exact bribe action.
+ * Apply this transition on its detached action state, so native failure rolls
+ * both the payment and the status change back together. */
+export function markPublicDealPaid(deal: PublicDeal, players: readonly PublicDealSeat[], payer: string): PublicDeal {
+  validatePublicDeals([deal], players);
+  requireDeal(deal.status === 'active' && deal.payment?.kind === 'deferredBribe' &&
+    deal.paymentStatus === 'pending' && deal.payment.payer === payer,
+  'Only the payer may settle a pending deferred deal payment.');
+  return { ...deal, paymentStatus: 'paid' };
+}
+
+/** The caller must establish actual external impossibility before voiding. */
+export function voidPublicDealPayment(deal: PublicDeal, players: readonly PublicDealSeat[]): PublicDeal {
+  validatePublicDeals([deal], players);
+  requireDeal(deal.status === 'active' && deal.payment?.kind === 'deferredBribe' && deal.paymentStatus === 'pending',
+    'Only a pending deferred deal payment can become impossible.');
+  return { ...deal, paymentStatus: 'void' };
 }

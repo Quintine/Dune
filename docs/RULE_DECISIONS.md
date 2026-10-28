@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Structured public-deal payment due this turn — 28 October 2026
+
+The publisher permits binding legal public agreements but does not define this
+online receipt or forecast. The prototype records an exact separately paid
+current-turn bribe after unanimous consent; supported native funding witnesses
+protect a viable payment, and only defined expiration or Basic Mentat
+shortfalls void it. Temporary alliances and uncertain income are not treated as
+proof of permanent impossibility. These are provisional software policies.
+[Scope](PUBLIC_DEALS.md#structured-payment-due-this-turn--28-october-2026).
+
 ## Basic phase-wide bids through special-auction preparation — 28 October 2026
 
 The current-turn Truthtrance FAQ does not define forecasts through an Ixian
