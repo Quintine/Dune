@@ -3,13 +3,13 @@
 import { useId } from 'react';
 import { FACTIONS } from '@/game/catalog';
 import { territory } from '@/game/board';
-import { knowledgeFactInputError, SPICE_PEEK_VALUES, type KnowledgeFact } from '@/game/truthtrance-knowledge';
+import { knowledgeFactInputError, PRESCIENCE_LEADER_NAMES, SPICE_PEEK_VALUES, type KnowledgeFact } from '@/game/truthtrance-knowledge';
 import { TRUTH_CARD_NAMES } from '@/game/truthtrance-card-names';
 import { Input } from '@/components/ui/input';
 
-type NumericKnowledgeFact = Exclude<KnowledgeFact, { kind: 'prediction'; field: 'faction' } | { kind: 'spicePeek' } | { kind: 'auctionPeek' } | { kind: 'ixPoolPeek' }>;
+type NumericKnowledgeFact = Exclude<KnowledgeFact, { kind: 'prediction'; field: 'faction' } | { kind: 'spicePeek' } | { kind: 'auctionPeek' } | { kind: 'ixPoolPeek' } | { kind: 'presciencePeek' }>;
 function isNumericKnowledgeFact(fact: KnowledgeFact): fact is NumericKnowledgeFact {
-  return fact.kind !== 'spicePeek' && fact.kind !== 'auctionPeek' && fact.kind !== 'ixPoolPeek' && (fact.kind !== 'prediction' || fact.field === 'turn');
+  return fact.kind !== 'spicePeek' && fact.kind !== 'auctionPeek' && fact.kind !== 'ixPoolPeek' && fact.kind !== 'presciencePeek' && (fact.kind !== 'prediction' || fact.field === 'turn');
 }
 
 export function KnowledgeFactFields({
@@ -28,7 +28,41 @@ export function KnowledgeFactFields({
   const invalid = knowledgeFactInputError(value);
   return (
     <>
-      {value.kind === 'ixPoolPeek' ? (
+      {value.kind === 'presciencePeek' ? (
+        <>
+          <label>
+            Inspected battle plan field
+            <select value={value.field} onChange={(event) => {
+              const field = event.target.value;
+              if (field === 'dial') onChange({ kind: 'presciencePeek', field, value: 0 });
+              else if (field === 'leader' || field === 'weapon' || field === 'defense')
+                onChange({ kind: 'presciencePeek', field, name: 'None' });
+            }}>
+              <option value="leader">Leader</option>
+              <option value="weapon">Weapon</option>
+              <option value="defense">Defense</option>
+              <option value="dial">Dial</option>
+            </select>
+          </label>
+          {value.field === 'dial' ? <label htmlFor={`${id}-prescience-dial`}>
+            Inspected dial value
+            <Input id={`${id}-prescience-dial`} type="number" min={0} step={0.5} required
+              value={Number.isNaN(value.value) ? '' : value.value}
+              aria-invalid={!!invalid}
+              aria-describedby={`${id}-prescience-help${invalid ? ` ${id}-error` : ''}`}
+              onChange={(event) => onChange({ ...value, value: event.currentTarget.valueAsNumber })} />
+          </label> : <label>
+            Inspected {value.field} name
+            <select value={value.name} onChange={(event) => onChange({ ...value, name: event.target.value })}>
+              <option value="None">None</option>
+              {(value.field === 'leader' ? PRESCIENCE_LEADER_NAMES : TRUTH_CARD_NAMES)
+                .filter(name => name !== 'None')
+                .map(name => <option key={name} value={name}>{name}</option>)}
+            </select>
+          </label>}
+          <p id={`${id}-prescience-help`} className="fine">This asks what the target currently knows from Prescience in this battle. If that field is unknown or no longer available, the answer is I don’t know. Only the answer is published.</p>
+        </>
+      ) : value.kind === 'ixPoolPeek' ? (
         <>
           <label>
             Recorded Ixian inspected auction pool includes

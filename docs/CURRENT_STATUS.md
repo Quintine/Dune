@@ -16,6 +16,17 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance and revealed Prescience — 28 October. Prototyped / Partial.**
+Single and compound questions can compare a live answered battle Prescience
+field: a named leader/card or None, or an exact dial. Only recipients entitled
+to the existing battle insight can produce a definite answer; pending, canceled,
+wrong-field and expired insights remain unknown. Eleven related files pass 58
+cases, including genuine Basic battles with all four fields, actual questions,
+all four minimal bot answers and battle continuation; the native fixture
+selects unopened deck order. Controls use component callback tests, not a
+browser. General freeform AI, wider interactions and deployed acceptance remain
+open. [Scope](TRUTTRANCE_KNOWLEDGE.md#already-answered-battle-prescience--28-october-2026).
+
 **Hidden Mobile Stronghold passenger collection — 28 October. Prototyped /
 Partial.** Explicit route choices count foreign fighters and one per deployed
 No-Field, excluding advisors; only Ixians receive the spice. The count uses

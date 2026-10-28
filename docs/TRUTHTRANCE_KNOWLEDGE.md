@@ -1,5 +1,29 @@
 # Truthtrance: recorded predictions and storm knowledge
 
+## Already answered battle Prescience — 28 October 2026
+
+**Prototyped / Partial.** A current-fact question can compare the leader,
+weapon, defense or exact dial already revealed through native battle
+Prescience. The field must match the answered inspection and the respondent
+must be entitled to the existing battle insight. Pending or unavailable
+inspection, a different field and an expired battle return unknown. The
+normal inspection category conversion is reused, including an Ecaz battle
+special represented as no element. The question exposes no inspected value to
+the asker beyond the target's ordinary Yes/No response.
+
+The [GF9 FAQ p. 8](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=8)
+permits game-related yes/no and compound questions. This bounded selector
+expresses that general permission and is not a new printed restriction.
+Other forms of private knowledge, general freeform interpretation and complete
+Truthtrance coverage remain unfinished.
+
+Eleven focused files pass 58 cases, including genuine Basic Prescience answers,
+Truthtrance questions, all four minimal bot responses and battle continuation
+for all four fields. The native fixture orders unopened cards without staging
+hands or positions. Controlled component callbacks exercise the selectors;
+`npm run check:quick` and the production build also passed. Browser and
+deployed acceptance remain open.
+
 ## Basic Ixian auction knowledge — 28 October 2026
 
 **Prototyped / Partial.** The structured fact `{kind:'ixPoolPeek', name}`

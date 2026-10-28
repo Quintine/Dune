@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Truthtrance and answered battle Prescience — 28 October 2026
+
+The publisher FAQ permits game-related yes/no and compound questions. The
+structured predicate compares an already answered live battle Prescience field
+only for a respondent entitled to the existing insight; unobserved, pending or
+expired fields yield unknown. The field selector and its lifetime are a
+bounded software interpretation, not a publisher ruling.
+[Scope](TRUTHTRANCE_KNOWLEDGE.md#already-answered-battle-prescience--28-october-2026).
+
 ## Mobile Stronghold passenger collection — 28 October 2026
 
 The E1 Ixian power permits collection per force in the stronghold without

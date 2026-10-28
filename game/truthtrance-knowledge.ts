@@ -1,7 +1,8 @@
 import { FACTIONS, type FactionId } from './catalog';
-import { SPICE_CARDS } from './cards';
+import { leaders, SPICE_CARDS } from './cards';
 import { territory } from './board';
 import { TRUTH_CARD_NAMES } from './truthtrance-card-names';
+import { battleCategoryInspectionValue } from './battle-card-slots';
 import type { Game, Player } from './engine';
 
 type Comparison = 'eq' | 'gte' | 'lte';
@@ -10,7 +11,16 @@ type Comparison = 'eq' | 'gte' | 'lte';
 export const SPICE_PEEK_VALUES: readonly string[] = [
   'worm', 'sandtrout', ...SPICE_CARDS.map(([id]) => id),
 ];
+/** Public printed choices, independent of the private inspected result. */
+export const PRESCIENCE_LEADER_NAMES: readonly string[] = [
+  ...new Set([...FACTIONS.flatMap(f => leaders(f.id).map(leader => leader.name)),
+    'Cheap Hero', 'Cheap Heroine', 'Auditor', 'Duke Prad Vidal', 'Kwisatz Haderach']),
+].sort();
+type PresciencePeekFact =
+  | { kind: 'presciencePeek'; field: 'leader' | 'weapon' | 'defense'; name: string }
+  | { kind: 'presciencePeek'; field: 'dial'; value: number };
 export type KnowledgeFact =
+  | PresciencePeekFact
   | { kind: 'prediction'; field: 'faction'; faction: FactionId }
   | { kind: 'prediction'; field: 'turn'; compare: Comparison; value: number }
   | { kind: 'spicePeek'; value: string }
@@ -27,16 +37,26 @@ export type TruthKnowledge = {
   auctionPeek: string | null;
   /** The authorized respondent's recorded Ixian group, not remaining lots. */
   ixPoolPeek?: readonly string[] | null;
+  presciencePeek?: { field: 'leader' | 'weapon' | 'defense' | 'dial'; value: string | number } | null;
 };
 
 export function isKnowledgeFact(value: unknown): value is KnowledgeFact {
   if (!value || typeof value !== 'object') return false;
   const kind = (value as { kind?: unknown }).kind;
-  return kind === 'prediction' || kind === 'stormDial' || kind === 'stormForecast' || kind === 'spicePeek' || kind === 'auctionPeek' || kind === 'ixPoolPeek';
+  return kind === 'prediction' || kind === 'stormDial' || kind === 'stormForecast' || kind === 'spicePeek' || kind === 'auctionPeek' || kind === 'ixPoolPeek' || kind === 'presciencePeek';
 }
 
 export function knowledgeFactInputError(value: unknown): string | null {
   if (!isKnowledgeFact(value)) return 'Choose a stored prediction, storm dial or known forecast.';
+  if (value.kind === 'presciencePeek') {
+    if (value.field === 'dial') return typeof value.value === 'number' && Number.isFinite(value.value) && value.value >= 0
+      ? null : 'Choose a nonnegative finite dial value.';
+    if (value.field !== 'leader' && value.field !== 'weapon' && value.field !== 'defense')
+      return 'Choose the observed battle plan field.';
+    const names = value.field === 'leader' ? PRESCIENCE_LEADER_NAMES : TRUTH_CARD_NAMES;
+    return typeof value.name === 'string' && (value.name === 'None' || names.includes(value.name))
+      ? null : 'Choose a known printed face or None.';
+  }
   if (value.kind === 'auctionPeek' || value.kind === 'ixPoolPeek')
     return typeof value.name === 'string' && TRUTH_CARD_NAMES.includes(value.name)
       ? null : 'Choose a known Treachery Card name.';
@@ -60,6 +80,9 @@ export function knowledgeFactInputError(value: unknown): string | null {
 export function parseKnowledgeFact(value: unknown): KnowledgeFact {
   const error = knowledgeFactInputError(value);
   if (error || !isKnowledgeFact(value)) throw new Error(error ?? 'Choose a valid private-knowledge question.');
+  if (value.kind === 'presciencePeek') return value.field === 'dial'
+    ? { kind: value.kind, field: value.field, value: value.value }
+    : { kind: value.kind, field: value.field, name: value.name };
   if (value.kind === 'auctionPeek' || value.kind === 'ixPoolPeek') return { kind: value.kind, name: value.name };
   if (value.kind === 'spicePeek') return { kind: value.kind, value: value.value };
   if (value.kind === 'prediction' && value.field === 'faction')
@@ -70,7 +93,7 @@ export function parseKnowledgeFact(value: unknown): KnowledgeFact {
 }
 
 export function truthKnowledgeOf(
-  g: Pick<Game, 'phase' | 'turn' | 'advanced' | 'stormDials' | 'stormDialers' | 'stormCard' | 'stormCardKnown' | 'spicePeekKnown' | 'spiceDeck' | 'auction' | 'richeseAuction' | 'ixAuction' | 'ixAuctionKnown' | 'homeworldOccupationPreview'>,
+  g: Pick<Game, 'phase' | 'turn' | 'advanced' | 'stormDials' | 'stormDialers' | 'stormCard' | 'stormCardKnown' | 'spicePeekKnown' | 'spiceDeck' | 'auction' | 'richeseAuction' | 'ixAuction' | 'ixAuctionKnown' | 'homeworldOccupationPreview' | 'battle' | 'players' | 'dukeVidal'>,
   p: Pick<Player, 'id' | 'faction' | 'prediction'>,
 ): TruthKnowledge {
   const dial = g.stormDials[p.id];
@@ -92,6 +115,30 @@ export function truthKnowledgeOf(
     : peek && 'sandtrout' in peek && peek.sandtrout === true ? 'sandtrout'
       : peek && 'territory' in peek && typeof peek.territory === 'string' && SPICE_PEEK_VALUES.includes(peek.territory)
         ? peek.territory : null;
+  // Match the existing battle.insight audience and inspection normalization.
+  // Never inspect the selected value before verifying the viewer is entitled.
+  const battle = g.phase === 6 ? g.battle : null;
+  const prescience = battle?.prescience;
+  let presciencePeek: TruthKnowledge['presciencePeek'] = null;
+  if (battle && prescience && (prescience.player === p.id || [battle.attacker, battle.defender].includes(p.id)) &&
+      Object.hasOwn(prescience, 'value')) {
+    const target = g.players.find(seat => seat.id === (prescience.player === battle.attacker ? battle.defender : battle.attacker));
+    if (target) {
+      const field = prescience.field;
+      const raw = prescience.value;
+      const card = (field === 'weapon' || field === 'defense') && typeof raw === 'string'
+        ? target.hand.find(item => item.id === raw) : undefined;
+      const value = battleCategoryInspectionValue(field, raw, card);
+      if (value === null) presciencePeek = { field, value: 'None' };
+      else if (field === 'dial' && typeof value === 'number' && Number.isFinite(value) && value >= 0)
+        presciencePeek = { field, value };
+      else if (field !== 'dial' && typeof value === 'string') {
+        const face = g.players.flatMap(seat => [...seat.leaders, ...seat.hand])
+          .concat(g.dukeVidal ? [g.dukeVidal.leader] : []).find(item => item.id === value);
+        if (face) presciencePeek = { field, value: face.name };
+      }
+    }
+  }
   return {
     prediction: p.faction === 'beneGesserit' && p.prediction
       ? { ...p.prediction } : null,
@@ -104,6 +151,7 @@ export function truthKnowledgeOf(
     spicePeek: peekFace,
     auctionPeek: typeof lotName === 'string' && lotName.length > 0 ? lotName : null,
     ixPoolPeek: ixPool,
+    presciencePeek,
   };
 }
 
@@ -114,6 +162,12 @@ export function knowledgeFactAnswer(
   const error = knowledgeFactInputError(fact);
   if (error) throw new Error(error);
   if (!knowledge) return 'unknown';
+  if (fact.kind === 'presciencePeek') {
+    const known = knowledge.presciencePeek;
+    if (!known || known.field !== fact.field) return 'unknown';
+    const expected = fact.field === 'dial' ? fact.value : fact.name;
+    return known.value === expected ? 'yes' : 'no';
+  }
   if (fact.kind === 'auctionPeek')
     return knowledge.auctionPeek == null ? 'unknown'
       : knowledge.auctionPeek === fact.name ? 'yes' : 'no';
@@ -134,6 +188,8 @@ export function knowledgeFactAnswer(
 }
 
 export function knowledgeFactText(fact: KnowledgeFact): string {
+  if (fact.kind === 'presciencePeek')
+    return `the ${fact.field} you observed through battle Prescience is ${fact.field === 'dial' ? fact.value : fact.name}`;
   if (fact.kind === 'auctionPeek')
     return `the current auction card you inspected as Atreides is ${fact.name}`;
   if (fact.kind === 'ixPoolPeek')
