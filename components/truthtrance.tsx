@@ -60,6 +60,7 @@ import type { MixedShipmentExpression } from '@/game/mixed-shipment-question';
 import type { PlanClaim } from '@/game/battle-promises';
 import { useId, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { CHEAP_HERO_TRAITOR } from '@/game/traitors';
 import {
   truthQuestionText,
@@ -68,6 +69,31 @@ import {
 } from '@/game/truthtrance';
 import type { Action, GameView } from '@/game/engine';
 import { canUseAsTruthtranceRole } from '@/game/shrine';
+
+/** The future cache lot is not selected when this condition is authored. */
+export function EarlyRicheseBidFields({ minimum, onMinimum, disabled }: {
+  minimum: number;
+  onMinimum: (value: number) => void;
+  disabled: boolean;
+}) {
+  const error = richeseBidMinimumError(minimum);
+  return <fieldset className="grid gap-2" disabled={disabled} aria-label="First Richese cache auction condition">
+    <legend>Bid in the first Richese cache auction this turn</legend>
+    <label htmlFor="truth-early-richese-minimum">Minimum bid in spice</label>
+    <Input id="truth-early-richese-minimum" type="number" min={1} max={Number.MAX_SAFE_INTEGER} step={1} required
+      disabled={disabled} value={Number.isFinite(minimum) ? minimum : ''}
+      aria-invalid={!!error} aria-describedby="truth-early-richese-help"
+      onChange={event => {
+        const next = event.currentTarget.valueAsNumber;
+        if (!disabled && !richeseBidMinimumError(next)) onMinimum(next);
+      }} />
+    {error && <p role="alert">{error}</p>}
+    <p className="fine" id="truth-early-richese-help">
+      This asks about the first Richese cache auction this turn. Its card and method have not yet been decided.
+      A qualifying bid does not promise a win or change the winning payment.
+    </p>
+  </fieldset>;
+}
 
 export function Truthtrance({
   game: g,
@@ -99,7 +125,7 @@ export function Truthtrance({
     g.players.find((p) => p.id !== me.id)!.id,
   );
   const [kind, setKind] = useState<
-    'fact' | 'freeform' | 'charity' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'phaseBid' | 'richeseBid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival' | 'mixedBid' | 'allianceExpression' | 'mixedAlliance' | 'mixedBattlePlan' | 'mixedTraitorCall' | 'travel' | 'turnActions'
+    'fact' | 'freeform' | 'charity' | 'battlePlan' | 'shipment' | 'mixedShipment' | 'movement' | 'traitorCall' | 'bid' | 'phaseBid' | 'richeseBid' | 'earlyRicheseBid' | 'revival' | 'bribe' | 'alliance' | 'leaderRevival' | 'revivalExpression' | 'bribeExpression' | 'movementExpression' | 'mixedMovement' | 'mixedBribe' | 'mixedRevival' | 'mixedBid' | 'allianceExpression' | 'mixedAlliance' | 'mixedBattlePlan' | 'mixedTraitorCall' | 'travel' | 'turnActions'
   >('fact');
   const [revivalLeader, setRevivalLeader] = useState(g.allLeaders.find(leader =>
     leader.faction === g.players.find(player => player.id === target)?.faction)?.id ?? '');
@@ -244,6 +270,7 @@ export function Truthtrance({
         : kind === 'mixedBid' ? { kind, target, turn: bidClaim.turn, lot: bidClaim.lot, mixed: mixedBid }
         : kind === 'bid' ? { kind, target, ...bidClaim }
         : kind === 'phaseBid' ? { kind, target, ...phaseBidClaim }
+        : kind === 'earlyRicheseBid' ? { kind, target, turn:g.turn, minimum:bidMinimum }
         : kind === 'richeseBid' ? { kind, target, turn:g.turn, event:g.richeseAuction?.event ?? '', minimum:bidMinimum }
         : kind === 'charity' ? { kind, target, turn:g.turn }
         : kind === 'shipment'
@@ -439,6 +466,13 @@ export function Truthtrance({
                       {button(answer === 'unknown' ? 'I don’t know' : `Answer ${answer === 'yes' ? 'Yes' : 'No'}`, { type: 'truthAnswer', answer })}
                     </div>)}
                   </>
+                ) : w.question!.kind === 'earlyRicheseBid' ? (
+                  <>
+                    <p className="notice">This concerns the first Richese cache auction this turn. Its card and method are not yet decided. Yes requires a qualifying bid while possible; No forbids a qualifying bid. The normal auction and payment rules still apply.</p>
+                    {(g.truthEarlyRicheseBidAnswers ?? []).map(answer => <div key={answer}>
+                      {button(`Answer ${answer === 'yes' ? 'Yes' : answer === 'no' ? 'No' : 'I don’t know'}`, { type: 'truthAnswer', answer })}
+                    </div>)}
+                  </>
                 ) : w.question!.kind === 'richeseBid' ? (
                   <>
                     <p className="notice">Yes requires a qualifying bid in your one remaining opportunity while possible. No forbids a qualifying bid. Silent amounts remain sealed until all submit; winning still requires payment.</p>
@@ -610,6 +644,7 @@ export function Truthtrance({
                   <option value="bid">Bind a bid in this ordinary lot</option>
                   <option value="charity">Bind a Charity claim this turn</option>
                   <option value="phaseBid">Bind a bid this Bidding phase</option>
+                  <option value="earlyRicheseBid">Bind a bid in the first Richese cache auction</option>
                   <option value="richeseBid">Bind a bid in this Richese lot</option>
                   <option value="mixedBid">Combine current facts and ordinary bids</option>
                   <option value="traitorCall">Bind this battle’s Traitor declaration</option>
@@ -759,6 +794,12 @@ export function Truthtrance({
                   <p className="fine">Ask whether the selected player will claim Charity after answering in the upcoming or current Charity phase. Earlier claims do not count; native eligibility and payment still apply. An unresolved outcome may leave the answer unknown.</p>
                   {!g.truthCharityTargets.includes(target) && <p className="notice">Choose a player with a supported remaining Charity opportunity.</p>}
                   <p className="notice" aria-label="Public Charity question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
+                </>
+              ) : kind === 'earlyRicheseBid' ? (
+                <>
+                  <EarlyRicheseBidFields minimum={bidMinimum} onMinimum={setBidMinimum} disabled={busy} />
+                  {!g.truthEarlyRicheseBidTargets.includes(target) && <p className="notice">Choose a supported player before the first Richese cache auction and finish pending decisions.</p>}
+                  <p className="notice" aria-label="Public early Richese bid question preview">{truthQuestionText(question, leaderName, locationName, name)}</p>
                 </>
               ) : kind === 'richeseBid' ? (
                 <>
@@ -911,6 +952,7 @@ export function Truthtrance({
                 (kind === 'revival' && (!!revivalClaimInputError(revivalClaim) || !g.truthRevivalTargets.includes(target))) ||
                 (kind === 'mixedBid' && (!!mixedBidError || !g.truthMixedBidTargets.includes(target))) ||
                 (kind === 'bid' && (!!bidClaimInputError(bidClaim) || !g.truthBidTargets.includes(target))) ||
+                (kind === 'earlyRicheseBid' && (!!richeseBidMinimumError(bidMinimum) || !g.truthEarlyRicheseBidTargets.includes(target))) ||
                 (kind === 'richeseBid' && (!!richeseBidMinimumError(bidMinimum) || !g.richeseAuction || !g.truthRicheseBidTargets.includes(target))) ||
                 (kind === 'charity' && !g.truthCharityTargets.includes(target)) ||
                 (kind === 'phaseBid' && (!!phaseBidClaimInputError(phaseBidClaim) || !g.truthPhaseBidTargets.includes(target))) ||

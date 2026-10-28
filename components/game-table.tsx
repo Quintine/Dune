@@ -1,5 +1,6 @@
 'use client';
 import { RicheseBidPromisePanel } from './richese-bid-promise-panel';
+import { EarlyRicheseBidPromises } from './early-richese-bid-promises';
 import { TravelPromises } from './travel-promises';
 import { TurnActionPromises } from './turn-action-promises';
 import { MixedTraitorPromises } from './mixed-traitor-promises';
@@ -2095,6 +2096,7 @@ export function GameTable({
           {g.status === 'playing' && <RevivalPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <BidPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <PhaseBidPromises game={g} send={act} busy={busy} />}
+          {g.status === 'playing' && <EarlyRicheseBidPromises game={g} />}
           {g.status === 'playing' && <MixedBidPromises game={g} send={act} busy={busy} />}
           {g.status === 'playing' && <MixedBattlePromises game={g} />}
           {g.status === 'playing' && <MixedTraitorPromises game={g} />}

@@ -1,5 +1,16 @@
 # Rule decision index
 
+## Early Richese cache-bid commitments — 28 October 2026
+
+The FAQ permits current-turn action questions but does not specify a future
+cache auction's unknown method, rivals or feasibility. This Basic prototype
+provisionally asks about the first actual cache lot, retains a waiting receipt
+until that event exists, uses current personal funding as its Yes witness and
+releases an impossible promise on external cancellation. A seller choosing
+Once Around may lose its turn when all others pass. This is an online
+interpretation rather than a publisher clarification.
+[Scope](TRUTHTRANCE_BID_PROMISES.md#basic-early-richese-cache-bid--28-october-2026).
+
 ## Truthtrance and answered battle Prescience — 28 October 2026
 
 The publisher FAQ permits game-related yes/no and compound questions. The

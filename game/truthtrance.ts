@@ -75,6 +75,7 @@ import { parseFaceDancerFact, faceDancerFactMatches, faceDancerFactText, type Fa
 import { parseBidClaim, bidClaimText, bidPromiseModeSupported, type BidClaim } from './bid-promises';
 import { parsePhaseBidClaim, phaseBidClaimText, phaseBidPromiseModeSupported, type PhaseBidClaim } from './turn-bid-promises';
 import { parseRicheseBidClaim, richeseBidClaimText, type RicheseBidClaim } from './richese-bid-promises';
+import { parseEarlyRicheseBidClaim, earlyRicheseBidClaimText, type EarlyRicheseBidClaim } from './early-richese-bid';
 
 export type TruthFact =
   | KnowledgeFact
@@ -110,6 +111,7 @@ export type TruthQuestion =
   | ({ kind: 'bid'; target: string } & BidClaim)
   | ({ kind: 'phaseBid'; target: string } & PhaseBidClaim)
   | ({ kind: 'richeseBid'; target: string } & RicheseBidClaim)
+  | ({ kind: 'earlyRicheseBid'; target: string } & EarlyRicheseBidClaim)
   | { kind: 'traitorCall'; target: string; battle: string; territory: string }
   | ({ kind: 'movement'; target: string } & MovementClaim)
   | ({ kind: 'shipment'; target: string } & ShipmentClaim)
@@ -374,6 +376,17 @@ function parseQuestion(g: Game, asker: string, value: unknown): TruthQuestion {
       !g.pendingKarama && !g.pendingTreacheryDiscard,
     'Choose a remaining native Revival opportunity this turn in a supported table and finish pending decisions.');
     return { kind: 'revival', target: v.target, ...claim };
+  }
+  if (v.kind === 'earlyRicheseBid') {
+    check(Object.keys(v).sort().join(',') === 'kind,minimum,target,turn',
+      'Supply the current turn, cache bid minimum and respondent.');
+    const claim = parseEarlyRicheseBidClaim(v);
+    check(bidPromiseModeSupported({ ...g, semutaPreview: undefined }) && !g.kullPreview && !g.advanced &&
+      g.status === 'playing' && g.phase >= 0 && g.phase <= 2 && claim.turn === g.turn &&
+      g.players.some(player => player.faction === 'richese') && (g.richeseCache?.length ?? 0) > 0 &&
+      !g.response && !g.decision && !g.phaseOpening && !g.pendingKarama && !g.pendingTreacheryDiscard,
+      'Choose a quiet Basic turn before the first Richese cache auction.');
+    return { kind: 'earlyRicheseBid', target: v.target, ...claim };
   }
   if (v.kind === 'richeseBid') {
     check(Object.keys(v).sort().join(',') === 'event,kind,minimum,target,turn',
@@ -773,6 +786,7 @@ export function truthQuestionText(
   if (q.kind === 'bid') return `Will you ${bidClaimText(q)}?`;
   if (q.kind === 'phaseBid') return `Will you ${phaseBidClaimText(q)}?`;
   if (q.kind === 'richeseBid') return `Will you ${richeseBidClaimText(q)}?`;
+  if (q.kind === 'earlyRicheseBid') return `Will you ${earlyRicheseBidClaimText(q)}?`;
   if (q.kind === 'traitorCall') return `In this revealed battle in ${locationName(q.territory)}, will you declare the opposing leader a Traitor?`;
   if (q.kind === 'movementExpression') return `Will you ${movementExpressionText(q.claim)} before your Shipment and Movement turn ends?`;
   if (q.kind === 'movement') return `Will you ${movementClaimText(q)} before your Shipment and Movement turn ends?`;
@@ -912,6 +926,8 @@ export function resolveTruthAction(
     bindCharity?: (g: Game, p: Player, turn: number, answer: boolean, asker: string) => void;
     richeseBidAnswers?: (g: Game, p: Player, claim: RicheseBidClaim) => TruthAnswer[];
     bindRicheseBid?: (g: Game, p: Player, claim: RicheseBidClaim, answer: boolean, asker: string) => void;
+    earlyRicheseBidAnswers?: (g: Game, p: Player, claim: EarlyRicheseBidClaim) => TruthAnswer[];
+    bindEarlyRicheseBid?: (g: Game, p: Player, claim: EarlyRicheseBidClaim, answer: boolean, asker: string) => void;
     phaseBidAnswers?: (g: Game, p: Player, claim: PhaseBidClaim) => TruthAnswer[];
     bindPhaseBid?: (g: Game, p: Player, claim: PhaseBidClaim, answer: boolean, asker: string) => void;
     travelAnswers?: (g: Game, p: Player, claim: TravelClaim) => TruthAnswer[];
@@ -1104,6 +1120,9 @@ export function resolveTruthAction(
         if (w.question.kind === 'richeseBid')
           check(effects.richeseBidAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a bidder with a remaining Richese auction opportunity.');
+        if (w.question.kind === 'earlyRicheseBid')
+          check(effects.earlyRicheseBidAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
+            'Choose a bidder with a compatible future cache auction opportunity.');
         if (w.question.kind === 'phaseBid')
           check(effects.phaseBidAnswers?.(g, g.players.find(other => other.id === w.question!.target)!, w.question).length,
             'Choose a phase bid question compatible with supported native opportunities and earlier answers.');
@@ -1246,6 +1265,11 @@ export function resolveTruthAction(
           check(effects.richeseBidAnswers && effects.bindRicheseBid && effects.richeseBidAnswers(g, p, q).includes(a.answer),
             'Choose an answer consistent with this Richese lot and your legal bid.');
           if (a.answer !== 'unknown') effects.bindRicheseBid(g, p, q, a.answer === 'yes', current.player);
+        }
+        if (q.kind === 'earlyRicheseBid') {
+          check(effects.earlyRicheseBidAnswers && effects.bindEarlyRicheseBid && effects.earlyRicheseBidAnswers(g, p, q).includes(a.answer),
+            'Choose an answer compatible with your future cache auction opportunity.');
+          if (a.answer !== 'unknown') effects.bindEarlyRicheseBid(g, p, q, a.answer === 'yes', current.player);
         }
         if (q.kind === 'phaseBid') {
           check(effects.phaseBidAnswers && effects.bindPhaseBid && effects.phaseBidAnswers(g, p, q).includes(a.answer),

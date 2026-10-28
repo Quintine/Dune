@@ -19,6 +19,9 @@ import { SaphoTruthOrderError, quoteSaphoTruthOrder, reorderSaphoTruthOrder, val
 import { RicheseBidPromiseError, richeseBidCompletionRange, richeseBidRequired, recordRicheseBid,
   liveRicheseBidPromises, reconcileRicheseBidPromises, finishRicheseBidLot, validateRicheseBidPromises,
   type RicheseBidClaim, type RicheseBidPromise, type RicheseBidOpportunity } from './richese-bid-promises';
+import { EarlyRicheseBidError, earlyRicheseBidAnswerOptions, bindEarlyRicheseBid,
+  attachEarlyRicheseBids, liveEarlyRicheseBidPromises, reconcileEarlyRicheseBids,
+  validateEarlyRicheseBidPromises, type EarlyRicheseBidClaim, type EarlyRicheseBidPromise } from './early-richese-bid';
 import { AuctionClockError, AUCTION_BID_MS, quoteAuctionClock, viewAuctionClock,
   type AuctionClock, type AuctionClockView } from './auction-clock';
 import { PrintedCardPlayError, printedCardPlayCount, recordPrintedCardPlay,
@@ -2323,6 +2326,7 @@ export type Game = {
   bidPromises?: BidPromise[];
   phaseBidPromises?: PhaseBidPromise[];
   richeseBidPromises?: RicheseBidPromise[];
+  earlyRicheseBidPromises?: EarlyRicheseBidPromise[];
   /** Raw mixed question linked to one private native current-lot obligation. */
   mixedBidQuestions?: (MixedBidClaim & {
     event: string; player: string; asker: string; answer: boolean; binding: boolean;
@@ -14985,6 +14989,11 @@ function beginRicheseLot(
     tieOrder: g.order,
   });
   g.richeseAuction = lot;
+  if (source === 'cache' && g.earlyRicheseBidPromises?.length) {
+    const attached = earlyRicheseBidRule(() => attachEarlyRicheseBids(g.earlyRicheseBidPromises!, g.turn, lot.event));
+    g.earlyRicheseBidPromises = attached.promises;
+    (g.richeseBidPromises ??= []).push(...attached.bound);
+  }
   g.richeseOfferedCard = structuredClone(card);
   g.richeseFunding = {};
   g.richesePeekKnown = false;
@@ -16596,6 +16605,67 @@ function projectedCharityTruthGuide(g: Game,player: string): {action:Action} | n
 function richeseBidRule<T>(run: () => T): T {
   try { return run(); } catch (error) { if (error instanceof RicheseBidPromiseError) throw new RuleError(error.message); throw error; }
 }
+function earlyRicheseBidRule<T>(run: () => T): T {
+  try { return run(); } catch (error) { if (error instanceof EarlyRicheseBidError) throw new RuleError(error.message); throw error; }
+}
+function earlyRicheseBidWindow(g: Game): boolean {
+  return bidPromiseModeSupported({ ...g, semutaPreview: undefined }) && !g.kullPreview && !g.advanced &&
+    g.status === 'playing' && g.phase >= 0 && g.phase <= 2 && !!byFaction(g, 'richese') &&
+    (g.richeseCache?.length ?? 0) > 0 && !g.response && !g.decision && !g.phaseOpening &&
+    !g.pendingKarama && !g.pendingTreacheryDiscard;
+}
+/** A conservative witness uses the respondent's current uncommitted spice;
+ * it does not assume an ally's future aid or an opponent's future bid. */
+function earlyRicheseBidMaximum(g: Game, p: Player): number {
+  // A leading ordinary bid may become a real purchase when the other players
+  // pass. Reserve its physical hand slot, including Harkonnen's bonus draw.
+  const pendingPurchase = g.auction?.bidder === p.id && !g.currentAuctionSale
+    ? 1 + Number(p.faction === 'harkonnen') : 0;
+  if (p.hand.length + pendingPurchase >= handLimit(p)) return 0;
+  const amount = uncommittedSpice(g,p);
+  return Number.isSafeInteger(amount) ? Math.max(0,amount) : 0;
+}
+function earlyRicheseBidTruthAnswers(g: Game,p: Player,claim: EarlyRicheseBidClaim): TruthAnswer[] {
+  if (!earlyRicheseBidWindow(g) || claim.turn !== g.turn) return [];
+  if (richeseBidOtherPromises(g,p)) return ['unknown'];
+  const asker = g.truthtrance?.queue[0]?.player ?? g.players.find(row => row.id !== p.id)?.id ?? g.host;
+  const answers = earlyRicheseBidRule(() => earlyRicheseBidAnswerOptions(g.earlyRicheseBidPromises ?? [],claim,p.id,asker,
+    earlyRicheseBidMaximum(g,p))).map(answer => answer ? 'yes' as const : 'no' as const);
+  return answers.includes('yes') ? answers : [...answers,'unknown'];
+}
+function bindEarlyRicheseBidTruth(g: Game,p: Player,claim: EarlyRicheseBidClaim,answer: boolean,asker: string): void {
+  requireRule(earlyRicheseBidTruthAnswers(g,p,claim).includes(answer ? 'yes' : 'no'),
+    'This early cache bid answer no longer has a funded completion.');
+  g.earlyRicheseBidPromises = earlyRicheseBidRule(() => bindEarlyRicheseBid(g.earlyRicheseBidPromises ?? [],claim,
+    p.id,asker,answer,crypto.randomUUID(),earlyRicheseBidMaximum(g,p)));
+}
+function reconcileEarlyRicheseTruth(g: Game,voluntary?: {actor:string;action:Action}): void {
+  earlyRicheseBidRule(() => validateEarlyRicheseBidPromises(g.earlyRicheseBidPromises ?? [],g.players.map(p => p.id)));
+  if (!g.earlyRicheseBidPromises?.length) return;
+  const pending = !!(g.truthtrance || g.response || g.decision || g.phaseOpening || g.pendingKarama || g.pendingTreacheryDiscard);
+  if (pending && !voluntary) return;
+  for (const p of g.players) {
+    // While a response is unsettled, preflight the voluntary actor only. Other
+    // seats wait for the settled continuation, so temporary reservations do
+    // not prematurely release their commitments.
+    if (pending && voluntary?.actor !== p.id) continue;
+    const turns: Set<number> = new Set((g.earlyRicheseBidPromises ?? []).filter(row => row.player === p.id && !row.boundEvent &&
+      !row.fulfilled && !row.released).map(row => row.turn));
+    for (const turn of turns) {
+      const round = g.richeseBidding;
+      const cachePending = g.status === 'playing' && g.turn === turn && g.phase <= 3 &&
+        (g.richeseCache?.length ?? 0) > 0 &&
+        (g.phase < 3 || !round || round.turn !== turn || !round.cacheCanceled && round.stage !== 'complete');
+      const before: EarlyRicheseBidPromise[] = g.earlyRicheseBidPromises ?? [];
+      g.earlyRicheseBidPromises = earlyRicheseBidRule((): EarlyRicheseBidPromise[] => reconcileEarlyRicheseBids(before,p.id,turn,{
+        cachePending,canBid:p.hand.length < handLimit(p),maximum:earlyRicheseBidMaximum(g,p),
+        change:voluntary?.actor === p.id ? 'voluntary' : 'external',
+      }));
+      if (g.earlyRicheseBidPromises.some((row,index) => row.player === p.id && row.released && !before[index]?.released))
+        log(g, `${p.name} can no longer fulfill the early Richese cache bid answer; it is no longer binding.`);
+    }
+  }
+}
 function richeseBidWindow(g: Game): boolean {
   return bidPromiseModeSupported({ ...g, semutaPreview: undefined }) && g.status === 'playing' && g.phase === 3 &&
     !!g.richeseAuction && ['onceAround','silent'].includes(g.richeseAuction.method) && !g.richeseAuction.outcome &&
@@ -16628,7 +16698,8 @@ function richeseBidOtherPromises(g: Game, p: Player): boolean {
  * admission, not later when neither promised action can be completed. */
 function richeseBidCompatibleLaterPromises(g: Game,p: Player): boolean {
   const lot = g.richeseAuction;
-  if (!lot) return true;
+  if (!lot) return !liveEarlyRicheseBidPromises(g.earlyRicheseBidPromises ?? [],p.id,g.turn).some(row => row.answer) ||
+    !richeseBidOtherPromises(g,p);
   const context = {turn:g.turn,event:lot.event,player:p.id};
   return !richeseBidRequired(g.richeseBidPromises ?? [],context) || !richeseBidOtherPromises(g,p);
 }
@@ -16664,6 +16735,12 @@ function reconcileRicheseBids(g: Game,voluntary?: {actor:string;action:Action}) 
     const context = {turn:row.turn,event:row.event,player:row.player};
     const change = voluntary?.actor === row.player ? 'voluntary' : 'external';
     const lot = g.richeseAuction;
+    // A waiting cache promise may attach before the owner can act in Once
+    // Around. Preserve it while other seats still have their bid opportunity;
+    // if everyone passes, the native close releases the impossible Yes.
+    if (lot?.event === row.event && lot.method === 'onceAround' && lot.owner === row.player &&
+        lot.active !== row.player && !lot.bidder &&
+        g.earlyRicheseBidPromises?.some(early => early.id === row.id && early.boundEvent === lot.event)) continue;
     if (g.turn !== row.turn || !lot || lot.event !== row.event || lot.outcome)
       g.richeseBidPromises = richeseBidRule(() => finishRicheseBidLot(g.richeseBidPromises!,context,change));
     else g.richeseBidPromises = richeseBidRule(() => reconcileRicheseBidPromises(g.richeseBidPromises!,context,
@@ -16881,7 +16958,8 @@ function bidPromiseCompletion(g: Game, p: Player, promises = g.bidPromises ?? []
       liveRevivalPromises(g.revivalPromises ?? [], p.id, g.turn).length ||
       liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [], p.id, g.turn).length ||
       liveRevivalExpressionPromises(g.revivalExpressionPromises ?? [], p.id, g.turn).length ||
-      hasBribePromises(g, p.id)) {
+      hasBribePromises(g, p.id) ||
+      liveEarlyRicheseBidPromises(g.earlyRicheseBidPromises ?? [], p.id, g.turn).some(row => row.answer)) {
       const trial = structuredClone(g);
       trial.truthtrance = null;
       trial.auction!.bid = action.amount as number;
@@ -16895,6 +16973,7 @@ function bidPromiseCompletion(g: Game, p: Player, promises = g.bidPromises ?? []
       reconcileGroundMovementPromises(trial, p.id, action, g.phase);
       reconcileRevivalPromises(trial, { actor: p.id, action });
       reconcileBribePromises(trial, { actor: p.id, action });
+      reconcileEarlyRicheseTruth(trial, { actor: p.id, action });
     }
     return action;
   }
@@ -40327,6 +40406,7 @@ function applyActionWithInitiator(state: Game, id: string, action: Action, initi
   reconcileTravelPromises(g, promiseActor, action, state.phase);
   reconcileBidPromises(g, voluntary);
   reconcilePhaseBids(g, voluntary);
+  reconcileEarlyRicheseTruth(g, voluntary);
   reconcileRicheseBids(g, voluntary);
   reconcileCharityTruth(g, voluntary);
   reconcileRevivalPromises(g, voluntary);
@@ -40454,6 +40534,7 @@ function applyActionWithInitiator(state: Game, id: string, action: Action, initi
   reconcileShipmentPromises(g, { actor: id, action, phase: state.phase });
   reconcileBidPromises(g, { actor: id, action });
   reconcilePhaseBids(g, { actor: id, action });
+  reconcileEarlyRicheseTruth(g, { actor: id, action });
   reconcileRicheseBids(g, { actor: id, action });
   reconcileCharityTruth(g, { actor: id, action });
   reconcileRevivalPromises(g, { actor: id, action });
@@ -40688,6 +40769,7 @@ function settleAutomaticContinuations(g: Game) {
     reconcileShipmentPromises(g);
     reconcileBidPromises(g);
     reconcilePhaseBids(g);
+    reconcileEarlyRicheseTruth(g);
     reconcileRicheseBids(g);
     reconcileCharityTruth(g);
     reconcileRevivalPromises(g);
@@ -40804,6 +40886,7 @@ export function normalizeAutomaticGame(state: Game): Game {
   reconcileShipmentPromises(g);
   reconcileBidPromises(g);
   reconcilePhaseBids(g);
+  reconcileEarlyRicheseTruth(g);
   reconcileRicheseBids(g);
   reconcileCharityTruth(g);
   reconcileRevivalPromises(g);
@@ -41093,6 +41176,8 @@ function applyActionInner(
         bindCharity: bindCharityTruth,
         richeseBidAnswers: richeseBidTruthAnswers,
         bindRicheseBid: bindRicheseBidTruth,
+        earlyRicheseBidAnswers: earlyRicheseBidTruthAnswers,
+        bindEarlyRicheseBid: bindEarlyRicheseBidTruth,
         phaseBidAnswers: phaseBidTruthAnswers,
         bindPhaseBid: bindPhaseBidTruth,
         turnActionAnswers: turnActionTruthAnswers,
@@ -45263,6 +45348,10 @@ export function viewGame(state: Game, id: string, now?: number) {
     }).map(player => player.id) : [],
     truthRicheseBidAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
       g.truthtrance.question.kind === 'richeseBid' ? richeseBidTruthAnswers(g,me,g.truthtrance.question) : null,
+    truthEarlyRicheseBidTargets: earlyRicheseBidWindow(g) ? g.players.map(player => player.id) : [],
+    truthEarlyRicheseBidAnswers: g.truthtrance?.stage === 'answer' && g.truthtrance.question?.target === id &&
+      g.truthtrance.question.kind === 'earlyRicheseBid' ? earlyRicheseBidTruthAnswers(g,me,g.truthtrance.question) : null,
+    ownEarlyRicheseBidPromises: (g.earlyRicheseBidPromises ?? []).filter(row => row.player === id).map(row => ({...row})),
     richeseBidPromises: (g.richeseBidPromises ?? []).filter(row => row.player === id).map(row => ({...row})),
     richeseBidPromiseGuide: projectedRicheseBidGuide(g,id),
     truthPhaseBidTargets: phaseBidQuestionWindow(g) ? g.players.map(player => player.id) : [],

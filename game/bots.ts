@@ -1393,6 +1393,10 @@ function policyActions(g: GameView): Action[] {
         const answer = g.truthRicheseBidAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];
       }
+      if (w.question.kind === 'earlyRicheseBid') {
+        const answer = g.truthEarlyRicheseBidAnswers?.[0];
+        return answer ? [{ type: 'truthAnswer', answer }] : [];
+      }
       if (w.question.kind === 'phaseBid') {
         const answer = g.truthPhaseBidAnswers?.[0];
         return answer ? [{ type: 'truthAnswer', answer }] : [];

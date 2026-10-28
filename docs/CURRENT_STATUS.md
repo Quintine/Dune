@@ -16,6 +16,18 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Basic early Richese cache-bid commitments — 28 October. Prototyped /
+Partial.** Before Bidding, ask about a minimum bid in the first actual cache
+lot of the turn. The waiting answer attaches to its real event and uses the
+existing Once Around or Silent enforcement and guide. Funding, hand space,
+voluntary spending and external cancellation are accounted for under an
+explicit provisional policy. A persistent reminder shows the waiting answer.
+Thirteen focused files pass 74 cases, including
+Basic native first/last lots, both methods and answers, owner opportunity,
+cancel, last-slot protection and all four minimal bots; selected edge fixtures
+stage conserved unopened cards. Advanced, combinations, browser and deployed
+acceptance remain open. [Scope](TRUTHTRANCE_BID_PROMISES.md#basic-early-richese-cache-bid--28-october-2026).
+
 **Truthtrance and revealed Prescience — 28 October. Prototyped / Partial.**
 Single and compound questions can compare a live answered battle Prescience
 field: a named leader/card or None, or an exact dial. Only recipients entitled

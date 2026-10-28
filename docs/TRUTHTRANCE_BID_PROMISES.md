@@ -1,5 +1,38 @@
 # Truthtrance ordinary bid commitments
 
+## Basic early Richese cache bid — 28 October 2026
+
+**Prototyped / Partial.** Before Bidding, a player may ask whether the target
+will make at least a stated bid in this turn's first Richese cache auction.
+The card, method, direction and public auction event do not yet exist in the
+question. A waiting receipt attaches to the real cache event before settlement,
+then reuses the existing Once Around or Silent obligation, legal guide and
+sealed-bid behavior. Yes is fulfilled by a qualifying accepted declaration,
+not a win; No caps the bid. An actual canceled or unavailable cache releases
+Yes and fulfills No. A real opposing bid can also make a later Yes impossible.
+
+The early feasibility witness conservatively uses current uncommitted personal
+spice and hand space, without assuming future allied funding or rival bids;
+uncertain cases can answer No or unknown rather than inventing a Yes witness.
+Other positive financial/action promises remain guarded until a joint planner
+exists. During the wait, a voluntary action cannot eliminate a funded Yes;
+an outstanding leading ordinary purchase reserves a hand slot (two for a
+Harkonnen bonus draw). A waiting Richese owner can choose Silent; if the owner
+chooses Once Around and all others pass, the unreachable Yes is released. This
+is an online feasibility policy, not a publisher ruling. The general
+[GF9 FAQ p. 8](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=8)
+permits game-related current-turn questions and compliance while possible.
+
+Thirteen focused files pass 74 cases. Basic native first/last Once Around and
+Silent paths exercise both answers, real event binding, guides and all four
+minimal bot profiles. Additional real-auction cases exercise voluntary spending,
+the final hand slot, canceled cache and the owner's Once Around turn; some
+explicitly stage conserved unopened cards. The owner sees a persistent waiting
+reminder; controls are tested with component callbacks. Printed Kull, broader
+combinations, Advanced early questions and deployed
+acceptance remain open.
+`npm run check:quick` and the production build passed for this batch.
+
 ## Richese Silent bid prototype — 27 October 2026
 
 **Prototyped / Partial.** The existing event-bound Richese minimum-bid question
