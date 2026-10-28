@@ -2,6 +2,33 @@
 
 Bounded source and implementation audit, 2026-09-06. No runtime edits or live-room actions were performed.
 
+## Initial mandatory discard before native retention — 28 October 2026
+
+**Prototyped / Partial.** In the supported bare Basic Semuta profile with a
+native Moritani ally, cards that the losing ally could not keep as a winner
+are discarded with the original mandatory battle batch; the ally's eligible
+played cards remain reserved for its later retention choice. Cheap Hero is
+always ineligible. The ordinary predicate still permits an unused Poison Tooth
+and applies the existing Traitor exception to otherwise mandatory cards.
+
+The initial batch receives one neutral Semuta opportunity. Its resolved battle
+and remaining winner cleanup continue once; the losing ally's original
+retention pool stays fixed even if Semuta transfers a freshly discarded card.
+The later choice, Karama response and disposal of unkept eligible cards use the
+existing native continuation. A Semuta holder cannot spend a reserved battle
+card. Older saved retention records and other profiles keep their recorded
+all-played reservation.
+
+The publisher permits the ally to keep one eligible played card and Semuta to
+take a card another player has just discarded. It does not establish the timing
+between these effects. Sending unretainable cards to an initial batch and the
+remaining unkept cards to a later batch is a provisional software ordering; it
+creates separate Semuta opportunities and is not a publisher ruling that the
+loser's discards are simultaneous or separate. The existing all-card
+reservation remains a different serialization, documented below. Controlled
+actual-battle fixtures exercise this boundary; wider combinations, complete
+rules and deployed acceptance remain open.
+
 ## Distinct Advanced special Karama first version — 8 October 2026
 
 This is **not** the ally-retention ability below. Authorized supplied PDF
@@ -116,9 +143,10 @@ require one private selection. Kept and unrelated hand cards remain unavailable.
 Compulsory/optional winner-card batches may also pause before the original
 choose-stage retention. Existing aftermath validation and reciprocal alliance
 checks preserve that native opportunity. A loser acquiring the winner's card
-through Semuta cannot add it to the original played/eligible pool. All losing
-played cards are reserved in this envelope, so no losing `battleResolved`
-batch precedes retention; that distinct pending-retention path stays gated.
+through Semuta cannot add it to the original played/eligible pool. At this
+earlier checkpoint all losing played cards were reserved, so no losing
+`battleResolved` batch preceded retention. The later narrowly scoped initial
+mandatory-discard prototype is described above.
 Advanced native Moritani and Nexus/Skills compositions are not opened.
 
 An enemy or the defeated ally spending a printed Karama to cancel the proposed

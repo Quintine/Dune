@@ -1,5 +1,15 @@
 # Rule decision index
 
+## Semuta before Moritani allied retention — 28 October 2026
+
+The printed powers do not specify their combined discard ordering. In the
+bare Basic Semuta preview, the defeated ally's mandatory cards enter an
+initial Semuta batch before winner cleanup; the later unkept retainable cards
+form a separate batch after the original retention choice and response. This
+is a provisional serialization, not a publisher ruling. Existing saved
+retention records and other profiles keep their previous reservations.
+[Scope](MORITANI_ALLY_RETENTION_RULES.md#initial-mandatory-discard-before-native-retention--28-october-2026).
+
 ## Richese marker with same-source Homeworld forces — 28 October 2026
 
 The supplied Advanced revision permits Homeworld-to-Homeworld shipment

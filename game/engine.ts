@@ -9188,13 +9188,13 @@ function treacheryDiscardIntegrity(g: Game) {
       'The committed Kaitain discard no longer matches its payment and closing opportunity.');
   } else throw new RuleError('Unknown saved discard continuation.');
   if (pending.reaction && g.moritaniRetention &&
-      (continuation.kind === 'winnerMandatoryDiscard' ||
+      (continuation.kind === 'battleResolved' || continuation.kind === 'winnerMandatoryDiscard' ||
         (continuation.kind === 'battleCleanup' && continuation.source === 'winner'))) {
     const retention = g.moritaniRetention;
     const owner = getPlayer(g, retention.owner), loser = getPlayer(g, retention.player);
     requireRule(!g.advanced && retention.source === undefined && retention.stage === 'choose' &&
       owner.faction === 'moritani' && owner.ally === loser.id && loser.ally === owner.id,
-      'The pending native allied retention no longer matches the preceding winner discard.');
+      'The pending native allied retention no longer matches the preceding battle discard.');
     currentBattleAftermathQuote(g);
   }
 }
@@ -9393,7 +9393,8 @@ function semutaOfferSupported(
     continuation.kind === 'battleResolved') &&
     ((g.pendingWinnerDiscards && continuation.kind !== 'battleResolved') ||
       (g.moritaniRetention && (g.advanced || g.moritaniRetention.source !== undefined ||
-        g.moritaniRetention.stage !== 'choose' || continuation.kind === 'battleResolved')) ||
+        g.moritaniRetention.stage !== 'choose' ||
+        (continuation.kind === 'battleResolved' && !bareBasicSemutaProfile(g)))) ||
       g.pendingIxSubstitution)) return false;
   if (continuation.kind === 'terrorDiscard' &&
     (!childTerrorDiscard && (continuation.entry.resume !== 'none' ||
@@ -32487,6 +32488,7 @@ function currentBattleResolutionInput(g: Game, canceledVoter?: string): BattleRe
     physicalCards: physicalTreacheryCards(g),
     pendingAuditorPresent: !!g.pendingAuditor,
     pendingRetentionPresent: !!g.moritaniRetention,
+    nativeMoritaniEarlyMandatoryDiscard: !!g.semutaPreview && bareBasicSemutaProfile(g),
     nexusMoritani: !!g.nexusCards?.cards && !byFaction(g, 'moritani'),
     ...(b.stoneAllocation ? { stoneAllocations: b.stoneAllocation.selections } : {}),
   };

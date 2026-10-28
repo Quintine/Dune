@@ -2,6 +2,26 @@
 
 Read-only engine audit, 2026-09-07. Read the complete `docs/SEMUTA_DRUG_ENGINE_AUDIT.md`, then inspected every current `discard(...)` call, direct Treachery-discard mutation and `draw(g)` caller in `game/engine.ts`, plus the Truthtrance discard callback and pure Box/Distrans results. Names below are integration anchors; approximate current lines are navigation aids only. This report adopts no additional source ruling and changes no project file.
 
+## Native Moritani retention and initial battle discards — 28 October 2026
+
+In the supported bare Basic Semuta profile, a defeated ally of native Moritani
+discards played cards that cannot be retained with the original mandatory
+`battleResolved` batch. The eligible played cards remain reserved for the
+later Moritani choice. A neutral Semuta reaction can suspend the original
+resolved-battle continuation at the initial batch; claiming or passing resumes
+the original winner cleanup and the same retention choice without repeating
+battle results. A later discard of the unkept eligible cards has its own fresh
+Semuta opportunity. A recovered card never enters the original retention pool.
+
+This split into two distinct opportunities is a provisional software ordering:
+the source does not establish the priority or whether those discards must be
+grouped. The ordinary winner-retention predicate, including the Cheap Hero and
+Traitor cases, determines which cards are ineligible; it is not inferred from
+their generic card types alone. Older saved retention records and non-preview
+games retain their original reservations. Controlled actual-battle fixtures
+exercise the new continuation; wider module combinations and final acceptance
+remain open. [Retention scope](MORITANI_ALLY_RETENTION_RULES.md#initial-mandatory-discard-before-native-retention--28-october-2026).
+
 ## Shrine physical-role stages — 16 October 2026
 
 Fresh private `semuta --discoveries` setup retains the original Discovery

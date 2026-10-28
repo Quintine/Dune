@@ -32,6 +32,9 @@ function battle(holdCard: boolean, advanced = false, playedCard = true,
     cards.hands[winnerId] = 'choam';
   }
   Object.assign(game, { active: winnerId, order: ids, phase: 6, storm: 18 });
+  // This deliberately staged battle skips the preceding Charity phase, so its
+  // Advanced-only ordering receipt cannot remain active in the battle fixture.
+  delete game.charityOrder;
   for (const player of game.players) {
     player.forces = player.id === observerId ? {} : { 'arrakeen:10': 10 };
     player.reserves = player.id === observerId ? 20 : 10;

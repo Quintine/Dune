@@ -16,6 +16,17 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Semuta before Basic Moritani ally retention — 28 October. Prototyped /
+Partial.** In the bare Basic Semuta preview, mandatory loser cards form an
+initial battle discard batch before the original allied-retention choice;
+Semuta may claim or pass before winner cleanup resumes. The later unkept cards
+form a separate opportunity. This ordering is provisional; older saves and
+other profiles retain their existing reservations. Eleven related offline
+files pass 125 cases, including controlled physical-card battle claim/pass,
+later retention and mandatory-card/Traitor distinctions. Wider combinations
+and deployed acceptance remain open.
+[Scope](MORITANI_ALLY_RETENTION_RULES.md#initial-mandatory-discard-before-native-retention--28-october-2026).
+
 **Mixed Homeworld No-Field transfers — 28 October. Prototyped / Partial.** Richese may provisionally
 ship its existing concealed marker together with its own selected physical
 forces from that same foreign Homeworld to another eligible foreign World.

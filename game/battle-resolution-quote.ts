@@ -156,6 +156,9 @@ export type BattleResolutionInput = {
   physicalCards: readonly { id: string }[];
   pendingAuditorPresent: boolean;
   pendingRetentionPresent: boolean;
+  /** Selected Basic Semuta serialization: dispose mandatory loser cards before
+   * reserving the eligible native Moritani ally-retention choices. */
+  nativeMoritaniEarlyMandatoryDiscard?: boolean;
   /** Open the same loser window regardless of private Moritani Nexus custody. */
   nexusMoritani?: boolean;
 };
@@ -966,16 +969,17 @@ function calculate(input: BattleResolutionInput): BattleResolutionQuote {
     const loser = winner === a ? d : a,
       loserPlayed = loser === a ? played.attacker : played.defender;
     const retainablePlayed = loserPlayed.filter(
-      (selected) => !mandatorySkillDiscard(loser, selected),
-    );
-    const eligible = retainablePlayed.filter(
       (selected) =>
-        canRetainBattleCard(
-          card(loser, selected)!,
-          ac || dc,
-          !!loser.poisonTooth,
-        ),
+        !mandatorySkillDiscard(loser, selected) &&
+        (!input.nativeMoritaniEarlyMandatoryDiscard || !moritani ||
+          canRetainBattleCard(
+            card(loser, selected)!,
+            ac || dc,
+            !!loser.poisonTooth,
+          )),
     );
+    const eligible = retainablePlayed.filter((selected) =>
+      canRetainBattleCard(card(loser, selected)!, ac || dc, !!loser.poisonTooth));
     if (
       moritani &&
       loser.id !== moritani.id &&
