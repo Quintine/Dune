@@ -1,5 +1,23 @@
 # Juice of Sapho: finite ordering implementation
 
+## Recovered Sapho after the same holder's Last — 28 October 2026
+
+**Prototyped / Partial.** An unstarted holder who previously used Sapho to go
+last may recover that physical card with Nullentropy Box and use it again to
+go first among the remaining combined Movement turns. The fresh use removes
+that same holder's Last protection, preserves completed turns and respects an
+already-started current actor and the Guild's existing timing. Semuta discard
+responses still finish through the original continuation. Another holder may
+not replace the protected Last under this bounded policy. Replaying after one's
+own started turn was suspended remains unsupported.
+
+The printed card has no stated once-per-turn limit; choosing how a later use
+interacts with an earlier protected position is a provisional interpretation,
+not a publisher clarification. A native Basic game covers Sapho's purchase,
+Last play, paid Box recovery and First replay; Box possession is staged by a
+conserving exchange with the unopened cache. Five related files pass 44 cases.
+Broader combinations, browser and deployed acceptance remain open.
+
 ## Own started Advanced Charity turn — 27 October 2026
 
 **Prototyped / Partial.** At a clean boundary in ordered Advanced Charity, the
@@ -468,8 +486,9 @@ different holder behind the active turn under the selected provisional policy.
 Other ordered actions and competing first/Guild precedence beyond the retained
 native choice remain unfinished. The own-started Movement and Revival policies
 above supersede the earlier blanket split-turn exclusion.
-Reacquiring and replaying Sapho while existing last protection remains is still
-guarded. Silent submission stays simultaneous with its original storm tie order.
+The same-holder unstarted Movement replay described above is supported; other
+holders' protected Last and suspended-own-turn replay remain guarded. Silent
+submission stays simultaneous with its original storm tie order.
 
 The battle audit in [the battle review](JUICE_OF_SAPHO_BATTLE_REVIEW.md) found a real Stone Burner counterexample: a plan admitted with original aggressor tie priority can become allocation-ambiguous after late Sapho. A complete implementation needs the actual allocation continuation (and a usable, possession-independent late intervention boundary), not rejection based on an opponent's hidden plan. No aggressor handler has been enabled around that defect.
 

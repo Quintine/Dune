@@ -16,6 +16,23 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Truthtrance about a public Basic Richese cache lot — 28 October.
+Prototyped / Partial.** A named-face question covers the current public cache
+lot while preserving the separate Atreides inspection question. Single and
+compound controls and minimal bot answers use the same actual lot. Six related
+files pass 17 cases, including native cache play, true/false answers and
+unavailable boundaries. Other special auctions, browser and deployed
+acceptance remain open. [Scope](TRUTHTRANCE_KNOWLEDGE.md#public-basic-richese-cache-lot--28-october-2026).
+
+**Sapho replay after the same holder's Last — 28 October. Prototyped /
+Partial.** The unstarted holder may recover the physical card and use First to
+replace its own earlier Last, preserving completed turns and the active actor.
+Five related files pass 44 cases, including Basic real discard, paid Box
+recovery, Semuta responses and replay; Box possession uses a conserved staging
+exchange. Other holders' protections and suspended-own-turn replay remain
+guarded; broader combinations and deployed acceptance are open.
+[Scope](JUICE_OF_SAPHO_RUNTIME.md#recovered-sapho-after-the-same-holders-last--28-october-2026).
+
 **Public-deal payments due on later turns — 28 October. Prototyped /
 Partial.** Players may set a future turn and settle early or on the deadline.
 Before that turn the obligation does not reserve current spice or assume future

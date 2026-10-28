@@ -1,5 +1,20 @@
 # Truthtrance: recorded predictions and storm knowledge
 
+## Public Basic Richese cache lot — 28 October 2026
+
+**Prototyped / Partial.** A separate `{kind:'cacheLot', name}` fact asks whether
+the currently offered public Basic Richese cache card has a named printed face.
+Any seated respondent can give a definite answer while that actual lot is
+active. Missing, completed, Advanced and Black Market lots return unknown.
+Only the offered card is read, not the other cached cards; the existing
+Atreides inspection question keeps its original meaning. Single and compound
+editors use the public name registry and minimal bots use the same answer path.
+
+The [GF9 FAQ p. 8](https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf#page=8)
+permits game-related yes/no questions. This selector and its active-lot boundary
+are a provisional online interpretation; broader special auctions and full
+Truthtrance acceptance remain open.
+
 ## Already answered battle Prescience — 28 October 2026
 
 **Prototyped / Partial.** A current-fact question can compare the leader,

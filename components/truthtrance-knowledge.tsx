@@ -7,9 +7,9 @@ import { knowledgeFactInputError, PRESCIENCE_LEADER_NAMES, SPICE_PEEK_VALUES, ty
 import { TRUTH_CARD_NAMES } from '@/game/truthtrance-card-names';
 import { Input } from '@/components/ui/input';
 
-type NumericKnowledgeFact = Exclude<KnowledgeFact, { kind: 'prediction'; field: 'faction' } | { kind: 'spicePeek' } | { kind: 'auctionPeek' } | { kind: 'ixPoolPeek' } | { kind: 'presciencePeek' }>;
+type NumericKnowledgeFact = Exclude<KnowledgeFact, { kind: 'prediction'; field: 'faction' } | { kind: 'spicePeek' } | { kind: 'auctionPeek' } | { kind: 'cacheLot' } | { kind: 'ixPoolPeek' } | { kind: 'presciencePeek' }>;
 function isNumericKnowledgeFact(fact: KnowledgeFact): fact is NumericKnowledgeFact {
-  return fact.kind !== 'spicePeek' && fact.kind !== 'auctionPeek' && fact.kind !== 'ixPoolPeek' && fact.kind !== 'presciencePeek' && (fact.kind !== 'prediction' || fact.field === 'turn');
+  return fact.kind !== 'spicePeek' && fact.kind !== 'auctionPeek' && fact.kind !== 'cacheLot' && fact.kind !== 'ixPoolPeek' && fact.kind !== 'presciencePeek' && (fact.kind !== 'prediction' || fact.field === 'turn');
 }
 
 export function KnowledgeFactFields({
@@ -71,6 +71,16 @@ export function KnowledgeFactFields({
             </select>
           </label>
           <p className="fine">In Basic Bidding, this asks whether the named card is in the Ixian’s recorded inspected auction pool. If that knowledge is unavailable, the answer is I don’t know. Only the answer is published; the pool itself remains private.</p>
+        </>
+      ) : value.kind === 'cacheLot' ? (
+        <>
+          <label>
+            Public Basic Richese cache auction card
+            <select value={value.name} onChange={(event) => onChange({ kind: 'cacheLot', name: event.target.value })}>
+              {TRUTH_CARD_NAMES.map((name) => <option key={name} value={name}>{name}</option>)}
+            </select>
+          </label>
+          <p className="fine">This asks about the current public Richese cache auction card in Basic play. If that auction is unavailable, the answer is I don’t know. Only the answer is published.</p>
         </>
       ) : value.kind === 'auctionPeek' ? (
         <>

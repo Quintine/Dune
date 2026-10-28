@@ -25,6 +25,7 @@ export type KnowledgeFact =
   | { kind: 'prediction'; field: 'turn'; compare: Comparison; value: number }
   | { kind: 'spicePeek'; value: string }
   | { kind: 'auctionPeek'; name: string }
+  | { kind: 'cacheLot'; name: string }
   | { kind: 'ixPoolPeek'; name: string }
   | { kind: 'stormDial' | 'stormForecast'; compare: Comparison; value: number };
 
@@ -35,6 +36,8 @@ export type TruthKnowledge = {
   stormForecast: number | null;
   spicePeek: string | null;
   auctionPeek: string | null;
+  /** The currently offered public Basic Richese cache card, not the cache. */
+  cacheLot?: string | null;
   /** The authorized respondent's recorded Ixian group, not remaining lots. */
   ixPoolPeek?: readonly string[] | null;
   presciencePeek?: { field: 'leader' | 'weapon' | 'defense' | 'dial'; value: string | number } | null;
@@ -43,7 +46,7 @@ export type TruthKnowledge = {
 export function isKnowledgeFact(value: unknown): value is KnowledgeFact {
   if (!value || typeof value !== 'object') return false;
   const kind = (value as { kind?: unknown }).kind;
-  return kind === 'prediction' || kind === 'stormDial' || kind === 'stormForecast' || kind === 'spicePeek' || kind === 'auctionPeek' || kind === 'ixPoolPeek' || kind === 'presciencePeek';
+  return kind === 'prediction' || kind === 'stormDial' || kind === 'stormForecast' || kind === 'spicePeek' || kind === 'auctionPeek' || kind === 'cacheLot' || kind === 'ixPoolPeek' || kind === 'presciencePeek';
 }
 
 export function knowledgeFactInputError(value: unknown): string | null {
@@ -57,7 +60,7 @@ export function knowledgeFactInputError(value: unknown): string | null {
     return typeof value.name === 'string' && (value.name === 'None' || names.includes(value.name))
       ? null : 'Choose a known printed face or None.';
   }
-  if (value.kind === 'auctionPeek' || value.kind === 'ixPoolPeek')
+  if (value.kind === 'auctionPeek' || value.kind === 'cacheLot' || value.kind === 'ixPoolPeek')
     return typeof value.name === 'string' && TRUTH_CARD_NAMES.includes(value.name)
       ? null : 'Choose a known Treachery Card name.';
   if (value.kind === 'spicePeek')
@@ -83,7 +86,7 @@ export function parseKnowledgeFact(value: unknown): KnowledgeFact {
   if (value.kind === 'presciencePeek') return value.field === 'dial'
     ? { kind: value.kind, field: value.field, value: value.value }
     : { kind: value.kind, field: value.field, name: value.name };
-  if (value.kind === 'auctionPeek' || value.kind === 'ixPoolPeek') return { kind: value.kind, name: value.name };
+  if (value.kind === 'auctionPeek' || value.kind === 'cacheLot' || value.kind === 'ixPoolPeek') return { kind: value.kind, name: value.name };
   if (value.kind === 'spicePeek') return { kind: value.kind, value: value.value };
   if (value.kind === 'prediction' && value.field === 'faction')
     return { kind: value.kind, field: value.field, faction: value.faction };
@@ -93,7 +96,7 @@ export function parseKnowledgeFact(value: unknown): KnowledgeFact {
 }
 
 export function truthKnowledgeOf(
-  g: Pick<Game, 'phase' | 'turn' | 'advanced' | 'stormDials' | 'stormDialers' | 'stormCard' | 'stormCardKnown' | 'spicePeekKnown' | 'spiceDeck' | 'auction' | 'richeseAuction' | 'ixAuction' | 'ixAuctionKnown' | 'homeworldOccupationPreview' | 'battle' | 'players' | 'dukeVidal'>,
+  g: Pick<Game, 'phase' | 'turn' | 'advanced' | 'stormDials' | 'stormDialers' | 'stormCard' | 'stormCardKnown' | 'spicePeekKnown' | 'spiceDeck' | 'auction' | 'richeseAuction' | 'richeseCache' | 'ixAuction' | 'ixAuctionKnown' | 'homeworldOccupationPreview' | 'battle' | 'players' | 'dukeVidal'>,
   p: Pick<Player, 'id' | 'faction' | 'prediction'>,
 ): TruthKnowledge {
   const dial = g.stormDials[p.id];
@@ -103,6 +106,11 @@ export function truthKnowledgeOf(
   // The private lot is read only after the same inspection entitlement used by
   // the ordinary auction view has resolved successfully for this faction.
   const lotName = lot?.peekKnown ? lot.cards[lot.index]?.name : undefined;
+  // A Basic Richese cache lot is shown to every seat. It is not the owner's
+  // private cache inventory or an Advanced Black Market card.
+  const cacheLot = g.phase === 3 && !g.advanced && g.players.some(seat => seat.id === p.id) &&
+    g.richeseAuction?.source === 'cache' && !g.richeseAuction.outcome
+    ? g.richeseCache?.find(card => card.id === g.richeseAuction!.cardId)?.name : undefined;
   // Basic native Ixians may answer from their own successful inspection. The
   // record describes a known group, not the currently unsold auction cards.
   const ixKnown = g.phase === 3 && !g.advanced && p.faction === 'ixians'
@@ -150,6 +158,7 @@ export function truthKnowledgeOf(
       ? g.stormCard : null,
     spicePeek: peekFace,
     auctionPeek: typeof lotName === 'string' && lotName.length > 0 ? lotName : null,
+    cacheLot: typeof cacheLot === 'string' && cacheLot.length > 0 ? cacheLot : null,
     ixPoolPeek: ixPool,
     presciencePeek,
   };
@@ -171,6 +180,9 @@ export function knowledgeFactAnswer(
   if (fact.kind === 'auctionPeek')
     return knowledge.auctionPeek == null ? 'unknown'
       : knowledge.auctionPeek === fact.name ? 'yes' : 'no';
+  if (fact.kind === 'cacheLot')
+    return knowledge.cacheLot == null ? 'unknown'
+      : knowledge.cacheLot === fact.name ? 'yes' : 'no';
   if (fact.kind === 'ixPoolPeek')
     return knowledge.ixPoolPeek == null ? 'unknown'
       : knowledge.ixPoolPeek.includes(fact.name) ? 'yes' : 'no';
@@ -192,6 +204,8 @@ export function knowledgeFactText(fact: KnowledgeFact): string {
     return `the ${fact.field} you observed through battle Prescience is ${fact.field === 'dial' ? fact.value : fact.name}`;
   if (fact.kind === 'auctionPeek')
     return `the current auction card you inspected as Atreides is ${fact.name}`;
+  if (fact.kind === 'cacheLot')
+    return `the current public Richese cache auction card is ${fact.name}`;
   if (fact.kind === 'ixPoolPeek')
     return `your recorded Ixian auction group includes ${fact.name}`;
   if (fact.kind === 'spicePeek') {

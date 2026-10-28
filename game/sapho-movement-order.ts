@@ -27,7 +27,6 @@ function validate(context: SaphoMovementOrderContext): OrderedOpportunity {
   validateOrderedOpportunity(queue);
   requireMovement(queue.current !== null && queue.remaining.length > 0,
     'The combined movement turns have already finished.');
-  requireMovement(!queue.protectedLast, 'Juice of Sapho already protects the last turn in this phase.');
   requireMovement(Array.isArray(context.started) && context.started.every(identifier) &&
     new Set(context.started).size === context.started.length &&
     context.started.every(player => queue.eligible.includes(player)),
@@ -71,11 +70,18 @@ export function reorderSaphoMovementOrder(context: SaphoMovementOrderContext, re
   mode: 'first' | 'last';
 }): { event: string; afterCurrent: string | null; suspended?: string; next: OrderedOpportunity } {
   return wrap(() => {
-    const queue = validate(context), event = eventFor(queue);
+    const original = validate(context), event = eventFor(original);
     requireMovement(request && request.event === event, 'This Sapho movement opportunity has expired.');
     requireMovement(request.mode === 'first' || request.mode === 'last', 'Choose first or last.');
-    requireMovement(identifier(request.player) && queue.remaining.includes(request.player),
+    requireMovement(identifier(request.player) && original.remaining.includes(request.player),
       'Only a pending participant may change its movement position.');
+    // A recovered physical Sapho may supersede its own earlier Last use.
+    // Another seat cannot replace that protection under this bounded policy.
+    if (original.protectedLast) {
+      requireMovement(original.protectedLast === request.player && request.mode === 'first',
+        'Only the protected player may relinquish their earlier last position.');
+    }
+    const queue = original.protectedLast ? { ...original, protectedLast: null } : original;
     if (context.started.includes(request.player) && request.player === queue.current &&
         context.allowStartedLast === true) {
       requireMovement(request.mode === 'last', 'An already-started turn can only be moved to last.');

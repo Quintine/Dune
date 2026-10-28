@@ -27872,8 +27872,9 @@ function playSapho(g: Game, p: Player, action: Action) {
     const quote=saphoMovementRule(()=>reorderSaphoMovementOrder(context,
       {event:option.event,player:p.id,mode:option.mode}));
     g.movementRemaining = [...quote.next.remaining];
-    if (option.mode === 'last')
-      g.saphoMovementLast = { event: context.queue.event, turn: g.turn, player: p.id };
+    g.saphoMovementLast = quote.next.protectedLast
+      ? { event: context.queue.event, turn: g.turn, player: quote.next.protectedLast }
+      : null;
     const used = discard(g, p, 'richese-juice-of-sapho');
     log(
       g,

@@ -70,7 +70,9 @@ void test('started-tail last includes Guild while retaining the active turn and 
   assert.equal(quote.next.protectedLast, 'holder');
   assert.equal(quote.next.event, input.queue.event);
   assert.deepEqual(input, before);
-  assert.throws(() => saphoMovementOrderEvent({ ...input, queue: quote.next }), SaphoMovementOrderError);
+  const protectedContext = { ...input, queue: quote.next };
+  const event = saphoMovementOrderEvent(protectedContext);
+  assert.throws(() => reorderSaphoMovementOrder(protectedContext, { event, player: 'later', mode: 'first' }), SaphoMovementOrderError);
 });
 
 void test('an already started actor cannot use either mode to split its combined turn', () => {

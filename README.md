@@ -29,10 +29,12 @@ During play, **Public deals** lets two to six human seats record terms,
 accept or decline an offer, and agree to release it. Every party must accept,
 and every pair of parties must be nonallied when the offer is made or accepted.
 Terms are visible to the
-table and rely on players to honor them; the game does not interpret promises
-or determine impossibility. An optional immediate spice payment is executed
-using the normal bribe rules when the final participant accepts. AI negotiation
-and enforcement of future promises remain unfinished. See
+table and rely on players to honor free-text terms. An optional immediate spice
+payment is executed using the normal bribe rules when the final participant
+accepts. A structured payment may instead be due on the current or a later
+turn; the payer can pay it early or on the due turn. The provisional payment
+feasibility and expiry rules cover supported cases, while free-text enforcement,
+broader combinations and AI negotiation remain unfinished. See
 [public deals](docs/PUBLIC_DEALS.md).
 
 For the provisional two-person setup, the host enables **Two players, two

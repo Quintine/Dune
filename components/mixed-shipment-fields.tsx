@@ -67,6 +67,7 @@ export function TruthFactFields({ value: fact, game, target, onChange }: {
     stormForecast: { kind: 'stormForecast', compare: 'gte', value: 1 },
     spicePeek: { kind: 'spicePeek', value: 'worm' },
     auctionPeek: { kind: 'auctionPeek', name: 'Shield' },
+    cacheLot: { kind: 'cacheLot', name: 'Shield' },
     ixPoolPeek: { kind: 'ixPoolPeek', name: 'Shield' },
     presciencePeek: { kind: 'presciencePeek', field: 'leader', name: 'None' },
     spice: { kind: 'spice', compare: 'gte', value: 6 },
@@ -89,6 +90,7 @@ export function TruthFactFields({ value: fact, game, target, onChange }: {
         <option value="stormForecast">Known storm forecast</option>
         <option value="spicePeek">Known next Spice Blow card</option>
         <option value="auctionPeek">Inspected ordinary auction card</option>
+        <option value="cacheLot">Public Basic Richese cache auction card</option>
         <option value="ixPoolPeek">Recorded Ixian inspected auction pool includes a card</option>
         <option value="presciencePeek">Inspected battle plan field</option>
         <option value="spice">Current personal spice</option>
@@ -106,7 +108,7 @@ export function TruthFactFields({ value: fact, game, target, onChange }: {
         <FaceDancerFactFields value={fact} leaders={game.allLeaders} onChange={onChange} /> : fact.kind === 'noFieldValue' ?
         <NoFieldValueFields value={fact} onChange={onChange} /> : fact.kind === 'forceCount' ?
           <ForceCountFields value={fact} game={game} player={game.players.find(player => player.id === target)!} onChange={onChange} /> :
-        fact.kind === 'prediction' || fact.kind === 'stormDial' || fact.kind === 'stormForecast' || fact.kind === 'spicePeek' || fact.kind === 'auctionPeek' || fact.kind === 'ixPoolPeek' || fact.kind === 'presciencePeek' ?
+        fact.kind === 'prediction' || fact.kind === 'stormDial' || fact.kind === 'stormForecast' || fact.kind === 'spicePeek' || fact.kind === 'auctionPeek' || fact.kind === 'cacheLot' || fact.kind === 'ixPoolPeek' || fact.kind === 'presciencePeek' ?
           <KnowledgeFactFields value={fact} onChange={onChange} /> : fact.kind === 'spice' ? <>
             <label>
               Compare current personal spice

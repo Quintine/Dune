@@ -1,5 +1,21 @@
 # Rule decision index
 
+## Recovered Sapho after the same holder's Last — 28 October 2026
+
+The Sapho face does not state a once-per-turn limit. Provisionally, a fresh
+physical use by the same unstarted holder can replace its earlier Last with
+First, without taking another turn or changing a started opponent's turn.
+Competing holders and an already-suspended own turn remain guarded.
+[Scope](JUICE_OF_SAPHO_RUNTIME.md#recovered-sapho-after-the-same-holders-last--28-october-2026).
+
+## Truthtrance and a public Basic Richese cache lot — 28 October 2026
+
+The publisher FAQ permits game-related yes/no questions. The named-face
+selector for a currently public Basic cache lot and its active-lot lifetime
+are provisional software interpretations. Existing private Atreides
+inspection questions retain their distinct meaning.
+[Scope](TRUTHTRANCE_KNOWLEDGE.md#public-basic-richese-cache-lot--28-october-2026).
+
 ## Structured public-deal payments due later — 28 October 2026
 
 The publisher permits legal public agreements but does not define an online

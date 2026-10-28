@@ -54,7 +54,7 @@ void test('started self-last needs explicit Basic admission and cannot create a 
   reject(alone);
   const advanced = context();
   advanced.guild = { player: 'last', granted: false, locked: false };
-  reject(advanced);
+  assert.equal(request(advanced).next.protectedLast, 'active');
   const proposed = request(input);
   const already = { ...input, queue: proposed.next, started: ['done', 'active'] };
   assert.throws(() => saphoMovementOrderEvent(already), SaphoMovementOrderError);
