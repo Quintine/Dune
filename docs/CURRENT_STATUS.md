@@ -16,6 +16,17 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Basic phase-wide bids through Ixian/Richese preparation — 28 October.
+Prototyped / Partial.** Existing ordinary-bid questions can survive real Ixian
+inspection or cancellation and Richese cache-first/last preparation, including
+native Basic Semuta. Witnesses reserve the respondent's possible cache cost
+and hand slot without reading rival sealed bids. The ordinary-auction clock now
+honors a required phase-wide bid. Thirteen related files pass 89 cases,
+including native Ixian and Richese paths, both answers, funding/slot limits,
+Truthtrance discard, real clock expiry and legal bot guides. Selected edge
+fixtures stage conserved unopened cards. Other module combinations, full rules
+and deployed acceptance remain open. [Scope](TRUTHTRANCE_BID_PROMISES.md#basic-phase-wide-bids-through-ixian-and-richese-preparation--28-october-2026).
+
 **Basic early Richese cache-bid commitments — 28 October. Prototyped /
 Partial.** Before Bidding, ask about a minimum bid in the first actual cache
 lot of the turn. The waiting answer attaches to its real event and uses the

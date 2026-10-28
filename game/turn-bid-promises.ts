@@ -45,7 +45,11 @@ export function parsePhaseBidClaim(value: unknown): PhaseBidClaim {
 /** A phase-wide Yes can depend on an unopened later lot; its Kull purchase
  * interruption needs a separate continuation proof from a current-lot Yes. */
 export function phaseBidPromiseModeSupported(game: Parameters<typeof bidPromiseModeSupported>[0]): boolean {
-  return !game.kullPreview && bidPromiseModeSupported(game);
+  // Basic native Richese opens Semuta while preparing its cache auction.
+  // This phase-wide contract has its own continuation through that window;
+  // other current-lot bid contracts retain their separate Semuta guard.
+  const basicRichese = !game.advanced && game.players.some(player => player.faction === 'richese');
+  return !game.kullPreview && bidPromiseModeSupported(basicRichese ? { ...game, semutaPreview: undefined } : game);
 }
 
 export function phaseBidClaimText(claim: PhaseBidClaim): string {

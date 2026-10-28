@@ -16458,15 +16458,18 @@ function normalBidQuote(g: Game, p: Player, amount: unknown, requestedAid?: unkn
 function bidOpportunity(g: Game): BidOpportunity | null {
   const a = g.auction;
   if (g.status !== 'playing' || g.phase !== 3 || !a || g.currentAuctionSale ||
-    !a.cards[a.index] || !bidPromiseModeSupported(g)) return null;
+    !a.cards[a.index] || (!bidPromiseModeSupported(g) && !phaseBidPromiseModeSupported(g))) return null;
   return { turn: g.turn, lot: a.index + 1,
     source: JSON.stringify(['ordinaryBid', g.turn, a.index, a.cards[a.index].id]),
     bid: a.bid, bidder: a.bidder, passed: a.passed,
     eligible: g.players.filter(player => player.hand.length < handLimit(player)).map(player => player.id) };
 }
-function bidQuestionWindow(g: Game): boolean {
+function phaseBidCurrentWindow(g: Game): boolean {
   return !!bidOpportunity(g) && !g.response && !g.decision && !g.phaseOpening && !g.richeseAuction &&
     !g.ixAuction && !g.pendingKarama && !g.pendingTreacheryDiscard && !g.pendingKull;
+}
+function bidQuestionWindow(g: Game): boolean {
+  return bidPromiseModeSupported(g) && phaseBidCurrentWindow(g);
 }
 /** A future lot is a witness only after a real funded bid has committed the
  * current lot to sale. An unbid lot ends ordinary Bidding instead of opening
@@ -16478,14 +16481,42 @@ function phaseBidWitnesses(g: Game, p: Player): PhaseBidOpportunity[] {
     return Math.max(0, uncommittedSpice(g, p) - spent + Math.max(0, (aidFor(g, p)?.amount ?? 0) - spentAid));
   };
   if (g.phase < 3) {
-    // No special-auction preparation or future purchase is manufactured.
-    if (byFaction(g, 'ixians') || byFaction(g, 'richese') ||
+    // Ixian inspection returns at most one physical card; if it draws only
+    // one, the actual native continuation places that card in the auction.
+    // Richese's compulsory cache replaces one ordinary lot when available.
+    const cache = !!byFaction(g, 'richese') && (g.richeseCache?.length ?? 0) > 0;
+    // A definite answer spends the actual held Truthtrance before Bidding.
+    // Count its holder's newly freed slot only when that reserved card is
+    // still in a full hand; an unknown answer retains it and binds nothing.
+    const committedTruth = g.truthtrance?.question?.kind === 'phaseBid' ? g.truthtrance.queue[0] : undefined;
+    const holder = committedTruth && g.players.find(seat => seat.id === committedTruth.player);
+    const freedSlot = !!holder && holder.hand.length === handLimit(holder) &&
+      holder.hand.some(card => card.id === committedTruth!.card);
+    if (auctionEligible(g).length + Number(freedSlot) - Number(cache) < 1 ||
       p.hand.length >= handLimit(p) || !(g.deck.length || g.discard.length)) return [];
     const max = maximum();
     return max > 0 ? [{turn:g.turn,player:p.id,kind:'future',minimum:1,maximum:max}] : [];
   }
   const lot = bidOpportunity(g), auction = g.auction;
-  if (!lot || !auction) return [];
+  if (!lot || !auction) {
+    // A real first-position cache lot still precedes its frozen positive
+    // ordinary count. Reserve only this respondent's own potentially
+    // winning cache bid and its own pledged aid; never inspect rival sealed
+    // amounts or assume anyone else's future bid.
+    const round = g.richeseBidding, cacheLot = g.richeseAuction;
+    if (!round || round.turn !== g.turn || round.position !== 'first' ||
+        !Number.isSafeInteger(round.normalCount) || round.normalCount! < 1 ||
+        round.stage === 'complete' || !(g.deck.length || g.discard.length)) return [];
+    const ownCache = cacheLot?.source === 'cache' &&
+      !p.hand.some(card => card.id === cacheLot.cardId) &&
+      (cacheLot.outcome?.kind === 'sold' ? cacheLot.outcome.winner === p.id :
+        !cacheLot.outcome && (cacheLot.method === 'silent' ? (cacheLot.sealed[p.id] ?? 0) > 0 : cacheLot.bidder === p.id));
+    const futureCards = ownCache ? 1 + Number(p.faction === 'harkonnen') : 0;
+    if (p.hand.length + futureCards >= handLimit(p)) return [];
+    const spentAid = ownCache ? (g.richeseFunding?.[p.id]?.allyPayment ?? 0) : 0;
+    const max = maximum(0, spentAid);
+    return max > 0 ? [{turn:g.turn,player:p.id,kind:'future',minimum:1,maximum:max}] : [];
+  }
   const result: PhaseBidOpportunity[] = [];
   const current = bidPromiseRange(g.bidPromises ?? [], p.id, lot, normalBidMaximum(g, p));
   if (current) result.push({turn:g.turn,player:p.id,kind:'current',...current});
@@ -16785,7 +16816,8 @@ function phaseBidHonorsTurnActions(g: Game, p: Player, lot: BidOpportunity, acti
  * current-lot commitments. Future bidding with other financial/transport
  * promises awaits their combined planner; do not invent those resources. */
 function phaseBidFuturePlannerUnsupported(g: Game, p: Player): boolean {
-  return liveShipmentPromises(g.shipmentPromises ?? [],p.id,g.turn).some(row => row.answer) ||
+  return liveEarlyRicheseBidPromises(g.earlyRicheseBidPromises ?? [],p.id,g.turn).some(row => row.answer) ||
+    liveShipmentPromises(g.shipmentPromises ?? [],p.id,g.turn).some(row => row.answer) ||
     hasMovementPromises(g,p.id,true) || liveRevivalPromises(g.revivalPromises ?? [],p.id,g.turn).some(row => row.answer) ||
     liveLeaderRevivalPromises(g.leaderRevivalPromises ?? [],p.id,g.turn).some(row => row.answer) ||
     liveRevivalExpressionPromises(g.revivalExpressionPromises ?? [],p.id,g.turn).some(row => row.answer) ||
@@ -16924,7 +16956,7 @@ function projectedPhaseBidPromises(g: Game, player: string) {
 }
 function projectedPhaseBidGuide(g: Game, player: string): {action:Action} | null {
   const opportunity = bidOpportunity(g), seat = getPlayer(g,player);
-  if (!opportunity || !bidQuestionWindow(g) || g.truthtrance || g.auction?.active !== player) return null;
+  if (!opportunity || !phaseBidCurrentWindow(g) || g.truthtrance || g.auction?.active !== player) return null;
   const live = livePhaseBidPromises(g.phaseBidPromises ?? [],player,g.turn);
   if (!live.length) return null;
   const required = live.some(promise => promise.answer);
@@ -17232,8 +17264,9 @@ export function advanceAuctionClock(source: Game, now: number, controlEpoch: str
       ? turnActionCompletion(game, actor)?.bid : undefined;
     const opportunity = bidOpportunity(game);
     const required = opportunity && bidRequired(game.bidPromises ?? [], actor, opportunity);
-    if (!whole && !required) throw error;
-    const completion = minimumCompelledAuctionBid(game, actor);
+    const phaseGuide = projectedPhaseBidGuide(game, actor)?.action;
+    if (!whole && !required && phaseGuide?.type !== 'bid') throw error;
+    const completion = phaseGuide?.type === 'bid' ? phaseGuide : minimumCompelledAuctionBid(game, actor);
     requireRule(completion, 'The expired ordinary bid needs a legal completion of its binding Truthtrance answer.');
     next = applyAction(game, actor, completion);
     compelled = true;

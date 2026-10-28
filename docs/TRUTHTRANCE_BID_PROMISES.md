@@ -1,5 +1,34 @@
 # Truthtrance ordinary bid commitments
 
+## Basic phase-wide bids through Ixian and Richese preparation — 28 October 2026
+
+**Prototyped / Partial.** A pre-Bidding `{kind:'phaseBid'}` answer can now
+continue through native Basic Ixian inspection or cancellation and through
+the Richese cache before ordinary bidding. Richese's cache replaces one
+ordinary lot; a future witness therefore requires an eligible ordinary lot,
+an available physical card, funding and hand space. A definite Truthtrance
+answer spends its actual held card, so a full asker's newly freed hand slot is
+included. Cache bids do not fulfill or violate an ordinary-bid commitment.
+
+For a potential cache purchase, the respondent's own bid reserves its physical
+hand slot, possible Harkonnen bonus slot, funds and committed allied aid; the
+forecast does not read rival sealed amounts or assume a rival bid. Voluntary
+actions must preserve a funded Yes, while settled opposing effects can release
+an impossible one. Existing positive early-cache bid commitments do not admit
+an independent phase Yes without a joint planner. Basic native Semuta can
+finish its real discard window; Printed Kull and optional modules remain
+outside this slice. The publisher FAQ permits current-turn questions while
+possible; this detailed forecast remains a provisional software policy.
+
+An expired ordinary-auction clock now uses the existing phase-bid guide when a
+required Yes prevents passing; a No remains in force until Bidding actually
+closes. Thirteen focused files pass 89 cases, including native Ixian inspection
+and cancellation, Richese first/last Once Around and Silent lots, funding and
+hand-slot limits, actual Truthtrance discard, minimal bot guides and clock
+expiry. Selected edge cases explicitly stage conserved unopened cards. Types,
+lint and build pass. Other module combinations, full Truthtrance coverage and
+deployed acceptance remain open.
+
 ## Basic early Richese cache bid — 28 October 2026
 
 **Prototyped / Partial.** Before Bidding, a player may ask whether the target
@@ -104,8 +133,8 @@ card and post-purchase hand space and funding. Possible Basic and Advanced Harko
 draws reserve their hand slot; a cancelable Karama-only overbid is not a funded
 later-lot witness. Existing current-lot answers are considered before forecasting
 the later invoice. Before Bidding, a witness uses current eligible hand space,
-funding and available card count, without inventing a future acquisition. Ixian
-or Richese special-auction preparation is not forecast. Existing transport, revival and aggregate turn commitments retain current-lot
+funding and available card count, without inventing a future acquisition. The
+later Basic Ixian/Richese extension is documented above. Existing transport, revival and aggregate turn commitments retain current-lot
 checks; the future combined planner is not implemented. Before Bidding, an
 independent bribe can be quoted first using currently funded payments, leaving
 only the actual remaining funds for the bid; current-lot independent bribe

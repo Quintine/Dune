@@ -1,5 +1,14 @@
 # Rule decision index
 
+## Basic phase-wide bids through special-auction preparation — 28 October 2026
+
+The current-turn Truthtrance FAQ does not define forecasts through an Ixian
+inspection or Richese cache. The Basic prototype provisionally keeps the
+ordinary-bid commitment through those real preparations only when a funded,
+physical ordinary lot remains possible. It reserves the respondent's potential
+cache purchase without inspecting rival sealed bids; opposing effects can
+release impossibility. [Scope](TRUTHTRANCE_BID_PROMISES.md#basic-phase-wide-bids-through-ixian-and-richese-preparation--28-october-2026).
+
 ## Early Richese cache-bid commitments — 28 October 2026
 
 The FAQ permits current-turn action questions but does not specify a future
