@@ -41,7 +41,7 @@ export function advanceSaphoStartedMovement(game: Game, until: (state: Game) => 
  * shipment. Only unopened original deal/Spice ordering and original scalar
  * lotteries are selected; no played custody, resources, phase or queue is set. */
 export function createSaphoStartedMovementFixture(options: { advanced?: boolean; guildTake?: boolean;
-  truthFor?: readonly ('richese' | 'guild')[] } = {}) {
+  truthFor?: readonly ('richese' | 'guild')[]; ownerBeforeAtreides?: boolean } = {}) {
   const advanced = options.advanced ?? false, guildTake = options.guildTake ?? false;
   assert.ok(!guildTake || advanced, 'Flexible Guild TAKE is an original Advanced rule');
   const owner = 'emperor', guild = 'guild', canceler = 'atreides';
@@ -50,6 +50,11 @@ export function createSaphoStartedMovementFixture(options: { advanced?: boolean;
   const actions: SaphoStartedMovementStep[] = [];
   const act = (actor: string, action: Action) => { game = actSaphoStartedMovement(game, actor, action, actions); };
   const reach = (until: (state: Game) => boolean) => { game = advanceSaphoStartedMovement(game, until, actions); };
+  if (options.ownerBeforeAtreides) {
+    act('atreides', { type: 'seatPosition', position: 5 });
+    act(owner, { type: 'seatPosition', position: 2 });
+    act('atreides', { type: 'seatPosition', position: 3 });
+  }
   for (const player of game.players) act(player.id, { type: 'ready' });
   const lobby = structuredClone(game);
   act(game.host, advanced ? { type: 'start', advancedPreview: true } : { type: 'start' });
@@ -131,6 +136,7 @@ export function createSaphoStartedMovementFixture(options: { advanced?: boolean;
     lobby, setup, beforeStartingDeal, startingTruthSelection, afterSetup, acquired, acquisition, timing,
     originalInventory, originalCards: originalInventory, actions, steps: actions, sourceActionCount: actions.length,
     staging: [
+      ...(options.ownerBeforeAtreides ? ['The original lobby uses real seat-position actions to seat Emperor before Atreides; default seating is unchanged.'] : []),
       'Actual public ready/start (Advanced uses the original preview acknowledgement), original setup and paid cache1 purchase give Emperor the physical Sapho. Only an unopened original Atreides Karama deal position, one Basic/two Advanced original land Spice positions and scoped scalar lotteries are selected.',
       `The original ${advanced ? guildTake ? 'Guild TAKE' : 'Guild WAIT' : 'Basic in-order turn'} is followed by an actual one-force Polar Sink shipment costing ${current === guild ? 1 : 2}. The source stops after all original shipment responses settle, before Sapho or the current actor’s ground move/end. No dealt hand, balance, force, phase, queue, timing grant or pending receipt is installed.`,
     ] };

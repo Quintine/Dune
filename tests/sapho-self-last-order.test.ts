@@ -57,7 +57,10 @@ void test('started self-last needs explicit Basic admission and cannot create a 
   assert.equal(request(advanced).next.protectedLast, 'active');
   const proposed = request(input);
   const already = { ...input, queue: proposed.next, started: ['done', 'active'] };
-  assert.throws(() => saphoMovementOrderEvent(already), SaphoMovementOrderError);
+  const resumed = request(already, 'active', 'first');
+  assert.equal(resumed.next.current, 'active');
+  assert.equal(resumed.next.currentStarted, true);
+  assert.equal(resumed.next.protectedLast, null);
 });
 
 void test('a started actor is bound to its current phase, actor and whole remaining tail', () => {

@@ -16,6 +16,16 @@ open mode gates.
 
 
 ## Current checkpoint and work
+**Recovered Sapho after a suspended Movement turn — 28 October. Prototyped /
+Partial.** The holder may recover and replay the physical card to replace its
+own Last with First, without restoring spent shipment or movement. A different
+started actor finishes first. Seven related files pass 51 cases, including two
+native Basic programmes with paid Box recovery and discard reactions; one also
+checks spent ground movement. Box possession uses a conserved exchange.
+Another holder's Last, a further order query while the holder waits behind a
+started actor, broader combinations and deployed acceptance remain open. The
+ordering is provisional. [Scope](JUICE_OF_SAPHO_RUNTIME.md#recovered-sapho-after-suspending-an-already-started-movement-turn--28-october-2026).
+
 **Truthtrance about a public Basic Richese cache lot — 28 October.
 Prototyped / Partial.** A named-face question covers the current public cache
 lot while preserving the separate Atreides inspection question. Single and

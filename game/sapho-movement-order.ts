@@ -32,10 +32,12 @@ function validate(context: SaphoMovementOrderContext): OrderedOpportunity {
     context.started.every(player => queue.eligible.includes(player)),
     'Started movement turns must name unique participants in this phase.');
   const started = queue.remaining.filter(player => context.started.includes(player));
-  requireMovement(queue.currentStarted
-    ? started.length === 1 && started[0] === queue.current
-    : started.length === 0,
-  'Only the current combined turn may have started among the remaining participants.');
+  // A previous self-Last can suspend one started actor at the protected tail.
+  // Its already-spent movement and shipment remain in the engine's counters.
+  // No other noncurrent started participant is admitted.
+  requireMovement(started.includes(queue.current) === queue.currentStarted &&
+    started.every(player => player === queue.current || player === queue.protectedLast),
+  'Only the current or protected suspended combined turn may have started among the remaining participants.');
   requireMovement(context.guild === null || context.guild && typeof context.guild === 'object' &&
     identifier(context.guild.player) && queue.eligible.includes(context.guild.player) &&
     typeof context.guild.granted === 'boolean' && typeof context.guild.locked === 'boolean',
@@ -81,6 +83,8 @@ export function reorderSaphoMovementOrder(context: SaphoMovementOrderContext, re
       requireMovement(original.protectedLast === request.player && request.mode === 'first',
         'Only the protected player may relinquish their earlier last position.');
     }
+    const suspendedReplay = original.protectedLast === request.player &&
+      original.current !== request.player && context.started.includes(request.player);
     const queue = original.protectedLast ? { ...original, protectedLast: null } : original;
     if (context.started.includes(request.player) && request.player === queue.current &&
         context.allowStartedLast === true) {
@@ -96,15 +100,18 @@ export function reorderSaphoMovementOrder(context: SaphoMovementOrderContext, re
       validateOrderedOpportunity(next);
       return { event, afterCurrent: null, suspended: request.player, next };
     }
-    requireMovement(!context.started.includes(request.player),
+    requireMovement(!context.started.includes(request.player) || suspendedReplay,
       'Juice of Sapho cannot split a combined turn that has already started.');
     const grantedGuild = context.guild && context.guild.player === queue.current &&
       context.guild.granted && !context.guild.locked;
     requireMovement(queue.currentStarted || request.mode !== 'first' || !grantedGuild,
       'The Guild has already been granted the next combined turn.');
-    const next = request.mode === 'last'
+    const reordered = request.mode === 'last'
       ? protectOrderedOpportunityLast(queue, { event: queue.event, player: request.player })
       : reorderOrderedOpportunity(queue, { event: queue.event, player: request.player, position: 'first' });
+    const next = suspendedReplay && reordered.current === request.player
+      ? { ...reordered, currentStarted: true } : reordered;
+    validateOrderedOpportunity(next);
     requireMovement(next.remaining.some((player, index) => player !== queue.remaining[index]),
       'This participant is already in that remaining movement position.');
     return { event, afterCurrent: queue.currentStarted ? queue.current : null, next };

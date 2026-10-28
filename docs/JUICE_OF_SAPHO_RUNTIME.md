@@ -1,5 +1,22 @@
 # Juice of Sapho: finite ordering implementation
 
+## Recovered Sapho after suspending an already-started Movement turn — 28 October 2026
+
+**Prototyped / Partial.** A holder who used Last to suspend its own already
+started combined turn can recover the physical Sapho and use First to resume
+that same turn. Previous shipment and movement remain spent; the replay grants
+no second allowance. If another player's turn has started, that player finishes
+first. A current Guild grant remains protected. The same holder's earlier Last
+protection is released, while another holder cannot replace it. The precedence
+is a provisional online interpretation of the printed card.
+
+Two native Basic programmes exercise real shipment, Last, paid Box recovery,
+First, discard reactions and completion, both before and after the next player
+starts. Box possession is staged by a conserving exchange. Seven related files
+pass 51 cases. A further Sapho order query while the resumed holder waits behind
+another started actor remains guarded; wider combinations, browser and deployed
+acceptance remain open.
+
 ## Recovered Sapho after the same holder's Last — 28 October 2026
 
 **Prototyped / Partial.** An unstarted holder who previously used Sapho to go
@@ -8,8 +25,8 @@ go first among the remaining combined Movement turns. The fresh use removes
 that same holder's Last protection, preserves completed turns and respects an
 already-started current actor and the Guild's existing timing. Semuta discard
 responses still finish through the original continuation. Another holder may
-not replace the protected Last under this bounded policy. Replaying after one's
-own started turn was suspended remains unsupported.
+not replace the protected Last under this bounded policy. The later section
+above extends replay to the same holder's suspended started turn.
 
 The printed card has no stated once-per-turn limit; choosing how a later use
 interacts with an earlier protected position is a provisional interpretation,
@@ -486,9 +503,9 @@ different holder behind the active turn under the selected provisional policy.
 Other ordered actions and competing first/Guild precedence beyond the retained
 native choice remain unfinished. The own-started Movement and Revival policies
 above supersede the earlier blanket split-turn exclusion.
-The same-holder unstarted Movement replay described above is supported; other
-holders' protected Last and suspended-own-turn replay remain guarded. Silent
-submission stays simultaneous with its original storm tie order.
+The same-holder Movement replay described above is supported; other holders'
+protected Last remains guarded. Silent submission stays simultaneous with its
+original storm tie order.
 
 The battle audit in [the battle review](JUICE_OF_SAPHO_BATTLE_REVIEW.md) found a real Stone Burner counterexample: a plan admitted with original aggressor tie priority can become allocation-ambiguous after late Sapho. A complete implementation needs the actual allocation continuation (and a usable, possession-independent late intervention boundary), not rejection based on an opponent's hidden plan. No aggressor handler has been enabled around that defect.
 

@@ -37,7 +37,9 @@ void test('another seat cannot replace an existing Last, and replay cannot dupli
   const guild = order(); guild.guild = { player: 'active', granted: true, locked: false };
   assert.throws(() => reorder(guild, 'owner', 'first'), SaphoMovementOrderError);
   const suspended = order(); suspended.started = ['done', 'owner'];
-  assert.throws(() => saphoMovementOrderEvent(suspended), SaphoMovementOrderError);
+  const resumed = reorder(suspended, 'owner', 'first');
+  assert.equal(resumed.next.current, 'owner');
+  assert.equal(resumed.next.currentStarted, true);
 });
 
 function movementAction(game: Game, actor: string, mode: 'first' | 'last'): Action {

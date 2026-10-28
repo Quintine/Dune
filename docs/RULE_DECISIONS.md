@@ -1,11 +1,19 @@
 # Rule decision index
 
+## Recovered Sapho after a suspended Movement turn — 28 October 2026
+
+The holder's fresh physical Sapho may provisionally replace its own protected
+Last with First even after suspending a started turn. Spent actions remain
+spent, and a different started actor finishes first. Competing holders remain
+guarded. [Scope](JUICE_OF_SAPHO_RUNTIME.md#recovered-sapho-after-suspending-an-already-started-movement-turn--28-october-2026).
+
 ## Recovered Sapho after the same holder's Last — 28 October 2026
 
 The Sapho face does not state a once-per-turn limit. Provisionally, a fresh
 physical use by the same unstarted holder can replace its earlier Last with
 First, without taking another turn or changing a started opponent's turn.
-Competing holders and an already-suspended own turn remain guarded.
+Competing holders remain guarded; the later section above extends replay to
+the holder's own suspended turn.
 [Scope](JUICE_OF_SAPHO_RUNTIME.md#recovered-sapho-after-the-same-holders-last--28-october-2026).
 
 ## Truthtrance and a public Basic Richese cache lot — 28 October 2026

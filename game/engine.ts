@@ -8049,7 +8049,8 @@ function treacheryDiscardIntegrity(g: Game) {
         typeof c.afterCurrent === 'string' && c.afterCurrent === c.previousActive &&
         c.afterCurrent !== c.player && g.movementRemaining[0] === c.afterCurrent &&
         saphoMovementStarted(g, getPlayer(g,c.afterCurrent)) &&
-        g.movementRemaining.filter(id=>id!==c.afterCurrent).every(id=>!saphoMovementStarted(g,getPlayer(g,id)))) &&
+        g.movementRemaining.filter(id=>id!==c.afterCurrent).every(id=>
+          !saphoMovementStarted(g,getPlayer(g,id)) || c.mode === 'first' && id === c.player)) &&
       (c.mode === 'first'
         ? g.movementRemaining[c.afterCurrent === undefined ? 0 : 1] === c.player &&
           c.previousActive !== c.player && !g.saphoMovementLast
